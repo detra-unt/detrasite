@@ -405,6 +405,7 @@ export function formatShortDate(dateString: string, locale = 'es-PE'): string {
   return date.toLocaleDateString(locale, {
     year: 'numeric',
     month: 'short',
+    day: 'numeric',
   });
 }
 

@@ -105,17 +105,63 @@ const articleTypeLabel = article.articleType;
   <article class="max-w-4xl mx-auto px-6 md:px-8 py-12 md:py-16">
     <!-- Imagen de portada destacada -->
     <figure class="mb-12 -mt-20 relative z-10">
-      <img 
-        src={article.coverImage.url}
-        alt={article.coverImage.title || article.title}
-        class="w-full aspect-video object-cover rounded-xl shadow-2xl"
-      />
+      <button
+        id="open-image-modal"
+        class="block w-full group cursor-zoom-in"
+        aria-label="Ver imagen en tamaño grande"
+      >
+        <img
+          src={article.coverImage.url}
+          alt={article.coverImage.title || article.title}
+          class="w-full aspect-video object-cover rounded-xl shadow-2xl group-hover:shadow-3xl transition-shadow"
+        />
+        <span class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm text-on-surface px-3 py-1.5 rounded-full text-xs font-label font-semibold opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 shadow-lg">
+          <span class="material-symbols-outlined text-sm">zoom_in</span>
+          Ver imagen
+        </span>
+      </button>
       {article.coverImage.description && (
         <figcaption class="text-center text-sm text-on-surface-variant mt-4 italic">
           {article.coverImage.description}
         </figcaption>
       )}
     </figure>
+
+    <!-- Modal de imagen -->
+    <div
+      id="image-modal"
+      class="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Visor de imagen"
+    >
+      <!-- Botón cerrar -->
+      <button
+        id="close-modal"
+        class="absolute top-4 right-4 z-50 bg-white/10 hover:bg-white/20 text-white p-3 rounded-full transition-colors backdrop-blur-sm"
+        aria-label="Cerrar modal"
+      >
+        <span class="material-symbols-outlined text-2xl">close</span>
+      </button>
+
+      <!-- Contenedor de la imagen -->
+      <div class="w-full h-full flex items-center justify-center p-4 md:p-8">
+        <img
+          src={article.coverImage.url}
+          alt={article.coverImage.title || article.title}
+          class="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+        />
+      </div>
+
+      <!-- Leyenda opcional -->
+      {article.coverImage.description && (
+        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 md:p-6">
+          <p class="text-white/90 text-sm md:text-center font-label italic">
+            {article.coverImage.description}
+          </p>
+        </div>
+      )}
+    </div>
     
     <!-- Información de autores -->
     <aside class="bg-surface-container rounded-xl p-6 md:p-8 mb-12">
@@ -173,8 +219,8 @@ const articleTypeLabel = article.articleType;
   <!-- CTA para volver -->
   <section class="bg-surface-container py-12">
     <div class="max-w-4xl mx-auto px-6 md:px-8 text-center">
-      <a 
-        href="/publicaciones" 
+      <a
+        href="/publicaciones"
         class="inline-flex items-center gap-2 font-label font-semibold text-primary hover:text-primary-container transition-colors"
       >
         <span class="material-symbols-outlined">arrow_back</span>
@@ -183,3 +229,37 @@ const articleTypeLabel = article.articleType;
     </div>
   </section>
 </Layout>
+
+<script>
+  // Modal de imagen
+  const openBtn = document.getElementById('open-image-modal');
+  const modal = document.getElementById('image-modal');
+  const closeBtn = document.getElementById('close-modal');
+
+  function openModal() {
+    modal?.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    modal?.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  openBtn?.addEventListener('click', openModal);
+  closeBtn?.addEventListener('click', closeModal);
+
+  // Cerrar con tecla Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal?.classList.contains('hidden') === false) {
+      closeModal();
+    }
+  });
+
+  // Cerrar al hacer clic fuera de la imagen
+  modal?.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+</script>

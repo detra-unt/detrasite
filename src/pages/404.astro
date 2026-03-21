@@ -1,0 +1,39 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout 
+  title="Página no encontrada | DETRA-UNT" 
+  description="Lo sentimos, la página que buscas no existe o ha sido movida."
+>
+  <section class="flex flex-col items-center justify-center min-h-[70vh] px-6 text-center">
+    
+    <div class="mb-6 flex items-center justify-center h-32 w-32 rounded-full bg-error-container text-on-error-container">
+      <span class="material-symbols-outlined text-6xl" aria-hidden="true">
+        travel_explore
+      </span>
+    </div>
+    
+    <h1 class="font-headline text-7xl md:text-9xl text-primary mb-2">
+      404
+    </h1>
+    <h2 class="font-headline text-2xl md:text-4xl text-on-surface mb-4">
+      Página no encontrada
+    </h2>
+    
+    <p class="font-body text-on-surface-variant max-w-lg mb-8 text-lg">
+      Lo sentimos, no hemos podido encontrar la página que buscas. Es posible que el enlace sea incorrecto, que la página haya sido eliminada o que esté temporalmente inaccesible.
+    </p>
+    
+    <a 
+      href="/" 
+      class="inline-flex items-center gap-2 bg-primary text-on-primary px-8 py-3 rounded-full font-label text-base font-medium hover:bg-primary-container hover:text-on-primary-container transition-colors duration-300 shadow-sm"
+    >
+      <span class="material-symbols-outlined text-xl" aria-hidden="true">
+        home
+      </span>
+      Volver al inicio
+    </a>
+    
+  </section>
+</Layout>

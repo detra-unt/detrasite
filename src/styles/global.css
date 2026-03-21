@@ -60,6 +60,9 @@
   --radius-lg: 0.25rem;
   --radius-xl: 0.5rem;
   --radius-full: 0.75rem;
+
+  /* Box Shadows */
+  --shadow-3xl: 0 35px 60px -15px rgba(0, 0, 0, 0.3);
 }
 
 /* Material Symbols */
