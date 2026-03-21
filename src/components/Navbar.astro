@@ -10,17 +10,17 @@ const { currentPage = 'home' } = Astro.props;
   <div class="flex justify-between items-center w-full px-8 py-4 max-w-7xl mx-auto">
     <!-- Brand Logo -->
     <a href="/" class="flex items-center">
-      <img src="/logoDetra.png" alt="Detra logo" class="h-10 w-auto object-contain">
+      <img src="/logoDetravf.png" alt="Detra logo" class="h-10 w-auto object-contain">
     </a>
     
-    <!-- Navigation Links -->
+    <!-- Navigation Links — solo en desktop -->
     <div class="hidden md:flex items-center space-x-8">
       <a 
         class:list={[
           "font-label tracking-tight text-sm transition-colors",
           currentPage === 'home' 
-            ? "text-[#550015] font-bold border-b-2 border-[#550015] pb-1" 
-            : "text-[#1c1c14]/70 hover:text-[#550015]"
+            ? "text-[#5E0B15] font-bold border-b-2 border-[#5E0B15] pb-1" 
+            : "text-[#1c1c14]/70 hover:text-[#5E0B15]"
         ]}
         href="/">
         Inicio
@@ -47,7 +47,7 @@ const { currentPage = 'home' } = Astro.props;
       </a>
     </div>
     
-    <!-- Trailing Actions -->
+    <!-- Acciones trailing — solo en desktop -->
     <div class="hidden md:flex items-center space-x-6">
       <button class="material-symbols-outlined text-[#2e0007] hover:text-[#550015] transition-all duration-300 scale-95 active:opacity-80">
         account_balance
@@ -57,44 +57,64 @@ const { currentPage = 'home' } = Astro.props;
       </button>
     </div>
     
-    <!-- Mobile Menu Button -->
-    <button class="md:hidden material-symbols-outlined text-[#2e0007]" id="mobile-menu-btn">
-      menu
+    <!-- Botón hamburguesa — solo en mobile -->
+    <button
+      id="mobile-menu-btn"
+      class="md:hidden cursor-pointer flex flex-col justify-center items-center w-10 h-10 rounded-md hover:bg-[#2e0007]/10 transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#550015]"
+      aria-label="Abrir menú"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+    >
+      <!-- Las tres barras del hamburger, animadas con CSS -->
+      <span class="hamburger-line block w-5 h-0.5 bg-[#2e0007] rounded-full transition-all duration-300 origin-center"></span>
+      <span class="hamburger-line block w-5 h-0.5 bg-[#2e0007] rounded-full transition-all duration-300 mt-1.5 origin-center"></span>
+      <span class="hamburger-line block w-5 h-0.5 bg-[#2e0007] rounded-full transition-all duration-300 mt-1.5 origin-center"></span>
     </button>
   </div>
   
-  <!-- Mobile Menu -->
-  <div class="hidden bg-[#fcfaec] border-t border-[#dcc0c1]/30 px-8 py-4" id="mobile-menu">
-    <div class="flex flex-col space-y-4">
+  <!-- Menú mobile — se expande con animación de altura -->
+  <div
+    id="mobile-menu"
+    class="md:hidden overflow-hidden transition-all duration-300 ease-in-out"
+    style="max-height: 0; opacity: 0;"
+    aria-hidden="true"
+  >
+    <div class="bg-[#fcfaec] border-t border-[#dcc0c1]/30 px-8 py-5 flex flex-col space-y-5">
       <a 
         class:list={[
-          "font-label tracking-tight text-sm",
-          currentPage === 'home' ? "text-[#550015] font-bold" : "text-[#1c1c14]/70"
+          "font-label tracking-tight text-sm transition-colors w-fit",
+          currentPage === 'home' 
+            ? "text-[#550015] font-bold border-b-2 border-[#550015] pb-0.5" 
+            : "text-[#1c1c14]/70 hover:text-[#550015]"
         ]}
         href="/">
         Inicio
       </a>
       <a 
         class:list={[
-          "font-label tracking-tight text-sm",
-          currentPage === 'publications' ? "text-[#550015] font-bold" : "text-[#1c1c14]/70"
+          "font-label tracking-tight text-sm transition-colors w-fit",
+          currentPage === 'publications' 
+            ? "text-[#550015] font-bold border-b-2 border-[#550015] pb-0.5" 
+            : "text-[#1c1c14]/70 hover:text-[#550015]"
         ]}
         href="/publicaciones">
         Publicaciones
       </a>
       <a 
         class:list={[
-          "font-label tracking-tight text-sm",
-          currentPage === 'about' ? "text-[#550015] font-bold" : "text-[#1c1c14]/70"
+          "font-label tracking-tight text-sm transition-colors w-fit",
+          currentPage === 'about' 
+            ? "text-[#550015] font-bold border-b-2 border-[#550015] pb-0.5" 
+            : "text-[#1c1c14]/70 hover:text-[#550015]"
         ]}
         href="/sobrenosotros">
         Sobre Nosotros
       </a>
-      <div class="pt-4 border-t border-[#dcc0c1]/30 flex items-center space-x-4">
-        <button class="material-symbols-outlined text-[#2e0007]">
+      <div class="pt-2 border-t border-[#dcc0c1]/30 flex items-center space-x-4">
+        <button class="material-symbols-outlined text-[#2e0007] hover:text-[#550015] transition-colors">
           account_balance
         </button>
-        <button class="bg-[#550015] text-white px-6 py-2 rounded-md font-label text-sm font-semibold">
+        <button class="bg-[#550015] text-white px-6 py-2 rounded-md font-label text-sm font-semibold hover:opacity-90 transition-all">
           Unirse
         </button>
       </div>
@@ -102,11 +122,74 @@ const { currentPage = 'home' } = Astro.props;
   </div>
 </nav>
 
+<style>
+  /* Estado "abierto" del botón hamburguesa */
+  #mobile-menu-btn.is-open .hamburger-line:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+  }
+  #mobile-menu-btn.is-open .hamburger-line:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  #mobile-menu-btn.is-open .hamburger-line:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+  }
+</style>
+
 <script>
-  const menuBtn = document.getElementById('mobile-menu-btn');
-  const mobileMenu = document.getElementById('mobile-menu');
-  
-  menuBtn?.addEventListener('click', () => {
-    mobileMenu?.classList.toggle('hidden');
-  });
+  function initMobileMenu() {
+    const btn = document.getElementById('mobile-menu-btn');
+    const menu = document.getElementById('mobile-menu');
+    if (!btn || !menu) return;
+
+    // Altura real del contenido interno para la animación
+    const inner = menu.querySelector('div') as HTMLElement | null;
+
+    btn.addEventListener('click', () => {
+      const isOpen = btn.classList.contains('is-open');
+
+      if (isOpen) {
+        // Cerrar
+        menu.style.maxHeight = '0px';
+        menu.style.opacity = '0';
+        btn.classList.remove('is-open');
+        btn.setAttribute('aria-expanded', 'false');
+        menu.setAttribute('aria-hidden', 'true');
+      } else {
+        // Abrir: calculamos la altura real del contenido
+        const contentHeight = inner ? inner.scrollHeight : 300;
+        menu.style.maxHeight = `${contentHeight}px`;
+        menu.style.opacity = '1';
+        btn.classList.add('is-open');
+        btn.setAttribute('aria-expanded', 'true');
+        menu.setAttribute('aria-hidden', 'false');
+      }
+    });
+
+    // Cerrar menú al hacer clic en un enlace
+    menu.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => {
+        menu.style.maxHeight = '0px';
+        menu.style.opacity = '0';
+        btn.classList.remove('is-open');
+        btn.setAttribute('aria-expanded', 'false');
+        menu.setAttribute('aria-hidden', 'true');
+      });
+    });
+
+    // Cerrar menú si se redimensiona a desktop
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 768 && btn.classList.contains('is-open')) {
+        menu.style.maxHeight = '0px';
+        menu.style.opacity = '0';
+        btn.classList.remove('is-open');
+        btn.setAttribute('aria-expanded', 'false');
+        menu.setAttribute('aria-hidden', 'true');
+      }
+    });
+  }
+
+  // Ejecutar al cargar y también tras las transiciones de View Transitions de Astro
+  initMobileMenu();
+  document.addEventListener('astro:after-swap', initMobileMenu);
 </script>

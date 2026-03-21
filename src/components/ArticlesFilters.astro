@@ -264,14 +264,22 @@ const articleTypes = Object.entries(ARTICLE_TYPES).map(([label, slug]) => ({
     });
     
     // Cargar filtros desde URL al iniciar
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.toString()) {
-      urlParams.forEach((value, key) => {
-        const input = form.elements.namedItem(key) as HTMLInputElement | HTMLSelectElement;
-        if (input) input.value = value;
-      });
-      fetchArticles(urlParams);
-      updateFilterTags(urlParams);
-    }
+    const loadFiltersFromUrl = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.toString()) {
+        urlParams.forEach((value, key) => {
+          const input = form.elements.namedItem(key) as HTMLInputElement | HTMLSelectElement;
+          if (input) input.value = value;
+        });
+        fetchArticles(urlParams);
+        updateFilterTags(urlParams);
+      }
+    };
+    
+    loadFiltersFromUrl();
+    
+    // Re-inicializar filtros después de navegación SPA
+    document.addEventListener('astro:after-swap', loadFiltersFromUrl);
+    window.addEventListener('popstate', loadFiltersFromUrl);
   });
 </script>

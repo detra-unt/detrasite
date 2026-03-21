@@ -2,36 +2,39 @@
 
 ---
 
-<section class="relative min-h-[60vh] md:min-h-[80vh] lg:min-h-[870px] flex items-center overflow-hidden bg-[#fcfaec]">
+<section class="relative min-h-[calc(100dvh-80px)] flex items-center overflow-hidden bg-[#fcfaec] py-8 md:py-12">
   <div class="absolute inset-0 z-0">
     <img 
       alt="Arquitectura clasica de biblioteca universitaria con techos altos"
-      class="w-full h-full object-cover opacity-20 grayscale mix-blend-multiply"
-      src="/principal.avif" 
+      class="w-full h-full object-cover opacity-80 grayscale mix-blend-multiply"
+      src="/principalv2.jpeg" 
     />
     <div class="absolute inset-0 bg-gradient-to-r from-[#fcfaec] via-[#fcfaec]/60 to-transparent"></div>
   </div>
   
   <div class="relative z-10 max-w-7xl mx-auto px-6 md:px-8 w-full grid md:grid-cols-12 gap-8 md:gap-12 items-center">
     <div class="md:col-span-8">
-      <span class="inline-block px-3 py-1 bg-[#ffdea5] text-[#261900] text-[10px] uppercase tracking-widest font-label font-bold mb-4 md:mb-6 rounded-sm">
-        FACULTAD DE DERECHO Y CIENCIAS POLÍTICAS
+      <span class="inline-block px-3 py-1 bg-[#000000] text-[#fff] text-[10px] uppercase tracking-widest font-label font-bold mb-4 md:mb-6 rounded-sm">
+        CÍRCULO DE ESTUDIOS DETRA - UNT
       </span>
-      <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-headline font-bold text-[#2e0007] leading-[0.9] tracking-tighter mb-6 md:mb-8 italic">
-        El Futuro del <br />Discurso Legal.
+      <h1 class="text-3xl sm:text-5xl md:text-6xl lg:text-6xl font-headline font-bold text-[#5E0B15] leading-[1.1] md:leading-[0.9] tracking-tighter mb-4 md:mb-8 italic">
+        <span class="block pb-1 md:pb-2">Construyendo una visión crítica</span>
+        <span class="block">del Derecho del Trabajo.</span>
       </h1>
-      <p class="text-lg md:text-xl lg:text-2xl font-body text-[#564243] max-w-2xl leading-relaxed mb-8 md:mb-10">
-        Avanzando la investigacion constitucional y la reforma judicial a traves de un riguroso analisis academico y colaboracion global.
+      <p class="text-sm md:text-xl lg:text-2xl font-body text-[#5E0B15] max-w-2xl leading-relaxed mb-6 md:mb-10">
+        Promoviendo la investigación jurídica y el análisis crítico de la realidad nacional en el ámbito del Derecho del Trabajo y la Seguridad Social. Buscamos impulsar un modelo útil que atienda las verdaderas necesidades de la clase trabajadora.
       </p>
       <div class="flex flex-col sm:flex-row flex-wrap gap-4">
-        <a href="/publicaciones">
-          <button class="cursor-pointer bg-[#2e0007] text-white px-8 md:px-10 py-3 md:py-4 rounded-lg font-label font-bold text-base md:text-lg hover:bg-[#550015] transition-all shadow-xl shadow-[#2e0007]/10">
-          Explorar Archivos
+        <a href="/publicaciones" class="w-full sm:w-auto flex">
+          <button class="w-full cursor-pointer bg-[#5E0B15] text-white px-8 md:px-10 py-3 md:py-4 rounded-lg font-label font-bold text-base md:text-lg hover:bg-[#550015] transition-all shadow-xl shadow-[#2e0007]/10">
+          Ver publicaciones
         </button>
         </a>
-        <button class="cursor-pointer border border-[#dcc0c1] text-[#2e0007] px-8 md:px-10 py-3 md:py-4 rounded-lg font-label font-bold text-base md:text-lg hover:bg-[#f6f4e6] transition-all">
-          Nuestra Mision
-        </button>
+        <a href="/sobrenosotros">
+          <button class="w-full sm:w-auto cursor-pointer border border-[#dcc0c1] text-[#2e0007] px-8 md:px-10 py-3 md:py-4 rounded-lg font-label font-bold text-base md:text-lg hover:bg-[#f6f4e6] transition-all">
+            Sobre nosotros
+          </button>
+        </a>
       </div>
     </div>
   </div>
