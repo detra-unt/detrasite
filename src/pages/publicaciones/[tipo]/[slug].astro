@@ -1,0 +1,185 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import RichTextRenderer from '../../../components/RichTextRenderer.astro';
+import { 
+  getArticleBySlug, 
+  getAllArticleSlugs, 
+  formatDate, 
+  getAuthorInitials,
+  getArticleTypeSlug,
+  type ArticleTypeSlug 
+} from '../../../lib/contentful';
+
+// Generar todas las rutas estáticas
+export async function getStaticPaths() {
+  const slugs = await getAllArticleSlugs();
+  
+  return slugs.map(({ slug, tipo }) => ({
+    params: { tipo, slug },
+  }));
+}
+
+const { tipo, slug } = Astro.params;
+
+// Validar tipo de artículo
+if (tipo !== 'estudiantes' && tipo !== 'invitados') {
+  return Astro.redirect('/publicaciones');
+}
+
+const article = await getArticleBySlug(slug as string, tipo as ArticleTypeSlug);
+
+if (!article) {
+  return Astro.redirect('/publicaciones');
+}
+
+const authors = article.authorsCollection.items;
+const publishDate = formatDate(article.publishDate);
+const articleTypeLabel = article.articleType;
+---
+
+<Layout 
+  title={`${article.title} | DETRA-UNT`} 
+  description={`Artículo de investigación: ${article.title}`}
+  currentPage="publications"
+>
+  <!-- Hero del Artículo -->
+  <header class="relative bg-primary text-white">
+    <!-- Imagen de fondo con overlay -->
+    <div class="absolute inset-0">
+      <img 
+        src={article.coverImage.url} 
+        alt={article.coverImage.title || article.title}
+        class="w-full h-full object-cover opacity-20"
+      />
+      <div class="absolute inset-0 bg-gradient-to-t from-primary via-primary/90 to-primary/70"></div>
+    </div>
+    
+    <div class="relative max-w-4xl mx-auto px-6 md:px-8 py-16 md:py-24">
+      <!-- Breadcrumb -->
+      <nav class="mb-8">
+        <ol class="flex items-center gap-2 text-sm font-label text-white/60">
+          <li><a href="/" class="hover:text-white transition-colors">Inicio</a></li>
+          <li><span class="material-symbols-outlined text-sm">chevron_right</span></li>
+          <li><a href="/publicaciones" class="hover:text-white transition-colors">Publicaciones</a></li>
+          <li><span class="material-symbols-outlined text-sm">chevron_right</span></li>
+          <li class="text-white/80 capitalize">{tipo}</li>
+        </ol>
+      </nav>
+      
+      <!-- Tipo de artículo badge -->
+      <span class="inline-block bg-tertiary-fixed text-on-tertiary-fixed px-3 py-1 rounded text-xs font-label font-bold uppercase tracking-wider mb-6">
+        {articleTypeLabel}
+      </span>
+      
+      <!-- Título -->
+      <h1 class="font-headline text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-8">
+        {article.title}
+      </h1>
+      
+      <!-- Meta información -->
+      <div class="flex flex-wrap items-center gap-6 text-white/80">
+        <!-- Fecha -->
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-xl">calendar_today</span>
+          <time datetime={article.publishDate} class="font-label text-sm">
+            {publishDate}
+          </time>
+        </div>
+        
+        <!-- Autores -->
+        <div class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-xl">person</span>
+          <div class="flex items-center gap-2">
+            {authors.map((author, index) => (
+              <span class="font-label text-sm">
+                {author.academicDegree !== 'Estudiante' ? `${author.academicDegree}. ` : ''}{author.fullName}{index < authors.length - 1 ? ',' : ''}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+  
+  <!-- Contenido Principal -->
+  <article class="max-w-4xl mx-auto px-6 md:px-8 py-12 md:py-16">
+    <!-- Imagen de portada destacada -->
+    <figure class="mb-12 -mt-20 relative z-10">
+      <img 
+        src={article.coverImage.url}
+        alt={article.coverImage.title || article.title}
+        class="w-full aspect-video object-cover rounded-xl shadow-2xl"
+      />
+      {article.coverImage.description && (
+        <figcaption class="text-center text-sm text-on-surface-variant mt-4 italic">
+          {article.coverImage.description}
+        </figcaption>
+      )}
+    </figure>
+    
+    <!-- Información de autores -->
+    <aside class="bg-surface-container rounded-xl p-6 md:p-8 mb-12">
+      <h2 class="font-headline text-lg font-semibold text-primary mb-4">
+        {authors.length === 1 ? 'Autor' : 'Autores'}
+      </h2>
+      <div class="flex flex-col md:flex-row gap-6">
+        {authors.map((author) => (
+          <div class="flex items-start gap-4 flex-1">
+            {author.profilePicture ? (
+              <img 
+                src={author.profilePicture.url} 
+                alt={author.fullName}
+                class="w-16 h-16 rounded-full object-cover ring-2 ring-primary-fixed"
+              />
+            ) : (
+              <div class="w-16 h-16 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-headline font-bold text-lg">
+                {getAuthorInitials(author.fullName)}
+              </div>
+            )}
+            <div>
+              <p class="font-label font-semibold text-on-surface">
+                {author.academicDegree !== 'Estudiante' ? `${author.academicDegree}. ` : ''}{author.fullName}
+              </p>
+              <p class="font-label text-sm text-on-surface-variant mb-2">
+                {author.academicDegree}
+              </p>
+              {author.aboutAuthor && (
+                <p class="font-body text-sm text-on-surface-variant leading-relaxed">
+                  {author.aboutAuthor}
+                </p>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </aside>
+    
+    <!-- Contenido del artículo -->
+    <div class="text-on-surface">
+      <RichTextRenderer content={article.content.json} />
+    </div>
+    
+    <!-- Referencias (si existen) -->
+    {article.referencias && (
+      <section class="mt-16 pt-12 border-t border-outline-variant">
+        <h2 class="font-headline text-2xl font-bold text-primary mb-6">Referencias</h2>
+        <div class="text-sm">
+          <RichTextRenderer content={article.referencias.json} class="text-on-surface-variant" />
+        </div>
+      </section>
+    )}
+  </article>
+  
+  <!-- CTA para volver -->
+  <section class="bg-surface-container py-12">
+    <div class="max-w-4xl mx-auto px-6 md:px-8 text-center">
+      <a 
+        href="/publicaciones" 
+        class="inline-flex items-center gap-2 font-label font-semibold text-primary hover:text-primary-container transition-colors"
+      >
+        <span class="material-symbols-outlined">arrow_back</span>
+        Volver a Publicaciones
+      </a>
+    </div>
+  </section>
+</Layout>

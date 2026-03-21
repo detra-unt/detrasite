@@ -1,0 +1,277 @@
+---
+// Componente de filtros de artículos - buscador, fechas y tipo
+import { ARTICLE_TYPES } from '../lib/contentful';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+
+// Obtener tipos de artículo
+const articleTypes = Object.entries(ARTICLE_TYPES).map(([label, slug]) => ({
+  label: label.replace('.', ''),
+  slug,
+}));
+---
+
+<section class:list={['bg-surface-container-low py-8 md:py-10', className]}>
+  <div class="max-w-7xl mx-auto px-6 md:px-8">
+    <form id="articles-filter-form" class="flex flex-col lg:flex-row gap-4 lg:gap-6 lg:items-end">
+      
+      <!-- Buscador por título o autor -->
+      <div class="flex-grow lg:max-w-md">
+        <label for="search" class="block font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant mb-2">
+          Buscar artículo
+        </label>
+        <div class="relative">
+          <input
+            type="text"
+            id="search"
+            name="search"
+            placeholder="Título o nombre del autor..."
+            class="w-full bg-white border border-outline-variant/30 rounded-lg py-3 pl-4 pr-12 font-body text-sm text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+          />
+          <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">
+            search
+          </span>
+        </div>
+      </div>
+      
+      <!-- Filtro por fechas -->
+      <div class="flex gap-3 flex-wrap sm:flex-nowrap">
+        <div class="flex-1 min-w-[140px]">
+          <label for="date-from" class="block font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant mb-2">
+            Desde
+          </label>
+          <input
+            type="date"
+            id="date-from"
+            name="dateFrom"
+            class="w-full bg-white border border-outline-variant/30 rounded-lg py-3 px-4 font-body text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+          />
+        </div>
+        <div class="flex-1 min-w-[140px]">
+          <label for="date-to" class="block font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant mb-2">
+            Hasta
+          </label>
+          <input
+            type="date"
+            id="date-to"
+            name="dateTo"
+            class="w-full bg-white border border-outline-variant/30 rounded-lg py-3 px-4 font-body text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+          />
+        </div>
+      </div>
+      
+      <!-- Lista desplegable tipo de artículo -->
+      <div class="min-w-[200px]">
+        <label for="article-type" class="block font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant mb-2">
+          Tipo de artículo
+        </label>
+        <div class="relative">
+          <select
+            id="article-type"
+            name="articleType"
+            class="w-full appearance-none bg-white border border-outline-variant/30 rounded-lg py-3 pl-4 pr-10 font-body text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all cursor-pointer"
+          >
+            <option value="">Todos los artículos</option>
+            {articleTypes.map(({ label, slug }) => (
+              <option value={slug}>{label}</option>
+            ))}
+          </select>
+          <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">
+            expand_more
+          </span>
+        </div>
+      </div>
+      
+      <!-- Botones de acción -->
+      <div class="flex gap-3">
+        <button
+          type="submit"
+          class="flex items-center justify-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-lg font-label font-semibold text-sm hover:bg-primary-container hover:text-on-primary-container transition-colors"
+        >
+          <span class="material-symbols-outlined text-lg">filter_alt</span>
+          Filtrar
+        </button>
+        <button
+          type="reset"
+          id="clear-filters"
+          class="flex items-center justify-center gap-2 bg-surface-container text-on-surface px-4 py-3 rounded-lg font-label text-sm hover:bg-surface-container-high transition-colors"
+        >
+          <span class="material-symbols-outlined text-lg">clear</span>
+          Limpiar
+        </button>
+      </div>
+    </form>
+    
+    <!-- Indicador de filtros activos -->
+    <div id="active-filters" class="hidden mt-4 pt-4 border-t border-outline-variant/20">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="font-label text-xs text-on-surface-variant">Filtros activos:</span>
+        <div id="filter-tags" class="flex flex-wrap gap-2">
+          <!-- Los tags se agregan dinámicamente -->
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Lógica de filtrado del lado del cliente
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('articles-filter-form') as HTMLFormElement;
+    const clearBtn = document.getElementById('clear-filters');
+    const activeFiltersDiv = document.getElementById('active-filters');
+    const filterTagsDiv = document.getElementById('filter-tags');
+    const articlesList = document.getElementById('articles-list');
+    
+    // Función para obtener artículos con filtros
+    const fetchArticles = async (params: URLSearchParams) => {
+      // Los artículos ya están en el DOM, filtramos del lado del cliente
+      const articles = document.querySelectorAll('[data-article]');
+      const searchQuery = params.get('search')?.toLowerCase() || '';
+      const articleType = params.get('articleType') || '';
+      const dateFrom = params.get('dateFrom') || '';
+      const dateTo = params.get('dateTo') || '';
+      
+      let visibleCount = 0;
+      
+      articles.forEach((article) => {
+        const el = article as HTMLElement;
+        const title = el.dataset.title?.toLowerCase() || '';
+        const authors = el.dataset.authors?.toLowerCase() || '';
+        const type = el.dataset.type || '';
+        const date = el.dataset.date || '';
+        
+        let show = true;
+        
+        // Filtrar por búsqueda
+        if (searchQuery && !title.includes(searchQuery) && !authors.includes(searchQuery)) {
+          show = false;
+        }
+        
+        // Filtrar por tipo
+        if (articleType && type !== articleType) {
+          show = false;
+        }
+        
+        // Filtrar por fecha desde
+        if (dateFrom && date < dateFrom) {
+          show = false;
+        }
+        
+        // Filtrar por fecha hasta
+        if (dateTo && date > dateTo) {
+          show = false;
+        }
+        
+        el.style.display = show ? '' : 'none';
+        if (show) visibleCount++;
+      });
+      
+      // Mostrar mensaje si no hay resultados
+      const noResultsEl = document.getElementById('no-results');
+      if (noResultsEl) {
+        noResultsEl.style.display = visibleCount === 0 ? 'block' : 'none';
+      }
+      
+      // Actualizar contador
+      const countEl = document.getElementById('articles-count');
+      if (countEl) {
+        countEl.textContent = `${visibleCount} artículo${visibleCount !== 1 ? 's' : ''} encontrado${visibleCount !== 1 ? 's' : ''}`;
+      }
+    };
+    
+    // Función para actualizar tags de filtros activos
+    const updateFilterTags = (params: URLSearchParams) => {
+      if (!filterTagsDiv || !activeFiltersDiv) return;
+      
+      filterTagsDiv.innerHTML = '';
+      let hasFilters = false;
+      
+      params.forEach((value, key) => {
+        if (!value) return;
+        hasFilters = true;
+        
+        const tag = document.createElement('span');
+        tag.className = 'inline-flex items-center gap-1 bg-primary-fixed text-on-primary-fixed px-2 py-1 rounded text-xs font-label';
+        
+        let label = '';
+        switch (key) {
+          case 'search':
+            label = `Búsqueda: "${value}"`;
+            break;
+          case 'articleType':
+            label = `Tipo: ${value === 'estudiantes' ? 'Estudiantes' : 'Invitados'}`;
+            break;
+          case 'dateFrom':
+            label = `Desde: ${value}`;
+            break;
+          case 'dateTo':
+            label = `Hasta: ${value}`;
+            break;
+        }
+        
+        tag.innerHTML = `${label} <button type="button" data-remove="${key}" class="hover:text-primary"><span class="material-symbols-outlined text-sm">close</span></button>`;
+        filterTagsDiv.appendChild(tag);
+      });
+      
+      activeFiltersDiv.classList.toggle('hidden', !hasFilters);
+      
+      // Agregar listeners para remover filtros
+      filterTagsDiv.querySelectorAll('[data-remove]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const key = (btn as HTMLElement).dataset.remove;
+          if (key) {
+            const input = form.elements.namedItem(key === 'dateFrom' ? 'dateFrom' : key === 'dateTo' ? 'dateTo' : key) as HTMLInputElement | HTMLSelectElement;
+            if (input) {
+              input.value = '';
+            }
+            form.dispatchEvent(new Event('submit'));
+          }
+        });
+      });
+    };
+    
+    // Submit del formulario
+    form?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const params = new URLSearchParams();
+      
+      formData.forEach((value, key) => {
+        if (value) params.append(key, value.toString());
+      });
+      
+      fetchArticles(params);
+      updateFilterTags(params);
+      
+      // Actualizar URL sin recargar
+      const newUrl = params.toString() ? `?${params.toString()}` : window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+    });
+    
+    // Limpiar filtros
+    clearBtn?.addEventListener('click', () => {
+      setTimeout(() => {
+        const params = new URLSearchParams();
+        fetchArticles(params);
+        updateFilterTags(params);
+        window.history.replaceState({}, '', window.location.pathname);
+      }, 0);
+    });
+    
+    // Cargar filtros desde URL al iniciar
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.toString()) {
+      urlParams.forEach((value, key) => {
+        const input = form.elements.namedItem(key) as HTMLInputElement | HTMLSelectElement;
+        if (input) input.value = value;
+      });
+      fetchArticles(urlParams);
+      updateFilterTags(urlParams);
+    }
+  });
+</script>

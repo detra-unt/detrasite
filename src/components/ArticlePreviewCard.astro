@@ -1,0 +1,206 @@
+---
+// Componente de preview de artículo - muestra imagen, autores, fecha, tipo y título
+import type { ArticlePreview } from '../lib/contentful';
+import { getArticleUrl, getArticleTypeSlug, formatShortDate, getAuthorInitials } from '../lib/contentful';
+
+interface Props {
+  article: ArticlePreview;
+  variant?: 'default' | 'featured' | 'compact';
+  class?: string;
+}
+
+const { article, variant = 'default', class: className = '' } = Astro.props;
+
+const articleUrl = getArticleUrl(article);
+const typeSlug = getArticleTypeSlug(article.articleType);
+const formattedDate = formatShortDate(article.publishDate);
+const authors = article.authorsCollection.items;
+---
+
+{variant === 'featured' ? (
+  <!-- Variante Featured: Card grande con imagen de fondo -->
+  <a 
+    href={articleUrl}
+    class:list={[
+      'group relative block overflow-hidden rounded-xl bg-white transition-all hover:shadow-xl',
+      'aspect-[4/3] md:aspect-[16/9]',
+      className
+    ]}
+  >
+    <!-- Imagen de fondo -->
+    <img 
+      src={article.coverImage.url} 
+      alt={article.coverImage.title || article.title}
+      class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+      loading="lazy"
+    />
+    
+    <!-- Overlay gradiente -->
+    <div class="absolute inset-0 bg-gradient-to-t from-primary via-primary/60 to-transparent"></div>
+    
+    <!-- Contenido -->
+    <div class="absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white">
+      <!-- Badge tipo de artículo -->
+      <span class="self-start bg-tertiary-fixed text-on-tertiary-fixed px-2.5 py-1 rounded text-[10px] font-label font-bold uppercase tracking-wider mb-4">
+        {typeSlug === 'estudiantes' ? 'Estudiantes' : 'Invitados'}
+      </span>
+      
+      <!-- Título -->
+      <h3 class="font-headline text-xl md:text-2xl lg:text-3xl font-bold leading-tight mb-4 group-hover:underline underline-offset-4">
+        {article.title}
+      </h3>
+      
+      <!-- Meta: fecha y autores -->
+      <div class="flex flex-wrap items-center gap-4 text-white/80 text-sm">
+        <time datetime={article.publishDate} class="font-label">
+          {formattedDate}
+        </time>
+        <span class="w-1 h-1 rounded-full bg-white/40"></span>
+        <div class="flex items-center gap-2">
+          {authors.map((author, index) => (
+            <span class="font-label">
+              {author.fullName}{index < authors.length - 1 ? ', ' : ''}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  </a>
+) : variant === 'compact' ? (
+  <!-- Variante Compact: Para listas horizontales -->
+  <a 
+    href={articleUrl}
+    class:list={[
+      'group flex gap-4 md:gap-6 py-6 border-b border-outline-variant/30 transition-colors hover:bg-surface-container-low px-4 -mx-4 rounded-lg',
+      className
+    ]}
+  >
+    <!-- Imagen thumbnail -->
+    <div class="shrink-0 w-24 h-24 md:w-32 md:h-32 overflow-hidden rounded-lg">
+      <img 
+        src={article.coverImage.url}
+        alt={article.coverImage.title || article.title}
+        class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+        loading="lazy"
+      />
+    </div>
+    
+    <!-- Contenido -->
+    <div class="flex-grow flex flex-col justify-center min-w-0">
+      <!-- Meta superior -->
+      <div class="flex flex-wrap items-center gap-2 mb-2">
+        <span class:list={[
+          'px-2 py-0.5 rounded text-[10px] font-label font-bold uppercase tracking-wider',
+          typeSlug === 'estudiantes' 
+            ? 'bg-secondary-container text-on-secondary-container' 
+            : 'bg-tertiary-fixed text-on-tertiary-fixed'
+        ]}>
+          {typeSlug === 'estudiantes' ? 'Estudiantes' : 'Invitados'}
+        </span>
+        <span class="text-on-surface-variant/60 text-xs">•</span>
+        <time datetime={article.publishDate} class="font-label text-xs text-on-surface-variant">
+          {formattedDate}
+        </time>
+      </div>
+      
+      <!-- Título -->
+      <h3 class="font-headline text-lg md:text-xl font-bold text-primary leading-snug mb-2 group-hover:text-primary-container transition-colors line-clamp-2">
+        {article.title}
+      </h3>
+      
+      <!-- Autores -->
+      <div class="flex items-center gap-2 text-on-surface-variant text-sm">
+        {authors.slice(0, 2).map((author, index) => (
+          <span class="flex items-center gap-1.5">
+            {author.profilePicture ? (
+              <img 
+                src={author.profilePicture.url}
+                alt={author.fullName}
+                class="w-5 h-5 rounded-full object-cover"
+              />
+            ) : (
+              <span class="w-5 h-5 rounded-full bg-secondary-container text-on-secondary-container text-[10px] font-bold flex items-center justify-center">
+                {getAuthorInitials(author.fullName)}
+              </span>
+            )}
+            <span class="font-label text-xs">{author.fullName}{index < authors.length - 1 ? ',' : ''}</span>
+          </span>
+        ))}
+      </div>
+    </div>
+    
+    <!-- Flecha -->
+    <div class="shrink-0 self-center opacity-0 group-hover:opacity-100 transition-opacity">
+      <span class="material-symbols-outlined text-primary">arrow_forward</span>
+    </div>
+  </a>
+) : (
+  <!-- Variante Default: Card vertical estándar -->
+  <a 
+    href={articleUrl}
+    class:list={[
+      'group block bg-white rounded-xl overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1',
+      className
+    ]}
+  >
+    <!-- Imagen de portada -->
+    <div class="relative aspect-[16/10] overflow-hidden">
+      <img 
+        src={article.coverImage.url}
+        alt={article.coverImage.title || article.title}
+        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+        loading="lazy"
+      />
+      
+      <!-- Badge tipo -->
+      <span class:list={[
+        'absolute top-4 left-4 px-2.5 py-1 rounded text-[10px] font-label font-bold uppercase tracking-wider shadow-sm',
+        typeSlug === 'estudiantes' 
+          ? 'bg-secondary-container text-on-secondary-container' 
+          : 'bg-tertiary-fixed text-on-tertiary-fixed'
+      ]}>
+        {typeSlug === 'estudiantes' ? 'Estudiantes' : 'Invitados'}
+      </span>
+    </div>
+    
+    <!-- Contenido -->
+    <div class="p-5 md:p-6">
+      <!-- Fecha -->
+      <time datetime={article.publishDate} class="font-label text-xs text-on-surface-variant uppercase tracking-wider">
+        {formattedDate}
+      </time>
+      
+      <!-- Título -->
+      <h3 class="font-headline text-lg md:text-xl font-bold text-primary leading-snug mt-2 mb-4 group-hover:text-primary-container transition-colors line-clamp-2">
+        {article.title}
+      </h3>
+      
+      <!-- Autores -->
+      <div class="flex items-center gap-3 pt-4 border-t border-outline-variant/20">
+        <div class="flex -space-x-2">
+          {authors.map((author) => (
+            author.profilePicture ? (
+              <img 
+                src={author.profilePicture.url}
+                alt={author.fullName}
+                class="w-8 h-8 rounded-full object-cover ring-2 ring-white"
+              />
+            ) : (
+              <span class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container text-xs font-bold flex items-center justify-center ring-2 ring-white">
+                {getAuthorInitials(author.fullName)}
+              </span>
+            )
+          ))}
+        </div>
+        <div class="min-w-0 flex-grow">
+          <p class="font-label text-sm text-on-surface truncate">
+            {authors.map(a => a.fullName).join(', ')}
+          </p>
+          <p class="font-label text-xs text-on-surface-variant">
+            {authors.length === 1 ? 'Autor' : 'Autores'}
+          </p>
+        </div>
+      </div>
+    </div>
+  </a>
+)}

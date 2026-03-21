@@ -1,89 +1,91 @@
 ---
-// Este componente mostrara publicaciones recientes
-// Los datos vendran de Contentful en el futuro
-const publications = [
-  {
-    id: 1,
-    featured: true,
-    volume: "Volumen 42, Numero 1",
-    title: "Soberania Digital en la Era de la Gobernanza Descentralizada",
-    excerpt: "Una investigacion sobre los desafios jurisdiccionales planteados por los sistemas administrativos basados en blockchain y la evolucion de la autoridad estatal.",
-    author: {
-      initials: "DR",
-      name: "Dr. Alistair Vance",
-      role: "Investigador Senior, DETRA"
-    }
-  },
-  {
-    id: 2,
-    featured: false,
-    title: "Revision Judicial y Modernidad",
-    excerpt: "Un analisis comparativo de los tribunales constitucionales en la Union Europea.",
-    type: "note"
-  },
-  {
-    id: 3,
-    featured: false,
-    title: "El Compendio Legal 2024",
-    excerpt: "Nuestra revision anual de precedentes legales significativos y avances academicos.",
-    type: "compendium"
-  }
-];
+// Publicaciones recientes en la página de inicio
+// Datos de Contentful
+import ArticlePreviewCard from './ArticlePreviewCard.astro';
+import { getRecentArticles } from '../lib/contentful';
+
+// Obtener los 3 artículos más recientes
+const recentArticles = await getRecentArticles(3);
 ---
 
-<section class="py-16 md:py-24 bg-[#f6f4e6]">
+<section class="py-16 md:py-24 bg-surface-container-low">
   <div class="max-w-7xl mx-auto px-6 md:px-8">
     <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 md:mb-16 gap-4">
       <div class="max-w-xl">
-        <h2 class="text-3xl md:text-4xl lg:text-5xl font-headline font-semibold text-[#2e0007] mb-4">Publicaciones Recientes</h2>
-        <p class="text-[#564243] font-body leading-relaxed">
-          Perspectivas curadas de nuestra facultad y academicos visitantes, explorando las intersecciones del derecho, la tecnologia y la sociedad.
+        <h2 class="text-3xl md:text-4xl lg:text-5xl font-headline font-semibold text-primary mb-4">
+          Publicaciones Recientes
+        </h2>
+        <p class="text-on-surface-variant font-body leading-relaxed">
+          Perspectivas curadas de nuestra facultad y académicos visitantes, explorando las intersecciones del derecho, la tecnología y la sociedad.
         </p>
       </div>
-      <a class="text-[#2e0007] font-label font-bold flex items-center gap-2 group" href="/publicaciones">
-        Ver Todas las Revistas 
+      <a 
+        class="text-primary font-label font-bold flex items-center gap-2 group shrink-0" 
+        href="/publicaciones"
+      >
+        Ver Todos los Artículos
         <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
       </a>
     </div>
     
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-      <!-- Publication Card 1 (Featured) -->
-      <div class="md:col-span-2 group cursor-pointer bg-white p-6 md:p-10 rounded-xl transition-all hover:shadow-lg">
-        <span class="bg-[#ffdea5] text-[#261900] px-2 py-0.5 text-[10px] font-label font-bold uppercase rounded-sm mb-4 md:mb-6 inline-block">
-          {publications[0].volume}
-        </span>
-        <h3 class="text-2xl md:text-3xl lg:text-4xl font-headline font-bold text-[#2e0007] mb-4 md:mb-6 leading-tight group-hover:text-[#550015] transition-colors">
-          {publications[0].title}
-        </h3>
-        <p class="text-base md:text-lg text-[#564243] font-body mb-6 md:mb-8 line-clamp-3">
-          {publications[0].excerpt}
-        </p>
-        <div class="flex items-center gap-4 border-t border-[#dcc0c1]/30 pt-6">
-          <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#ffdadb] flex items-center justify-center text-[#822433] font-headline font-bold text-sm md:text-base">
-            {publications[0].author.initials}
-          </div>
-          <div>
-            <p class="font-label font-bold text-sm text-[#2e0007]">{publications[0].author.name}</p>
-            <p class="font-label text-xs text-[#564243]">{publications[0].author.role}</p>
-          </div>
-        </div>
+    {recentArticles.length > 0 ? (
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        {recentArticles.map((article, index) => (
+          <ArticlePreviewCard 
+            article={article} 
+            variant={index === 0 ? 'default' : 'default'} 
+          />
+        ))}
       </div>
-      
-      <!-- Publication Cards 2 & 3 -->
-      <div class="space-y-6 md:space-y-8">
-        <div class="bg-[#e5e3d5] p-6 md:p-8 rounded-xl hover:scale-[1.02] transition-transform cursor-pointer">
-          <h4 class="text-xl md:text-2xl font-headline font-bold text-[#2e0007] mb-4">{publications[1].title}</h4>
-          <p class="text-sm text-[#564243] font-body mb-6">{publications[1].excerpt}</p>
-          <span class="text-xs font-label font-bold text-[#550015] border-b border-[#550015]">
-            Leer Nota de Investigacion
+    ) : (
+      <!-- Estado vacío si no hay artículos -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+        <!-- Placeholder card 1 -->
+        <div class="md:col-span-2 bg-surface-container p-6 md:p-10 rounded-xl">
+          <span class="bg-tertiary-fixed text-on-tertiary-fixed px-2 py-0.5 text-[10px] font-label font-bold uppercase rounded-sm mb-4 md:mb-6 inline-block">
+            Próximamente
           </span>
+          <h3 class="text-2xl md:text-3xl lg:text-4xl font-headline font-bold text-primary mb-4 md:mb-6 leading-tight">
+            Artículos de investigación en camino
+          </h3>
+          <p class="text-base md:text-lg text-on-surface-variant font-body mb-6 md:mb-8">
+            Pronto podrás acceder a investigaciones académicas de alta calidad producidas por estudiantes e invitados de DETRA-UNT.
+          </p>
+          <div class="flex items-center gap-4 border-t border-outline-variant/30 pt-6">
+            <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-secondary-container flex items-center justify-center">
+              <span class="material-symbols-outlined text-on-secondary-container">school</span>
+            </div>
+            <div>
+              <p class="font-label font-bold text-sm text-on-surface">DETRA-UNT</p>
+              <p class="font-label text-xs text-on-surface-variant">Investigación Académica</p>
+            </div>
+          </div>
         </div>
-        <div class="bg-[#2e0007] text-white p-6 md:p-8 rounded-xl hover:scale-[1.02] transition-transform cursor-pointer shadow-2xl shadow-[#2e0007]/20">
-          <span class="material-symbols-outlined text-3xl md:text-4xl mb-4">auto_stories</span>
-          <h4 class="text-xl md:text-2xl font-headline font-bold mb-4">{publications[2].title}</h4>
-          <p class="text-sm text-white/70 font-body">{publications[2].excerpt}</p>
+        
+        <!-- Placeholder cards 2 & 3 -->
+        <div class="space-y-6 md:space-y-8">
+          <div class="bg-surface-variant p-6 md:p-8 rounded-xl">
+            <h4 class="text-xl md:text-2xl font-headline font-bold text-primary mb-4">
+              Artículos de Estudiantes
+            </h4>
+            <p class="text-sm text-on-surface-variant font-body mb-6">
+              Investigaciones realizadas por estudiantes destacados de nuestra facultad.
+            </p>
+            <span class="text-xs font-label font-bold text-primary-container">
+              Próximamente
+            </span>
+          </div>
+          <div class="bg-primary text-on-primary p-6 md:p-8 rounded-xl shadow-2xl shadow-primary/20">
+            <span class="material-symbols-outlined text-3xl md:text-4xl mb-4">auto_stories</span>
+            <h4 class="text-xl md:text-2xl font-headline font-bold mb-4">
+              Artículos de Invitados
+            </h4>
+            <p class="text-sm text-on-primary/70 font-body">
+              Contribuciones de académicos e investigadores invitados.
+            </p>
+          </div>
         </div>
       </div>
-    </div>
+    )}
   </div>
 </section>
