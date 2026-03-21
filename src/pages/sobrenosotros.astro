@@ -1,0 +1,16 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AboutHero from '../components/AboutHero.astro';
+import OurHistory from '../components/OurHistory.astro';
+import MissionVision from '../components/MissionVision.astro';
+import TeamSection from '../components/TeamSection.astro';
+---
+
+<Layout title="Sobre Nosotros | DETRA-UNT" description="Conoce la historia, mision y equipo de DETRA-UNT" currentPage="about">
+  <div class="max-w-7xl mx-auto px-6 md:px-8 py-12 md:py-20">
+    <AboutHero />
+    <OurHistory />
+    <MissionVision />
+    <TeamSection />
+  </div>
+</Layout>

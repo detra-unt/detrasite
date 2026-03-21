@@ -1,0 +1,26 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PublicationsHero from '../components/PublicationsHero.astro';
+import ResearchFilters from '../components/ResearchFilters.astro';
+import FeaturedPublications from '../components/FeaturedPublications.astro';
+import PublicationsList from '../components/PublicationsList.astro';
+import PublicationsSidebar from '../components/PublicationsSidebar.astro';
+import ContributeCTA from '../components/ContributeCTA.astro';
+---
+
+<Layout title="Publicaciones | DETRA-UNT" description="Repositorio de investigacion legal y academica de DETRA-UNT" currentPage="publications">
+  <PublicationsHero />
+  <ResearchFilters />
+  
+  <main class="max-w-7xl mx-auto px-6 md:px-8 pb-16 md:pb-24">
+    <FeaturedPublications />
+    
+    <!-- Research Archive (List View) -->
+    <div class="grid lg:grid-cols-12 gap-10 md:gap-16">
+      <PublicationsList />
+      <PublicationsSidebar />
+    </div>
+  </main>
+  
+  <ContributeCTA />
+</Layout>

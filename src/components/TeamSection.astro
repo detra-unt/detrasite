@@ -1,0 +1,65 @@
+---
+// Miembros del equipo - datos vendran de Contentful
+const teamMembers = [
+  {
+    id: 1,
+    name: "Dr. Elias Thorne",
+    role: "Editor Emerito",
+    badge: "Fundador",
+    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAgsQM_laIwz8TNnaTZIXzeCnbOZDCCTUb8E0dHrWk_t2eZ0RwplSXruLnarjsLOi2CEf478bs_zschSw4r3KkrqTCRzMo-3jvmPolExdsy2jHbdjXhG-q2PNbeJJ9CJ_rES0H8rIZ6c4NHCgQw4eWcywIVPx_QxswOobayAEGMIFmTgL5vN4wJybMhpa91OaEBf1PpBi-E5_SbLdm3G0g9Gq8rrDLFOcZrouycMS3OuZtho3Ro82Ps8BSY2h_DznHBIZM5Zo_DtYdP"
+  },
+  {
+    id: 2,
+    name: "Dra. Clara Mendez",
+    role: "Editora en Jefe",
+    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBp1bA-cQc8_TFDPI90IE9BZnDlUvClSPvVUNZV_totEMm9rpukJdLhjbmeVgzH89uygglJp8rsmKcelxVRR2GtZgBp_UNrbuUHwKgu-VO2RuYz33kUk9qT3csQaInEXuM7rWNE10feLMJRM7UDf7IIGBXPtkxDrFDZMtQCB08c-RNQgU40i0MD2C6y19RQWwDBca7Z5oJzw4Hjspqt01t0ObJ5Y5v9wNVWa8-aOWFSKpTeja5w8ujSwyulZwOVEBZUJ9hsd2VsEuqW"
+  },
+  {
+    id: 3,
+    name: "Prof. Julian Vane",
+    role: "Lider de Investigacion",
+    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBMHfqiNd3vE4Iv-sou0zTazW8DPuCOreuCtFURDAWEZHFi0k3PtY4jU-6hR4I0d8XxVr4eFNsmMc8SFtcXH6Im2VeMYXN7oDQ5kkWjspw9fUUDnYv_x7mxRjficKByZVp-Y3GLfH4dCQtUgXY5dxPbV9qmskxw_3mP0ahqB5eVzqJbJxwzMBmKirw61N1AptBw0LDOzMV813E8jyKGDRLtkWVZnhv1Fg8bxTkysjoZE08f6iA1KaOZjAd9yhHKW37PwhkMUrQsiF1F"
+  },
+  {
+    id: 4,
+    name: "Sarah Jenkins, J.D.",
+    role: "Directora Editorial",
+    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBY4e0C22RfLbfWc68Zp0QpSevJRKZ8u3d6CKYGqZ9eBhyzTFg9REeYt10jPqduQZ4gFU6RiNPC2z0J5bzxIAWbHRWwLbICV-TounqhgSgCMdSMsAp_gsXSWOBCqxT6824s0sPDYpRaycVrKZA_vmhv3QkRZooQ2TRQrtps6oIrAdmifmzFTQl6trqo_eU-4kxkDzJiEAMiGqYFGzTYTRgJWtuqM_Oz9fsfZ3c4E-jvJKoQ5H18WrkkLmibgUQZGkdOrsATN3J6Ai2Q"
+  }
+];
+---
+
+<section class="mb-20 md:mb-32">
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 md:mb-16 gap-4">
+    <div>
+      <h2 class="text-3xl md:text-4xl lg:text-5xl text-[#2e0007] mb-4">El Consejo Editorial</h2>
+      <p class="font-body text-[#564243]">Las mentes detras de nuestra excelencia academica.</p>
+    </div>
+    <div class="hidden md:block h-[1px] flex-grow mx-12 bg-[#dcc0c1]/30"></div>
+    <button class="text-[#2e0007] font-bold font-label hover:underline text-sm">VER TODOS LOS MIEMBROS</button>
+  </div>
+  
+  <!-- Team Cards -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+    {teamMembers.map(member => (
+      <div class="group">
+        <div class="aspect-square bg-[#eae9db] rounded-xl mb-4 md:mb-6 overflow-hidden relative">
+          <img 
+            alt={`Retrato de ${member.name}`}
+            class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+            src={member.image}
+          />
+          {member.badge && (
+            <div class="absolute top-3 md:top-4 left-3 md:left-4">
+              <span class="bg-[#ffdea5] text-[#261900] text-[9px] px-2 py-0.5 rounded-sm font-label uppercase tracking-tighter">
+                {member.badge}
+              </span>
+            </div>
+          )}
+        </div>
+        <h3 class="text-base md:text-xl text-[#2e0007] font-bold">{member.name}</h3>
+        <p class="font-label text-[10px] md:text-xs text-[#564243] uppercase tracking-widest mt-1">{member.role}</p>
+      </div>
+    ))}
+  </div>
+</section>

@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+@theme {
+  /* Colors - Material Design 3 Palette */
+  --color-primary-fixed: #ffdadb;
+  --color-secondary-fixed-dim: #ecbabd;
+  --color-on-error-container: #93000a;
+  --color-primary: #2e0007;
+  --color-outline-variant: #dcc0c1;
+  --color-primary-container: #550015;
+  --color-surface-container: #f0eee0;
+  --color-surface-container-lowest: #ffffff;
+  --color-on-secondary-fixed-variant: #603d40;
+  --color-on-secondary-fixed: #2f1316;
+  --color-on-primary-fixed-variant: #822433;
+  --color-on-secondary-container: #7a5356;
+  --color-outline: #897172;
+  --color-surface-bright: #fcfaec;
+  --color-inverse-primary: #ffb2b7;
+  --color-on-tertiary-fixed: #261900;
+  --color-surface-container-high: #eae9db;
+  --color-on-primary: #ffffff;
+  --color-primary-fixed-dim: #ffb2b7;
+  --color-surface-container-low: #f6f4e6;
+  --color-secondary-fixed: #ffdadb;
+  --color-surface-variant: #e5e3d5;
+  --color-on-surface: #1c1c14;
+  --color-on-background: #1c1c14;
+  --color-secondary: #7b5457;
+  --color-inverse-surface: #313128;
+  --color-surface-tint: #a13c49;
+  --color-surface: #fcfaec;
+  --color-on-error: #ffffff;
+  --color-surface-dim: #dcdacd;
+  --color-error-container: #ffdad6;
+  --color-tertiary-container: #352400;
+  --color-on-tertiary-container: #ab8944;
+  --color-error: #ba1a1a;
+  --color-on-tertiary: #ffffff;
+  --color-on-primary-fixed: #40000e;
+  --color-on-tertiary-fixed-variant: #5d4201;
+  --color-on-surface-variant: #564243;
+  --color-background: #fcfaec;
+  --color-tertiary-fixed-dim: #e9c176;
+  --color-on-secondary: #ffffff;
+  --color-on-primary-container: #dd6975;
+  --color-surface-container-highest: #e5e3d5;
+  --color-secondary-container: #fdcbce;
+  --color-inverse-on-surface: #f3f1e3;
+  --color-tertiary-fixed: #ffdea5;
+  --color-tertiary: #1a1000;
+
+  /* Font Families */
+  --font-headline: "Newsreader", serif;
+  --font-body: "Public Sans", sans-serif;
+  --font-label: "Inter", sans-serif;
+
+  /* Border Radius */
+  --radius: 0.125rem;
+  --radius-lg: 0.25rem;
+  --radius-xl: 0.5rem;
+  --radius-full: 0.75rem;
+}
+
+/* Material Symbols */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Typography defaults */
+body {
+  font-family: var(--font-body);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-headline);
+}
+
+.label-text {
+  font-family: var(--font-label);
+}

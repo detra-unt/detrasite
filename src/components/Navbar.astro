@@ -1,0 +1,112 @@
+---
+interface Props {
+  currentPage?: 'home' | 'publications' | 'about';
+}
+
+const { currentPage = 'home' } = Astro.props;
+---
+
+<nav class="bg-[#fcfaec]/80 backdrop-blur-md sticky top-0 z-50 transition-all duration-300">
+  <div class="flex justify-between items-center w-full px-8 py-4 max-w-7xl mx-auto">
+    <!-- Brand Logo -->
+    <a href="/" class="text-2xl font-headline font-bold text-[#550015] tracking-tighter">
+      DETRA-UNT
+    </a>
+    
+    <!-- Navigation Links -->
+    <div class="hidden md:flex items-center space-x-8">
+      <a 
+        class:list={[
+          "font-label tracking-tight text-sm transition-colors",
+          currentPage === 'home' 
+            ? "text-[#550015] font-bold border-b-2 border-[#550015] pb-1" 
+            : "text-[#1c1c14]/70 hover:text-[#550015]"
+        ]}
+        href="/">
+        Inicio
+      </a>
+      <a 
+        class:list={[
+          "font-label tracking-tight text-sm transition-colors",
+          currentPage === 'publications' 
+            ? "text-[#550015] font-bold border-b-2 border-[#550015] pb-1" 
+            : "text-[#1c1c14]/70 hover:text-[#550015]"
+        ]}
+        href="/publicaciones">
+        Publicaciones
+      </a>
+      <a 
+        class:list={[
+          "font-label tracking-tight text-sm transition-colors",
+          currentPage === 'about' 
+            ? "text-[#550015] font-bold border-b-2 border-[#550015] pb-1" 
+            : "text-[#1c1c14]/70 hover:text-[#550015]"
+        ]}
+        href="/sobrenosotros">
+        Sobre Nosotros
+      </a>
+    </div>
+    
+    <!-- Trailing Actions -->
+    <div class="hidden md:flex items-center space-x-6">
+      <button class="material-symbols-outlined text-[#2e0007] hover:text-[#550015] transition-all duration-300 scale-95 active:opacity-80">
+        account_balance
+      </button>
+      <button class="bg-[#550015] text-white px-6 py-2 rounded-md font-label text-sm font-semibold hover:opacity-90 transition-all scale-95 active:opacity-80">
+        Unirse
+      </button>
+    </div>
+    
+    <!-- Mobile Menu Button -->
+    <button class="md:hidden material-symbols-outlined text-[#2e0007]" id="mobile-menu-btn">
+      menu
+    </button>
+  </div>
+  
+  <!-- Mobile Menu -->
+  <div class="hidden bg-[#fcfaec] border-t border-[#dcc0c1]/30 px-8 py-4" id="mobile-menu">
+    <div class="flex flex-col space-y-4">
+      <a 
+        class:list={[
+          "font-label tracking-tight text-sm",
+          currentPage === 'home' ? "text-[#550015] font-bold" : "text-[#1c1c14]/70"
+        ]}
+        href="/">
+        Inicio
+      </a>
+      <a 
+        class:list={[
+          "font-label tracking-tight text-sm",
+          currentPage === 'publications' ? "text-[#550015] font-bold" : "text-[#1c1c14]/70"
+        ]}
+        href="/publicaciones">
+        Publicaciones
+      </a>
+      <a 
+        class:list={[
+          "font-label tracking-tight text-sm",
+          currentPage === 'about' ? "text-[#550015] font-bold" : "text-[#1c1c14]/70"
+        ]}
+        href="/sobrenosotros">
+        Sobre Nosotros
+      </a>
+      <div class="pt-4 border-t border-[#dcc0c1]/30 flex items-center space-x-4">
+        <button class="material-symbols-outlined text-[#2e0007]">
+          account_balance
+        </button>
+        <button class="bg-[#550015] text-white px-6 py-2 rounded-md font-label text-sm font-semibold">
+          Unirse
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<script>
+  const menuBtn = document.getElementById('mobile-menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+  
+  menuBtn?.addEventListener('click', () => {
+    mobileMenu?.classList.toggle('hidden');
+  });
+</script>
