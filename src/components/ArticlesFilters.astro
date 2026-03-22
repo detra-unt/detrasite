@@ -120,7 +120,7 @@ const articleTypes = Object.entries(ARTICLE_TYPES).map(([label, slug]) => ({
 
 <script>
   // Lógica de filtrado del lado del cliente
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('astro:page-load', () => {
     const form = document.getElementById('articles-filter-form') as HTMLFormElement;
     const clearBtn = document.getElementById('clear-filters');
     const activeFiltersDiv = document.getElementById('active-filters');

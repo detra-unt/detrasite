@@ -16,9 +16,6 @@ const { articles, total } = await getArticles({ limit: 20 });
 <Layout title="Publicaciones | DETRA-UNT" description="Repositorio de artículos de investigación académica de DETRA-UNT" currentPage="publications">
   <PublicationsHero />
   
-  <!-- Filtros de búsqueda -->
-  <ArticlesFilters />
-  
   <main class="max-w-7xl mx-auto px-6 md:px-8 pb-16 md:pb-24">
     
     <!-- Artículos Destacados -->
@@ -40,6 +37,9 @@ const { articles, total } = await getArticles({ limit: 20 });
         </div>
       </section>
     )}
+
+    <!-- Filtros de búsqueda -->
+  <ArticlesFilters />
     
     <!-- Todos los Artículos -->
     <section>

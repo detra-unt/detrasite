@@ -39,8 +39,8 @@ const { currentPage = 'home' } = Astro.props;
         class:list={[
           "font-label tracking-tight text-sm transition-colors",
           currentPage === 'about' 
-            ? "text-[#550015] font-bold border-b-2 border-[#550015] pb-1" 
-            : "text-[#1c1c14]/70 hover:text-[#550015]"
+            ? "text-[#5E0B15] font-bold border-b-2 border-[#5E0B15] pb-1" 
+            : "text-[#1c1c14]/70 hover:text-[#5E0B15]"
         ]}
         href="/sobrenosotros">
         Sobre Nosotros
@@ -49,11 +49,11 @@ const { currentPage = 'home' } = Astro.props;
     
     <!-- Acciones trailing — solo en desktop -->
     <div class="hidden md:flex items-center space-x-6">
-      <button class="material-symbols-outlined text-[#2e0007] hover:text-[#550015] transition-all duration-300 scale-95 active:opacity-80">
+      <button class="material-symbols-outlined text-[#2e0007] hover:text-[#5E0B15] transition-all duration-300 scale-95 active:opacity-80">
         account_balance
       </button>
-      <button class="bg-[#550015] text-white px-6 py-2 rounded-md font-label text-sm font-semibold hover:opacity-90 transition-all scale-95 active:opacity-80">
-        Unirse
+      <button class="bg-[#5E0B15] cursor-pointer text-white px-6 py-2 rounded-md font-label text-sm font-semibold hover:opacity-90 transition-all scale-95 active:opacity-80">
+        Quiero unirme
       </button>
     </div>
     
@@ -66,9 +66,9 @@ const { currentPage = 'home' } = Astro.props;
       aria-controls="mobile-menu"
     >
       <!-- Las tres barras del hamburger, animadas con CSS -->
-      <span class="hamburger-line block w-5 h-0.5 bg-[#2e0007] rounded-full transition-all duration-300 origin-center"></span>
-      <span class="hamburger-line block w-5 h-0.5 bg-[#2e0007] rounded-full transition-all duration-300 mt-1.5 origin-center"></span>
-      <span class="hamburger-line block w-5 h-0.5 bg-[#2e0007] rounded-full transition-all duration-300 mt-1.5 origin-center"></span>
+      <span class="hamburger-line block w-5 h-0.5 bg-[#5E0B15] rounded-full transition-all duration-300 origin-center"></span>
+      <span class="hamburger-line block w-5 h-0.5 bg-[#5E0B15] rounded-full transition-all duration-300 mt-1.5 origin-center"></span>
+      <span class="hamburger-line block w-5 h-0.5 bg-[#5E0B15] rounded-full transition-all duration-300 mt-1.5 origin-center"></span>
     </button>
   </div>
   
@@ -84,8 +84,8 @@ const { currentPage = 'home' } = Astro.props;
         class:list={[
           "font-label tracking-tight text-sm transition-colors w-fit",
           currentPage === 'home' 
-            ? "text-[#550015] font-bold border-b-2 border-[#550015] pb-0.5" 
-            : "text-[#1c1c14]/70 hover:text-[#550015]"
+            ? "text-[#5E0B15] font-bold border-b-2 border-[#5E0B15] pb-0.5" 
+            : "text-[#1c1c14]/70 hover:text-[#5E0B15]"
         ]}
         href="/">
         Inicio
@@ -94,8 +94,8 @@ const { currentPage = 'home' } = Astro.props;
         class:list={[
           "font-label tracking-tight text-sm transition-colors w-fit",
           currentPage === 'publications' 
-            ? "text-[#550015] font-bold border-b-2 border-[#550015] pb-0.5" 
-            : "text-[#1c1c14]/70 hover:text-[#550015]"
+            ? "text-[#5E0B15] font-bold border-b-2 border-[#5E0B15] pb-0.5" 
+            : "text-[#1c1c14]/70 hover:text-[#5E0B15]"
         ]}
         href="/publicaciones">
         Publicaciones
@@ -104,17 +104,17 @@ const { currentPage = 'home' } = Astro.props;
         class:list={[
           "font-label tracking-tight text-sm transition-colors w-fit",
           currentPage === 'about' 
-            ? "text-[#550015] font-bold border-b-2 border-[#550015] pb-0.5" 
-            : "text-[#1c1c14]/70 hover:text-[#550015]"
+            ? "text-[#5E0B15] font-bold border-b-2 border-[#5E0B15] pb-0.5" 
+            : "text-[#1c1c14]/70 hover:text-[#5E0B15]"
         ]}
         href="/sobrenosotros">
         Sobre Nosotros
       </a>
       <div class="pt-2 border-t border-[#dcc0c1]/30 flex items-center space-x-4">
-        <button class="material-symbols-outlined text-[#2e0007] hover:text-[#550015] transition-colors">
+        <button class="material-symbols-outlined text-[#2e0007] hover:text-[#5E0B15] transition-colors">
           account_balance
         </button>
-        <button class="bg-[#550015] text-white px-6 py-2 rounded-md font-label text-sm font-semibold hover:opacity-90 transition-all">
+        <button class="bg-[#5E0B15] text-white px-6 py-2 rounded-md font-label text-sm font-semibold hover:opacity-90 transition-all">
           Unirse
         </button>
       </div>
