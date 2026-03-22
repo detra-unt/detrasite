@@ -52,9 +52,11 @@ const { currentPage = 'home' } = Astro.props;
       <button class="material-symbols-outlined text-[#2e0007] hover:text-[#5E0B15] transition-all duration-300 scale-95 active:opacity-80">
         account_balance
       </button>
-      <button class="bg-[#5E0B15] cursor-pointer text-white px-6 py-2 rounded-md font-label text-sm font-semibold hover:opacity-90 transition-all scale-95 active:opacity-80">
+      <a href="#formularioUnirse">
+        <button class="bg-[#5E0B15] cursor-pointer text-white px-6 py-2 rounded-md font-label text-sm font-semibold hover:opacity-90 transition-all scale-95 active:opacity-80">
         Quiero unirme
       </button>
+      </a>
     </div>
     
     <!-- Botón hamburguesa — solo en mobile -->
@@ -114,9 +116,11 @@ const { currentPage = 'home' } = Astro.props;
         <button class="material-symbols-outlined text-[#2e0007] hover:text-[#5E0B15] transition-colors">
           account_balance
         </button>
-        <button class="bg-[#5E0B15] text-white px-6 py-2 rounded-md font-label text-sm font-semibold hover:opacity-90 transition-all">
-          Unirse
+        <a href="#formularioUnirse">
+          <button class="bg-[#5E0B15] text-white px-6 py-2 rounded-md font-label text-sm font-semibold hover:opacity-90 transition-all">
+          Quiero unirme
         </button>
+        </a>
       </div>
     </div>
   </div>
