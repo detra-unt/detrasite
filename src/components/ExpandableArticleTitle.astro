@@ -1,0 +1,386 @@
+---
+interface Props {
+  id: string;
+  title: string;
+  href?: string;
+  class?: string;
+  linkClass?: string;
+  clampClass?: string;
+  minCharactersForTrigger?: number;
+  buttonClass?: string;
+  panelClass?: string;
+  panelTitleClass?: string;
+}
+
+const {
+  id,
+  title,
+  href,
+  class: className = '',
+  linkClass = '',
+  clampClass = 'line-clamp-2',
+  minCharactersForTrigger = 72,
+  buttonClass = '',
+  panelClass = '',
+  panelTitleClass = '',
+} = Astro.props;
+
+const panelId = `article-title-panel-${id}`;
+const panelTitleId = `article-title-panel-title-${id}`;
+---
+
+<div class="relative z-20 flex items-start gap-3 overflow-visible" data-expandable-title data-title-id={id}>
+  <h3
+    class:list={['min-w-0 flex-1', className, clampClass]}
+    data-title-text
+    style="text-wrap: balance;"
+  >
+    {href ? (
+      <a
+        href={href}
+        class:list={[
+          'relative z-20 inline transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current',
+          linkClass,
+        ]}
+      >
+        {title}
+      </a>
+    ) : (
+      <span class:list={['relative z-20 inline', linkClass]}>
+        {title}
+      </span>
+    )}
+  </h3>
+
+  <button
+    type="button"
+    class:list={[
+      'hidden h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#5E0B15]/15 bg-[#fcfaec]/92 text-[#5E0B15]/70 shadow-sm transition-all duration-200 hover:border-[#5E0B15]/30 hover:bg-white hover:text-[#5E0B15] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5E0B15]',
+      buttonClass,
+    ]}
+    data-title-trigger
+    data-min-characters={minCharactersForTrigger}
+    aria-controls={panelId}
+    aria-expanded="false"
+    aria-haspopup="dialog"
+    aria-label={`Ver titulo completo: ${title}`}
+  >
+    <span class="material-symbols-outlined text-[18px] leading-none" aria-hidden="true">more_horiz</span>
+  </button>
+
+  <div
+    id={panelId}
+    class:list={[
+      'pointer-events-none fixed z-[9999] hidden rounded-full border border-[#5E0B15]/12 bg-[#fcfaec]/96 text-left text-[#1c1c14] opacity-0 shadow-[0_18px_45px_rgba(28,28,20,0.18)] backdrop-blur-md transition-opacity duration-200',
+      panelClass,
+    ]}
+    data-title-panel
+    role="dialog"
+    aria-modal="false"
+    aria-labelledby={panelTitleId}
+  >
+    <div class="flex items-center gap-4 px-5 py-3 md:px-6">
+      <div class="min-w-0 flex-1">
+        <p class="mb-1 font-label text-[10px] font-bold uppercase tracking-[0.24em] text-[#5E0B15]/75">
+          Titulo completo
+        </p>
+        <p
+          id={panelTitleId}
+          class:list={[
+            'font-headline text-sm font-bold leading-snug text-[#1c1c14] md:text-base',
+            panelTitleClass,
+          ]}
+        >
+          {title}
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#5E0B15]/12 bg-white/80 text-[#5E0B15]/70 transition-colors duration-200 hover:border-[#5E0B15]/30 hover:text-[#5E0B15] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5E0B15]"
+        data-title-close
+        aria-label="Cerrar panel del titulo"
+      >
+        <span class="material-symbols-outlined text-[18px] leading-none" aria-hidden="true">close</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  [data-title-panel] {
+    left: var(--title-panel-left, 50vw);
+    top: var(--title-panel-top, 0);
+    width: min(var(--title-panel-width, 42rem), calc(100vw - 1.5rem));
+    transform: translateX(-50%) translateY(6px);
+    transition: opacity 200ms ease-out, transform 200ms ease-out;
+  }
+
+  /* Panel abierto - ya sea dentro del root o en el body */
+  [data-expandable-title][data-open='true'] [data-title-panel],
+  [data-title-panel][data-panel-open='true'] {
+    pointer-events: auto;
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  
+  /* Evitar parpadeo inicial */
+  [data-title-panel]:not([style*="--title-panel-left"]) {
+    visibility: hidden;
+  }
+</style>
+
+<script>
+  const rootSelector = '[data-expandable-title]';
+
+  const getElements = (root: HTMLElement) => {
+    const title = root.querySelector('[data-title-text]');
+    const trigger = root.querySelector('[data-title-trigger]');
+    let panel = root.querySelector('[data-title-panel]');
+    
+    // Si el panel no está en el root, buscarlo en el body
+    if (!panel && trigger) {
+      const panelId = trigger.getAttribute('aria-controls');
+      if (panelId) {
+        panel = document.getElementById(panelId);
+      }
+    }
+    
+    const closeButton = panel?.querySelector('[data-title-close]') || null;
+
+    return { title, trigger, panel, closeButton };
+  };
+
+  const closePanel = (root: HTMLElement) => {
+    const { trigger, panel } = getElements(root);
+
+    if (root.dataset.open !== 'true') {
+      return; // Ya está cerrado
+    }
+
+    root.dataset.open = 'false';
+
+    if (trigger) {
+      trigger.setAttribute('aria-expanded', 'false');
+    }
+
+    if (panel instanceof HTMLElement) {
+      panel.dataset.panelOpen = 'false'; // Marcar panel como cerrado
+      
+      // Esperar a que termine la transición de opacidad antes de ocultar
+      setTimeout(() => {
+        if (root.dataset.open === 'false') {
+          panel.classList.add('hidden');
+        }
+      }, 200);
+    }
+  };
+
+  const closeAllPanels = (exceptRoot?: HTMLElement) => {
+    document.querySelectorAll(rootSelector).forEach((root) => {
+      if (!(root instanceof HTMLElement)) {
+        return;
+      }
+
+      if (root !== exceptRoot) {
+        closePanel(root);
+      }
+    });
+  };
+
+  const positionPanel = (root: HTMLElement) => {
+    const { panel } = getElements(root);
+
+    if (!(panel instanceof HTMLElement)) {
+      return;
+    }
+
+    const rootRect = root.getBoundingClientRect();
+    const panelWidth = Math.min(Math.max(rootRect.width + 120, 320), window.innerWidth - 24, 760);
+    const panelHalf = panelWidth / 2;
+    const idealLeft = rootRect.left + rootRect.width / 2;
+    const left = Math.min(window.innerWidth - panelHalf - 12, Math.max(panelHalf + 12, idealLeft));
+    const top = Math.min(window.innerHeight - 24, rootRect.bottom + 10);
+
+    panel.style.setProperty('--title-panel-width', `${panelWidth}px`);
+    panel.style.setProperty('--title-panel-left', `${left}px`);
+    panel.style.setProperty('--title-panel-top', `${top}px`);
+  };
+
+  const openPanel = (root: HTMLElement) => {
+    const { trigger, panel } = getElements(root);
+
+    if (!(trigger instanceof HTMLButtonElement) || !(panel instanceof HTMLElement)) {
+      return;
+    }
+
+    closeAllPanels(root);
+    
+    // Mover el panel al body para evitar conflictos con stacking context de cards con hover
+    if (!panel.dataset.movedToBody) {
+      document.body.appendChild(panel);
+      panel.dataset.movedToBody = 'true';
+    }
+    
+    // Posicionar primero mientras está oculto
+    positionPanel(root);
+    
+    // Luego mostrar con un pequeño delay para asegurar que el posicionamiento se aplicó
+    requestAnimationFrame(() => {
+      panel.classList.remove('hidden');
+      root.dataset.open = 'true';
+      panel.dataset.panelOpen = 'true'; // Marcar el panel también como abierto
+      trigger.setAttribute('aria-expanded', 'true');
+      
+      // Recalcular posición después de mostrar por si el layout cambió
+      requestAnimationFrame(() => {
+        positionPanel(root);
+      });
+    });
+  };
+
+  const updateOverflowState = (root: HTMLElement) => {
+    const { title, trigger } = getElements(root);
+
+    if (!(title instanceof HTMLElement) || !(trigger instanceof HTMLButtonElement)) {
+      return;
+    }
+
+    const minimumCharacters = Number.parseInt(trigger.dataset.minCharacters || '72', 10);
+    const hasOverflow =
+      title.scrollHeight > title.clientHeight + 1 ||
+      title.scrollWidth > title.clientWidth + 1;
+    const textContent = title.textContent || '';
+    const isLongByCharacterCount = textContent.trim().length >= minimumCharacters;
+    const shouldShowTrigger = hasOverflow || isLongByCharacterCount;
+
+    // Solo actualizar si el estado cambió para evitar parpadeos
+    const isCurrentlyVisible = !trigger.classList.contains('hidden');
+    
+    if (shouldShowTrigger !== isCurrentlyVisible) {
+      trigger.classList.toggle('hidden', !shouldShowTrigger);
+      trigger.classList.toggle('inline-flex', shouldShowTrigger);
+      trigger.disabled = !shouldShowTrigger;
+      trigger.setAttribute('aria-hidden', String(!shouldShowTrigger));
+
+      if (!shouldShowTrigger) {
+        closePanel(root);
+      }
+    }
+  };
+
+  const setupRoot = (root: HTMLElement) => {
+    if (root.dataset.expandableTitleReady === 'true') {
+      return;
+    }
+
+    root.dataset.expandableTitleReady = 'true';
+    root.dataset.open = 'false';
+
+    const { trigger, closeButton, panel } = getElements(root);
+
+    if (trigger instanceof HTMLButtonElement) {
+      trigger.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (root.dataset.open === 'true') {
+          closePanel(root);
+          return;
+        }
+
+        openPanel(root);
+      });
+    }
+
+    if (closeButton instanceof HTMLButtonElement) {
+      closeButton.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        closePanel(root);
+      });
+    }
+    
+    // Asegurar que el panel tenga referencia al root
+    if (panel instanceof HTMLElement) {
+      const titleId = root.dataset.titleId;
+      if (titleId) {
+        panel.dataset.titleId = titleId;
+      }
+    }
+  };
+
+  const initExpandableTitles = () => {
+    document.querySelectorAll(rootSelector).forEach((root) => {
+      if (!(root instanceof HTMLElement)) {
+        return;
+      }
+
+      setupRoot(root);
+      requestAnimationFrame(() => updateOverflowState(root));
+    });
+  };
+
+  if (document.documentElement.dataset.expandableTitleBound !== 'true') {
+    document.documentElement.dataset.expandableTitleBound = 'true';
+
+    let resizeFrame = 0;
+    let scrollFrame = 0;
+
+    document.addEventListener('click', (event) => {
+      const target = event.target;
+
+      if (!(target instanceof Node)) {
+        return;
+      }
+
+      // Verificar si el click fue en un panel o su contenido
+      const clickedPanel = target instanceof Element ? target.closest('[data-title-panel]') : null;
+      if (clickedPanel) {
+        return; // No cerrar si se hizo click dentro del panel
+      }
+
+      const currentRoot = target instanceof Element ? target.closest(rootSelector) : null;
+
+      if (!currentRoot) {
+        closeAllPanels();
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        closeAllPanels();
+      }
+    });
+
+    // Reposicionar paneles abiertos durante scroll
+    window.addEventListener('scroll', () => {
+      cancelAnimationFrame(scrollFrame);
+      scrollFrame = requestAnimationFrame(() => {
+        document.querySelectorAll(`${rootSelector}[data-open="true"]`).forEach((root) => {
+          if (root instanceof HTMLElement) {
+            positionPanel(root);
+          }
+        });
+      });
+    }, { passive: true });
+
+    window.addEventListener('resize', () => {
+      cancelAnimationFrame(resizeFrame);
+      resizeFrame = requestAnimationFrame(() => {
+        initExpandableTitles();
+
+        document.querySelectorAll(`${rootSelector}[data-open="true"]`).forEach((root) => {
+          if (root instanceof HTMLElement) {
+            positionPanel(root);
+          }
+        });
+      });
+    });
+
+    document.addEventListener('astro:page-load', initExpandableTitles);
+  }
+
+  initExpandableTitles();
+  void document.fonts?.ready?.then(initExpandableTitles);
+</script>
