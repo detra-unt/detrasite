@@ -37,6 +37,120 @@ const publishDate = formatDate(article.publishDate);
 const articleTypeLabel = article.articleType;
 ---
 
+<style>
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes slideInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .hero-content {
+    animation: fadeInUp 0.8s ease-out;
+  }
+
+  .breadcrumb {
+    animation: slideInLeft 0.6s ease-out;
+  }
+
+  .article-badge {
+    animation: scaleIn 0.6s ease-out 0.2s backwards;
+  }
+
+  .article-title {
+    animation: fadeInUp 0.8s ease-out 0.3s backwards;
+  }
+
+  .article-meta {
+    animation: fadeInUp 0.8s ease-out 0.5s backwards;
+  }
+
+  .featured-image {
+    animation: scaleIn 1s ease-out 0.6s backwards;
+  }
+
+  .author-card {
+    animation: fadeInUp 0.6s ease-out backwards;
+  }
+
+  .author-card:nth-child(1) { animation-delay: 0.7s; }
+  .author-card:nth-child(2) { animation-delay: 0.85s; }
+  .author-card:nth-child(3) { animation-delay: 1s; }
+
+  .content-section {
+    animation: fadeInUp 0.8s ease-out 0.9s backwards;
+  }
+
+  /* Asegurar que las referencias largas (URLs, DOIs) no rompan el layout */
+  section :global(.rich-text-content p) {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  /* Efectos de hover suaves */
+  .hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-2px);
+  }
+
+  /* Decorative line effect */
+  .decorative-border {
+    position: relative;
+  }
+
+  .decorative-border::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, #5E0B15, transparent);
+    border-radius: 2px;
+  }
+
+  /* Quote styling enhancement */
+  :global(.rich-text-content blockquote) {
+    border-left: 4px solid #5E0B15;
+    padding-left: 1.5rem;
+    margin: 2rem 0;
+    font-style: italic;
+    color: #1c1c14;
+    background: linear-gradient(90deg, rgba(94, 11, 21, 0.03), transparent);
+    padding: 1.5rem 1.5rem 1.5rem 2rem;
+    border-radius: 0 0.5rem 0.5rem 0;
+  }
+</style>
+
 <Layout 
   title={`${article.title} | DETRA-UNT`} 
   description={`Artículo de investigación: ${article.title}`}
@@ -54,47 +168,63 @@ const articleTypeLabel = article.articleType;
       <div class="absolute inset-0 bg-gradient-to-t from-primary via-primary/90 to-primary/70"></div>
     </div>
     
-    <div class="relative max-w-4xl mx-auto px-6 md:px-8 py-16 md:py-24">
-      <!-- Breadcrumb -->
-      <nav class="mb-8">
-        <ol class="flex items-center gap-2 text-sm font-label text-white/60">
-          <li><a href="/" class="hover:text-white transition-colors">Inicio</a></li>
+    <div class="relative max-w-5xl mx-auto px-6 md:px-8 py-12 md:py-20 lg:py-24">
+      <!-- Breadcrumb mejorado -->
+      <nav class="breadcrumb mb-8 md:mb-10">
+        <ol class="flex items-center gap-2 text-sm font-label text-white/50">
+          <li><a href="/" class="hover:text-white transition-colors duration-300 hover:underline underline-offset-4">Inicio</a></li>
           <li><span class="material-symbols-outlined text-sm">chevron_right</span></li>
-          <li><a href="/publicaciones" class="hover:text-white transition-colors">Publicaciones</a></li>
+          <li><a href="/publicaciones" class="hover:text-white transition-colors duration-300 hover:underline underline-offset-4">Publicaciones</a></li>
           <li><span class="material-symbols-outlined text-sm">chevron_right</span></li>
-          <li class="text-white/80 capitalize">{tipo}</li>
+          <li class="text-white/70 capitalize font-medium">{tipo}</li>
         </ol>
       </nav>
       
-      <!-- Tipo de artículo badge -->
-      <span class="inline-block bg-tertiary-fixed text-on-tertiary-fixed px-3 py-1 rounded text-xs font-label font-bold uppercase tracking-wider mb-6">
+      <!-- Tipo de artículo badge mejorado -->
+      <span class="article-badge inline-flex items-center gap-2 bg-[#fcfaec] text-[#5E0B15] px-4 py-2 rounded-full text-xs font-label font-bold uppercase tracking-[0.15em] mb-6 md:mb-8 shadow-lg shadow-black/20">
+        <span class="w-2 h-2 bg-[#5E0B15] rounded-full animate-pulse"></span>
         {articleTypeLabel}
       </span>
       
-      <!-- Título -->
-      <h1 class="font-headline text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-8">
+      <!-- Título mejorado -->
+      <h1 class="article-title font-headline text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.1] mb-8 md:mb-10 max-w-4xl">
         {article.title}
       </h1>
       
-      <!-- Meta información -->
-      <div class="flex flex-wrap items-center gap-4 md:gap-6 text-white/80">
+      <!-- Meta información mejorada -->
+      <div class="article-meta flex flex-wrap items-center gap-5 md:gap-8 text-white/80">
         <!-- Fecha -->
-        <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-xl">calendar_today</span>
-          <time datetime={article.publishDate} class="font-label text-sm">
-            {publishDate}
-          </time>
+        <div class="flex items-center gap-3 group">
+          <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors duration-300">
+            <span class="material-symbols-outlined text-xl">calendar_today</span>
+          </div>
+          <div>
+            <p class="text-xs text-white/50 font-label uppercase tracking-wider mb-0.5">Publicado</p>
+            <time datetime={article.publishDate} class="font-label text-sm font-medium text-white">
+              {publishDate}
+            </time>
+          </div>
         </div>
         
+        <!-- Separador vertical -->
+        <div class="hidden md:block w-px h-12 bg-white/20"></div>
+        
         <!-- Autores -->
-        <div class="flex items-start gap-2">
-          <span class="material-symbols-outlined text-xl shrink-0">person</span>
-          <div class="flex flex-wrap gap-x-1">
-            {authors.map((author, index) => (
-              <span class="font-label text-sm">
-                {author.academicDegree !== 'Estudiante' ? `${author.academicDegree}. ` : ''}{author.fullName}{index < authors.length - 1 ? ',' : ''}
-              </span>
-            ))}
+        <div class="flex items-center gap-3 group flex-1">
+          <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0 group-hover:bg-white/20 transition-colors duration-300">
+            <span class="material-symbols-outlined text-xl">person</span>
+          </div>
+          <div class="min-w-0">
+            <p class="text-xs text-white/50 font-label uppercase tracking-wider mb-0.5">
+              {authors.length === 1 ? 'Autor' : 'Autores'}
+            </p>
+            <div class="flex flex-wrap gap-x-2 font-label text-sm font-medium text-white">
+              {authors.map((author, index) => (
+                <span class="inline-block">
+                  {author.academicDegree !== 'Estudiante' ? `${author.academicDegree}. ` : ''}{author.fullName}{index < authors.length - 1 ? ',' : ''}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -102,95 +232,129 @@ const articleTypeLabel = article.articleType;
   </header>
   
   <!-- Contenido Principal -->
-  <article class="max-w-4xl mx-auto px-6 md:px-8 py-12 md:py-16">
-    <!-- Imagen de portada destacada -->
-    <figure class="mb-12 -mt-20 relative z-10">
-      <img 
-        src={article.coverImage.url}
-        alt={article.coverImage.title || article.title}
-        class="w-full aspect-video object-cover rounded-xl shadow-2xl"
-      />
-      {article.coverImage.description && (
-        <figcaption class="text-center text-sm text-on-surface-variant mt-4 italic">
-          {article.coverImage.description}
-        </figcaption>
-      )}
-    </figure>
-    
-    <!-- Información de autores -->
-    <aside class="bg-surface-container rounded-xl p-6 md:p-8 mb-12">
-      <h2 class="font-headline text-lg font-semibold text-primary mb-4">
-        {authors.length === 1 ? 'Autor' : 'Autores'}
-      </h2>
-      <div class="flex flex-col gap-6">
-        {authors.map((author) => (
-          <div class="flex items-start gap-4">
-            {author.profilePicture ? (
-              <img 
-                src={author.profilePicture.url} 
-                alt={author.fullName}
-                class="w-14 h-14 md:w-16 md:h-16 rounded-full object-cover ring-2 ring-primary-fixed shrink-0"
-              />
-            ) : (
-              <div class="w-14 h-14 md:w-16 md:h-16 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-headline font-bold text-lg shrink-0">
-                {getAuthorInitials(author.fullName)}
-              </div>
-            )}
-            <div class="min-w-0">
-              <p class="font-label font-semibold text-on-surface">
-                {author.academicDegree !== 'Estudiante' ? `${author.academicDegree}. ` : ''}{author.fullName}
-              </p>
-              <p class="font-label text-sm text-on-surface-variant mb-2">
-                {author.academicDegree}
-              </p>
-              {author.aboutAuthor && (
-                <p class="font-body text-sm text-on-surface-variant leading-relaxed">
-                  {author.aboutAuthor}
-                </p>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-    </aside>
-    
-    <!-- Contenido del artículo -->
-    <div class="text-on-surface">
-      <RichTextRenderer content={article.content.json} />
-    </div>
-    
-    <!-- Referencias (si existen) -->
-    {article.referencias && (
-      <section class="mt-16 pt-12 border-t border-outline-variant">
-        <h2 class="font-headline text-2xl font-bold text-primary mb-6">Referencias</h2>
-        <div class="bg-surface-container-low rounded-xl p-6 md:p-8">
-          <RichTextRenderer 
-            content={article.referencias.json} 
-            class="text-sm text-on-surface-variant [&_p]:mb-3 [&_p]:leading-relaxed [&_p]:break-words [&_p]:overflow-wrap-anywhere"
+  <article class="relative bg-[#fcfaec] py-12 md:py-16">
+    <div class="max-w-5xl mx-auto px-6 md:px-8">
+      <!-- Imagen de portada destacada mejorada -->
+      <figure class="featured-image mb-12 md:mb-16 -mt-24 relative z-10 group">
+        <div class="relative overflow-hidden rounded-2xl shadow-2xl shadow-[#5E0B15]/20 ring-1 ring-[#5E0B15]/10">
+          <img 
+            src={article.coverImage.url}
+            alt={article.coverImage.title || article.title}
+            class="w-full aspect-video object-cover transition-transform duration-700 group-hover:scale-105"
           />
+          <!-- Gradient overlay sutil -->
+          <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
         </div>
-      </section>
-    )}
+        {article.coverImage.description && (
+          <figcaption class="text-center text-sm text-[#1c1c14]/60 mt-5 italic font-body">
+            {article.coverImage.description}
+          </figcaption>
+        )}
+      </figure>
+    
+      <!-- Información de autores mejorada -->
+      <aside class="author-card bg-white rounded-2xl p-8 md:p-10 mb-12 md:mb-16 shadow-xl shadow-[#5E0B15]/5 border border-[#5E0B15]/10 hover-lift decorative-border">
+        <div class="flex items-center gap-3 mb-8">
+          <span class="material-symbols-outlined text-3xl text-[#5E0B15]">
+            {authors.length === 1 ? 'person' : 'group'}
+          </span>
+          <h2 class="font-headline text-2xl md:text-3xl font-bold text-[#5E0B15]">
+            {authors.length === 1 ? 'Autor' : 'Autores'}
+          </h2>
+        </div>
+        <div class="flex flex-col gap-8">
+          {authors.map((author) => (
+            <div class="flex items-start gap-5 group">
+              {author.profilePicture ? (
+                <div class="relative">
+                  <img 
+                    src={author.profilePicture.url} 
+                    alt={author.fullName}
+                    class="w-16 h-16 md:w-20 md:h-20 rounded-2xl object-cover ring-4 ring-[#5E0B15]/10 shrink-0 group-hover:ring-[#5E0B15]/20 transition-all duration-300"
+                  />
+                  <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-[#5E0B15] rounded-full flex items-center justify-center">
+                    <span class="material-symbols-outlined text-white text-sm">verified</span>
+                  </div>
+                </div>
+              ) : (
+                <div class="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-gradient-to-br from-[#5E0B15] to-[#7a0e1c] flex items-center justify-center text-white font-headline font-bold text-xl md:text-2xl shrink-0 shadow-lg shadow-[#5E0B15]/20 group-hover:shadow-xl group-hover:shadow-[#5E0B15]/30 transition-all duration-300">
+                  {getAuthorInitials(author.fullName)}
+                </div>
+              )}
+              <div class="min-w-0 flex-1">
+                <p class="font-headline text-lg md:text-xl font-bold text-[#1c1c14] mb-1">
+                  {author.academicDegree !== 'Estudiante' ? `${author.academicDegree}. ` : ''}{author.fullName}
+                </p>
+                <p class="font-label text-sm text-[#5E0B15] font-semibold mb-3 uppercase tracking-wider">
+                  {author.academicDegree}
+                </p>
+                {author.aboutAuthor && (
+                  <p class="font-body text-base text-[#1c1c14]/70 leading-relaxed">
+                    {author.aboutAuthor}
+                  </p>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </aside>
+    
+      <!-- Contenido del artículo mejorado -->
+      <div class="content-section bg-white rounded-2xl p-8 md:p-12 lg:p-16 shadow-xl shadow-[#5E0B15]/5 border border-[#5E0B15]/10 mb-12 md:mb-16">
+        <div class="prose prose-lg max-w-none text-[#1c1c14]
+                    [&_h1]:font-headline [&_h1]:text-3xl [&_h1]:md:text-4xl [&_h1]:font-bold [&_h1]:text-[#5E0B15] [&_h1]:mb-6 [&_h1]:mt-12 [&_h1]:first:mt-0
+                    [&_h2]:font-headline [&_h2]:text-2xl [&_h2]:md:text-3xl [&_h2]:font-bold [&_h2]:text-[#5E0B15] [&_h2]:mb-5 [&_h2]:mt-10 [&_h2]:border-l-4 [&_h2]:border-[#5E0B15] [&_h2]:pl-4
+                    [&_h3]:font-headline [&_h3]:text-xl [&_h3]:md:text-2xl [&_h3]:font-semibold [&_h3]:text-[#5E0B15]/90 [&_h3]:mb-4 [&_h3]:mt-8
+                    [&_p]:font-body [&_p]:text-base [&_p]:md:text-lg [&_p]:leading-relaxed [&_p]:mb-6 [&_p]:text-[#1c1c14]/85
+                    [&_strong]:text-[#5E0B15] [&_strong]:font-bold
+                    [&_em]:text-[#1c1c14]/70 [&_em]:italic
+                    [&_ul]:space-y-2 [&_ul]:mb-6 [&_ul]:ml-6
+                    [&_ol]:space-y-2 [&_ol]:mb-6 [&_ol]:ml-6
+                    [&_li]:font-body [&_li]:text-base [&_li]:md:text-lg [&_li]:leading-relaxed [&_li]:text-[#1c1c14]/85
+                    [&_a]:text-[#5E0B15] [&_a]:underline [&_a]:underline-offset-2 [&_a]:decoration-[#5E0B15]/30 [&_a]:hover:decoration-[#5E0B15] [&_a]:transition-all
+                    [&_code]:bg-[#fcfaec] [&_code]:px-2 [&_code]:py-1 [&_code]:rounded [&_code]:text-sm [&_code]:font-mono [&_code]:text-[#5E0B15]
+                    [&_pre]:bg-[#1c1c14] [&_pre]:text-white [&_pre]:p-6 [&_pre]:rounded-xl [&_pre]:overflow-x-auto [&_pre]:mb-6
+                    [&_img]:rounded-xl [&_img]:shadow-lg [&_img]:my-8
+                    [&_hr]:border-[#5E0B15]/20 [&_hr]:my-12">
+          <RichTextRenderer content={article.content.json} />
+        </div>
+      </div>
+      
+      <!-- Referencias mejoradas (si existen) -->
+      {article.referencias && (
+        <section class="content-section bg-gradient-to-br from-white to-[#fcfaec]/30 rounded-2xl p-8 md:p-10 shadow-xl shadow-[#5E0B15]/5 border border-[#5E0B15]/10 decorative-border">
+          <div class="flex items-center gap-3 mb-8">
+            <span class="material-symbols-outlined text-3xl text-[#5E0B15]">menu_book</span>
+            <h2 class="font-headline text-2xl md:text-3xl font-bold text-[#5E0B15]">Referencias</h2>
+          </div>
+          <div class="bg-white/60 backdrop-blur-sm rounded-xl p-6 md:p-8">
+            <RichTextRenderer 
+              content={article.referencias.json} 
+              class="text-sm md:text-base text-[#1c1c14]/75 [&_p]:mb-4 [&_p]:leading-relaxed [&_p]:break-words [&_p]:overflow-wrap-anywhere font-body"
+            />
+          </div>
+        </section>
+      )}
+    </div>
   </article>
   
-  <!-- CTA para volver -->
-  <section class="bg-surface-container py-12">
-    <div class="max-w-4xl mx-auto px-6 md:px-8 text-center">
-      <a 
-        href="/publicaciones" 
-        class="inline-flex items-center gap-2 font-label font-semibold text-primary hover:text-primary-container transition-colors"
-      >
-        <span class="material-symbols-outlined">arrow_back</span>
-        Volver a Publicaciones
-      </a>
+  <!-- CTA para volver mejorado -->
+  <section class="relative bg-[#fcfaec] py-16 md:py-20 overflow-hidden">
+    <!-- Background decorativo -->
+    <div class="absolute inset-0 opacity-[0.02]" 
+         style="background-image: url('data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E');"></div>
+    
+    <div class="relative max-w-5xl mx-auto px-6 md:px-8 text-center">
+      <div class="inline-block">
+        <a 
+          href="/publicaciones" 
+          class="group inline-flex items-center gap-3 bg-[#5E0B15] text-white px-8 py-4 rounded-xl font-label font-bold text-base hover:bg-[#7a0e1c] transition-all duration-300 shadow-xl shadow-[#5E0B15]/20 hover:shadow-2xl hover:shadow-[#5E0B15]/30 hover:-translate-y-1"
+        >
+          <span class="material-symbols-outlined group-hover:-translate-x-1 transition-transform duration-300">arrow_back</span>
+          <span>Volver a Publicaciones</span>
+        </a>
+      </div>
+      <p class="mt-6 text-sm text-[#1c1c14]/60 font-body">Explora más artículos de investigación</p>
     </div>
   </section>
 </Layout>
-
-<style>
-  /* Asegurar que las referencias largas (URLs, DOIs) no rompan el layout */
-  section :global(.rich-text-content p) {
-    word-break: break-word;
-    overflow-wrap: anywhere;
-  }
-</style>

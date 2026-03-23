@@ -26,3 +26,4 @@ pnpm-debug.log*
 /plantilla
 
 .agents
+skills-lock.json

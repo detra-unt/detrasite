@@ -6,120 +6,161 @@ interface Props {
 const { currentPage = 'home' } = Astro.props;
 ---
 
-<nav class="bg-[#fcfaec]/80 backdrop-blur-md sticky top-0 z-50 transition-all duration-300">
-  <div class="flex justify-between items-center w-full px-8 py-2 max-w-7xl mx-auto">
+<nav
+  id="main-nav"
+  class="bg-[#fcfaec]/80 backdrop-blur-md sticky top-0 z-50 transition-all duration-500"
+>
+  <!-- Línea decorativa superior — acento editorial -->
+  <div class="h-[2px] w-full bg-gradient-to-r from-transparent via-[#5E0B15]/60 to-transparent"></div>
+
+  <div class="flex justify-between items-center w-full px-6 md:px-10 py-3 max-w-7xl mx-auto">
+
     <!-- Brand Logo -->
-    <a href="/" class="flex items-center">
-      <img src="/logoDetravf.png" alt="Detra logo" class="h-14 w-auto object-contain">
+    <a
+      href="/"
+      class="flex items-center group"
+      aria-label="Ir al inicio de Detra"
+    >
+      <img
+        src="/logoDetravf.png"
+        alt="Detra logo"
+        class="h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-[1.03]"
+      >
     </a>
-    
-    <!-- Navigation Links — solo en desktop -->
-    <div class="hidden md:flex items-center space-x-8">
-      <a 
+
+    <!-- Navigation Links — desktop -->
+    <div class="hidden md:flex items-center gap-10">
+      <a
         class:list={[
-          "font-label tracking-tight text-sm transition-colors",
-          currentPage === 'home' 
-            ? "text-[#5E0B15] font-bold border-b-2 border-[#5E0B15] pb-1" 
-            : "text-[#1c1c14]/70 hover:text-[#5E0B15]"
+          "nav-link relative font-label text-xs tracking-[0.14em] uppercase transition-colors duration-200",
+          currentPage === 'home'
+            ? "text-[#5E0B15] font-bold nav-link--active"
+            : "text-[#1c1c14]/60 hover:text-[#5E0B15]"
         ]}
-        href="/">
+        href="/"
+      >
         Inicio
       </a>
-      <a 
+      <a
         class:list={[
-          "font-label tracking-tight text-sm transition-colors",
-          currentPage === 'publications' 
-            ? "text-[#550015] font-bold border-b-2 border-[#550015] pb-1" 
-            : "text-[#1c1c14]/70 hover:text-[#550015]"
+          "nav-link relative font-label text-xs tracking-[0.14em] uppercase transition-colors duration-200",
+          currentPage === 'publications'
+            ? "text-[#550015] font-bold nav-link--active"
+            : "text-[#1c1c14]/60 hover:text-[#550015]"
         ]}
-        href="/publicaciones">
+        href="/publicaciones"
+      >
         Publicaciones
       </a>
-      <a 
+      <a
         class:list={[
-          "font-label tracking-tight text-sm transition-colors",
-          currentPage === 'about' 
-            ? "text-[#5E0B15] font-bold border-b-2 border-[#5E0B15] pb-1" 
-            : "text-[#1c1c14]/70 hover:text-[#5E0B15]"
+          "nav-link relative font-label text-xs tracking-[0.14em] uppercase transition-colors duration-200",
+          currentPage === 'about'
+            ? "text-[#5E0B15] font-bold nav-link--active"
+            : "text-[#1c1c14]/60 hover:text-[#5E0B15]"
         ]}
-        href="/sobrenosotros">
+        href="/sobrenosotros"
+      >
         Sobre Nosotros
       </a>
     </div>
-    
-    <!-- Acciones trailing — solo en desktop -->
-    <div class="hidden md:flex items-center space-x-6">
-      <button class="material-symbols-outlined text-[#2e0007] hover:text-[#5E0B15] transition-all duration-300 scale-95 active:opacity-80">
+
+    <!-- Acciones trailing — desktop -->
+    <div class="hidden md:flex items-center gap-5">
+      <button
+        class="material-symbols-outlined text-[#2e0007]/70 hover:text-[#5E0B15] transition-all duration-200 hover:scale-110"
+        aria-label="Acceder al directorio"
+      >
         account_balance
       </button>
       <a href="#formularioUnirse">
-        <button class="bg-[#5E0B15] cursor-pointer text-white px-6 py-2 rounded-md font-label text-sm font-semibold hover:opacity-90 transition-all scale-95 active:opacity-80">
-        Quiero unirme
-      </button>
+        <button
+          class="group relative overflow-hidden bg-[#5E0B15] cursor-pointer text-white px-5 py-2 rounded-[3px] font-label text-xs tracking-[0.12em] uppercase font-semibold transition-all duration-300 hover:shadow-[0_4px_20px_rgba(94,11,21,0.35)]"
+        >
+          <!-- Shimmer on hover -->
+          <span
+            class="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-500 bg-gradient-to-r from-transparent via-white/15 to-transparent"
+          ></span>
+          <span class="relative">Quiero unirme</span>
+        </button>
       </a>
     </div>
-    
-    <!-- Botón hamburguesa — solo en mobile -->
+
+    <!-- Botón hamburguesa — mobile -->
     <button
       id="mobile-menu-btn"
-      class="md:hidden cursor-pointer flex flex-col justify-center items-center w-10 h-10 rounded-md hover:bg-[#2e0007]/10 transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#550015]"
+      class="md:hidden cursor-pointer flex flex-col justify-center items-center w-9 h-9 rounded-sm border border-[#dcc0c1]/50 hover:border-[#5E0B15]/40 hover:bg-[#5E0B15]/5 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#550015]"
       aria-label="Abrir menú"
       aria-expanded="false"
       aria-controls="mobile-menu"
     >
-      <!-- Las tres barras del hamburger, animadas con CSS -->
-      <span class="hamburger-line block w-5 h-0.5 bg-[#5E0B15] rounded-full transition-all duration-300 origin-center"></span>
-      <span class="hamburger-line block w-5 h-0.5 bg-[#5E0B15] rounded-full transition-all duration-300 mt-1.5 origin-center"></span>
-      <span class="hamburger-line block w-5 h-0.5 bg-[#5E0B15] rounded-full transition-all duration-300 mt-1.5 origin-center"></span>
+      <span class="hamburger-line block w-[18px] h-[1.5px] bg-[#5E0B15] rounded-full transition-all duration-300 origin-center"></span>
+      <span class="hamburger-line block w-[18px] h-[1.5px] bg-[#5E0B15] rounded-full transition-all duration-300 mt-[5px] origin-center"></span>
+      <span class="hamburger-line block w-[18px] h-[1.5px] bg-[#5E0B15] rounded-full transition-all duration-300 mt-[5px] origin-center"></span>
     </button>
   </div>
-  
-  <!-- Menú mobile — se expande con animación de altura -->
+
+  <!-- Menú mobile -->
   <div
     id="mobile-menu"
-    class="md:hidden overflow-hidden transition-all duration-300 ease-in-out"
+    class="md:hidden overflow-hidden transition-all duration-350 ease-in-out"
     style="max-height: 0; opacity: 0;"
     aria-hidden="true"
   >
-    <div class="bg-[#fcfaec] border-t border-[#dcc0c1]/30 px-8 py-5 flex flex-col space-y-5">
-      <a 
-        class:list={[
-          "font-label tracking-tight text-sm transition-colors w-fit",
-          currentPage === 'home' 
-            ? "text-[#5E0B15] font-bold border-b-2 border-[#5E0B15] pb-0.5" 
-            : "text-[#1c1c14]/70 hover:text-[#5E0B15]"
-        ]}
-        href="/">
-        Inicio
-      </a>
-      <a 
-        class:list={[
-          "font-label tracking-tight text-sm transition-colors w-fit",
-          currentPage === 'publications' 
-            ? "text-[#5E0B15] font-bold border-b-2 border-[#5E0B15] pb-0.5" 
-            : "text-[#1c1c14]/70 hover:text-[#5E0B15]"
-        ]}
-        href="/publicaciones">
-        Publicaciones
-      </a>
-      <a 
-        class:list={[
-          "font-label tracking-tight text-sm transition-colors w-fit",
-          currentPage === 'about' 
-            ? "text-[#5E0B15] font-bold border-b-2 border-[#5E0B15] pb-0.5" 
-            : "text-[#1c1c14]/70 hover:text-[#5E0B15]"
-        ]}
-        href="/sobrenosotros">
-        Sobre Nosotros
-      </a>
-      <div class="pt-2 border-t border-[#dcc0c1]/30 flex items-center space-x-4">
-        <button class="material-symbols-outlined text-[#2e0007] hover:text-[#5E0B15] transition-colors">
+    <div class="bg-[#fcfaec] border-t border-[#dcc0c1]/40 px-8 py-6 flex flex-col gap-6">
+      
+      <!-- Links móvil -->
+      <div class="flex flex-col gap-5">
+        <a
+          class:list={[
+            "font-label text-xs tracking-[0.14em] uppercase transition-colors duration-200 w-fit",
+            currentPage === 'home'
+              ? "text-[#5E0B15] font-bold mobile-link--active"
+              : "text-[#1c1c14]/60 hover:text-[#5E0B15]"
+          ]}
+          href="/"
+        >
+          Inicio
+        </a>
+        <a
+          class:list={[
+            "font-label text-xs tracking-[0.14em] uppercase transition-colors duration-200 w-fit",
+            currentPage === 'publications'
+              ? "text-[#5E0B15] font-bold mobile-link--active"
+              : "text-[#1c1c14]/60 hover:text-[#5E0B15]"
+          ]}
+          href="/publicaciones"
+        >
+          Publicaciones
+        </a>
+        <a
+          class:list={[
+            "font-label text-xs tracking-[0.14em] uppercase transition-colors duration-200 w-fit",
+            currentPage === 'about'
+              ? "text-[#5E0B15] font-bold mobile-link--active"
+              : "text-[#1c1c14]/60 hover:text-[#5E0B15]"
+          ]}
+          href="/sobrenosotros"
+        >
+          Sobre Nosotros
+        </a>
+      </div>
+
+      <!-- Divisor -->
+      <div class="h-px bg-gradient-to-r from-[#dcc0c1]/60 to-transparent"></div>
+
+      <!-- Acciones móvil -->
+      <div class="flex items-center gap-5">
+        <button
+          class="material-symbols-outlined text-[#2e0007]/70 hover:text-[#5E0B15] transition-colors duration-200"
+          aria-label="Acceder al directorio"
+        >
           account_balance
         </button>
-        <a href="#formularioUnirse">
-          <button class="bg-[#5E0B15] text-white px-6 py-2 rounded-md font-label text-sm font-semibold hover:opacity-90 transition-all">
-          Quiero unirme
-        </button>
+        <a href="#formularioUnirse" class="flex-1">
+          <button class="w-full bg-[#5E0B15] text-white px-5 py-2.5 rounded-[3px] font-label text-xs tracking-[0.12em] uppercase font-semibold hover:opacity-90 transition-all duration-200 cursor-pointer">
+            Quiero unirme
+          </button>
         </a>
       </div>
     </div>
@@ -127,16 +168,59 @@ const { currentPage = 'home' } = Astro.props;
 </nav>
 
 <style>
-  /* Estado "abierto" del botón hamburguesa */
+  /* Indicador de página activa — línea inferior animada */
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 1.5px;
+    background-color: #5E0B15;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease;
+  }
+  .nav-link:hover::after {
+    transform: scaleX(1);
+  }
+  .nav-link--active::after {
+    transform: scaleX(1);
+  }
+
+  /* Indicador activo en móvil */
+  .mobile-link--active {
+    position: relative;
+    padding-left: 12px;
+  }
+  .mobile-link--active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 100%;
+    background-color: #5E0B15;
+    border-radius: 2px;
+  }
+
+  /* Hamburger open state */
   #mobile-menu-btn.is-open .hamburger-line:nth-child(1) {
-    transform: translateY(8px) rotate(45deg);
+    transform: translateY(6.5px) rotate(45deg);
   }
   #mobile-menu-btn.is-open .hamburger-line:nth-child(2) {
     opacity: 0;
     transform: scaleX(0);
   }
   #mobile-menu-btn.is-open .hamburger-line:nth-child(3) {
-    transform: translateY(-8px) rotate(-45deg);
+    transform: translateY(-6.5px) rotate(-45deg);
+  }
+
+  /* Scrolled state */
+  #main-nav.scrolled {
+    background-color: rgba(252, 250, 236, 0.96);
+    box-shadow: 0 1px 0 rgba(220, 192, 193, 0.5), 0 4px 16px rgba(46, 0, 7, 0.06);
   }
 </style>
 
@@ -144,23 +228,32 @@ const { currentPage = 'home' } = Astro.props;
   function initMobileMenu() {
     const btn = document.getElementById('mobile-menu-btn');
     const menu = document.getElementById('mobile-menu');
-    if (!btn || !menu) return;
+    const nav = document.getElementById('main-nav');
+    if (!btn || !menu || !nav) return;
 
-    // Altura real del contenido interno para la animación
     const inner = menu.querySelector('div') as HTMLElement | null;
+
+    // Scroll effect: add `.scrolled` class when page is scrolled
+    const handleScroll = () => {
+      if (window.scrollY > 12) {
+        nav.classList.add('scrolled');
+      } else {
+        nav.classList.remove('scrolled');
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // run on init
 
     btn.addEventListener('click', () => {
       const isOpen = btn.classList.contains('is-open');
 
       if (isOpen) {
-        // Cerrar
         menu.style.maxHeight = '0px';
         menu.style.opacity = '0';
         btn.classList.remove('is-open');
         btn.setAttribute('aria-expanded', 'false');
         menu.setAttribute('aria-hidden', 'true');
       } else {
-        // Abrir: calculamos la altura real del contenido
         const contentHeight = inner ? inner.scrollHeight : 300;
         menu.style.maxHeight = `${contentHeight}px`;
         menu.style.opacity = '1';
@@ -170,7 +263,6 @@ const { currentPage = 'home' } = Astro.props;
       }
     });
 
-    // Cerrar menú al hacer clic en un enlace
     menu.querySelectorAll('a').forEach((link) => {
       link.addEventListener('click', () => {
         menu.style.maxHeight = '0px';
@@ -181,7 +273,6 @@ const { currentPage = 'home' } = Astro.props;
       });
     });
 
-    // Cerrar menú si se redimensiona a desktop
     window.addEventListener('resize', () => {
       if (window.innerWidth >= 768 && btn.classList.contains('is-open')) {
         menu.style.maxHeight = '0px';
@@ -193,7 +284,6 @@ const { currentPage = 'home' } = Astro.props;
     });
   }
 
-  // Ejecutar al cargar y también tras las transiciones de View Transitions de Astro
   initMobileMenu();
   document.addEventListener('astro:after-swap', initMobileMenu);
 </script>

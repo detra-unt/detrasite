@@ -11,13 +11,13 @@ const GRAPHQL_ENDPOINT = `https://graphql.contentful.com/content/v1/spaces/${SPA
 
 // Tipos de artículo y mapeo a rutas
 export const ARTICLE_TYPES = {
-  'Artículo de estudiantes.': 'estudiantes',
-  'Artículos de invitados.': 'invitados',
+  'ARTÍCULO ESTUDIANTIL': 'estudiantes',
+  'ARTÍCULO DE INVITADO': 'invitados',
 } as const;
 
 export const ARTICLE_TYPE_LABELS = {
-  'estudiantes': 'Artículo de estudiantes.',
-  'invitados': 'Artículos de invitados.',
+  'estudiantes': 'ARTÍCULO ESTUDIANTIL',
+  'invitados': 'ARTÍCULO DE INVITADO',
 } as const;
 
 export type ArticleTypeValue = keyof typeof ARTICLE_TYPES;
@@ -170,11 +170,11 @@ export async function getArticles(options: GetArticlesOptions = {}): Promise<{
 
   // Construir filtros
   const filters: string[] = [];
-  
+
   if (articleType) {
     filters.push(`articleType: "${articleType}"`);
   }
-  
+
   if (searchQuery) {
     // Búsqueda por título o nombre de autor
     filters.push(`OR: [
@@ -182,11 +182,11 @@ export async function getArticles(options: GetArticlesOptions = {}): Promise<{
       { authorsCollection_exists: true }
     ]`);
   }
-  
+
   if (startDate) {
     filters.push(`publishDate_gte: "${startDate}"`);
   }
-  
+
   if (endDate) {
     filters.push(`publishDate_lte: "${endDate}"`);
   }
@@ -210,7 +210,7 @@ export async function getArticles(options: GetArticlesOptions = {}): Promise<{
   `;
 
   const data = await fetchGraphQL<ArticlesResponse>(query, preview);
-  
+
   return {
     articles: data.articleCollection.items,
     total: data.articleCollection.total,
@@ -230,7 +230,7 @@ export async function getFeaturedArticles(): Promise<ArticlePreview[]> {
       estudiantes: articleCollection(
         limit: 1
         order: publishDate_DESC
-        where: { articleType: "Artículo de estudiantes." }
+        where: { articleType: "ARTÍCULO ESTUDIANTIL" }
       ) {
         items {
           ${ARTICLE_PREVIEW_FRAGMENT}
@@ -239,7 +239,7 @@ export async function getFeaturedArticles(): Promise<ArticlePreview[]> {
       invitados: articleCollection(
         limit: 1
         order: publishDate_DESC
-        where: { articleType: "Artículos de invitados." }
+        where: { articleType: "ARTÍCULO DE INVITADO" }
       ) {
         items {
           ${ARTICLE_PREVIEW_FRAGMENT}
@@ -272,7 +272,7 @@ export async function getArticleBySlug(
   preview = false
 ): Promise<Article | null> {
   const articleType = getArticleTypeFromSlug(articleTypeSlug);
-  
+
   if (!articleType) {
     return null;
   }
@@ -323,7 +323,7 @@ export async function getArticleBySlug(
   `;
 
   const data = await fetchGraphQL<ArticleResponse>(query, preview);
-  
+
   return data.articleCollection.items[0] || null;
 }
 
@@ -349,7 +349,7 @@ export async function getAllArticleSlugs(): Promise<
   `;
 
   const data = await fetchGraphQL<AllSlugsResponse>(query);
-  
+
   return data.articleCollection.items.map((item) => ({
     slug: item.slug,
     tipo: getArticleTypeSlug(item.articleType),
