@@ -2,12 +2,9 @@
 // src/components/Footer.astro
 ---
 
-<footer class="relative bg-[#fcfaec] text-[#1c1c14] py-2 overflow-hidden"> 
-  
+<footer class="relative bg-[#fcfaec] text-[#1c1c14] py-2 overflow-hidden">
   <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    
     <div class="grid grid-cols-1 md:grid-cols-3 gap-16 lg:gap-12 pt-2">
-
       <!-- Column 1: Brand Identity -->
       <div class="space-y-6 text-center md:text-left group/brand">
         <div class="relative inline-block">
@@ -16,28 +13,45 @@
             alt="Logo DETRA UNT"
             class="h-28 w-auto mx-auto md:mx-0 opacity-90 hover:opacity-100 transition-all duration-500 hover:scale-105"
           />
-          <div class="absolute -inset-4 bg-[#5E0B15]/5 rounded-lg blur-xl opacity-0 group-hover/brand:opacity-100 transition-opacity duration-500 -z-10"></div>
+          <div
+            class="absolute -inset-4 bg-[#5E0B15]/5 rounded-lg blur-xl opacity-0 group-hover/brand:opacity-100 transition-opacity duration-500 -z-10"
+          >
+          </div>
         </div>
-        
+
         <div class="space-y-4">
-          <p class="text-sm md:text-justify leading-loose text-[#1c1c14]/75 font-body max-w-sm mx-auto md:mx-0">
-            Círculo de Estudios de Derecho del Trabajo y de la Seguridad Social (DETRA) de la Universidad Nacional de Trujillo. Promoviendo la investigación jurídica y el análisis de la realidad social.
+          <p
+            class="text-sm md:text-justify leading-loose text-[#1c1c14]/75 font-body max-w-sm mx-auto md:mx-0"
+          >
+            Círculo de Estudios de Derecho del Trabajo y de la Seguridad Social
+            (DETRA) de la Universidad Nacional de Trujillo. Promoviendo la
+            investigación jurídica y el análisis de la realidad social.
           </p>
-          
-          <div class="flex items-center gap-3 justify-center md:justify-start text-[#1c1c14]/60 hover:text-[#5E0B15] transition-colors duration-300 group/location">
-            <span class="material-symbols-outlined text-2xl group-hover/location:scale-110 transition-transform duration-300">location_on</span>
+
+          <div
+            class="flex items-center gap-3 justify-center md:justify-start text-[#1c1c14]/60 hover:text-[#5E0B15] transition-colors duration-300 group/location"
+          >
+            <span
+              class="material-symbols-outlined text-2xl group-hover/location:scale-110 transition-transform duration-300"
+              >location_on</span
+            >
             <span class="font-body text-sm">Trujillo, La Libertad - Perú</span>
           </div>
         </div>
-        
-        <div class="flex gap-5 mt-6 justify-center md:justify-start items-center">
+
+        <div
+          class="flex gap-5 mt-6 justify-center md:justify-start items-center"
+        >
           <div class="relative group/logo">
             <img
               src="/logoescueladerecho.png"
               alt="Logo Escuela de Derecho"
               class="h-20 w-auto opacity-85 hover:opacity-100 transition-all duration-500 hover:scale-110"
             />
-            <div class="absolute inset-0 bg-[#5E0B15]/10 rounded-md blur-md opacity-0 group-hover/logo:opacity-100 transition-opacity duration-500 -z-10"></div>
+            <div
+              class="absolute inset-0 bg-[#5E0B15]/10 rounded-md blur-md opacity-0 group-hover/logo:opacity-100 transition-opacity duration-500 -z-10"
+            >
+            </div>
           </div>
           <div class="w-px h-14 bg-[#1c1c14]/10"></div>
           <div class="relative group/logo">
@@ -46,7 +60,10 @@
               alt="Logo UNT"
               class="h-20 w-auto opacity-85 hover:opacity-100 transition-all duration-500 hover:scale-110"
             />
-            <div class="absolute inset-0 bg-[#5E0B15]/10 rounded-md blur-md opacity-0 group-hover/logo:opacity-100 transition-opacity duration-500 -z-10"></div>
+            <div
+              class="absolute inset-0 bg-[#5E0B15]/10 rounded-md blur-md opacity-0 group-hover/logo:opacity-100 transition-opacity duration-500 -z-10"
+            >
+            </div>
           </div>
         </div>
       </div>
@@ -56,32 +73,54 @@
         <!-- Título con mejor alineación -->
         <div class="relative mb-8 flex justify-center md:justify-start">
           <div class="relative inline-block">
-            <h3 class="text-[#5E0B15] text-lg md:text-xl font-semibold tracking-wider font-headline uppercase relative">
+            <h3
+              class="text-[#5E0B15] text-lg md:text-xl font-semibold tracking-wider font-headline uppercase relative"
+            >
               Explora
             </h3>
-            <span class="absolute -bottom-2 left-1/2 md:left-0 -translate-x-1/2 md:translate-x-0 w-12 h-0.5 bg-[#5E0B15]"></span>
+            <span
+              class="absolute -bottom-2 left-1/2 md:left-0 -translate-x-1/2 md:translate-x-0 w-12 h-0.5 bg-[#5E0B15]"
+            ></span>
           </div>
         </div>
 
         <!-- Enlaces de navegación mejorados para móvil -->
         <nav>
-          <ul class="space-y-2 md:space-y-3 font-body flex flex-col items-center md:items-start">
+          <ul
+            class="space-y-2 md:space-y-3 font-body flex flex-col items-center md:items-start"
+          >
             <li class="group/link w-full max-w-xs md:max-w-none">
               <a
                 href="/"
                 class="relative flex items-center justify-center md:justify-start gap-3 px-6 py-3 md:px-0 md:py-0 rounded-md md:rounded-none bg-gradient-to-r from-[#5E0B15]/0 via-[#5E0B15]/0 to-[#5E0B15]/0 hover:from-[#5E0B15]/5 hover:via-[#5E0B15]/8 hover:to-[#5E0B15]/5 md:bg-none text-[#1c1c14]/75 hover:text-[#5E0B15] transition-all duration-300 border border-[#5E0B15]/0 hover:border-[#5E0B15]/20 md:border-none"
               >
                 <!-- Decorative dot for mobile -->
-                <span class="md:hidden w-1.5 h-1.5 rounded-full bg-[#5E0B15]/40 group-hover/link:bg-[#5E0B15] group-hover/link:scale-125 transition-all duration-300"></span>
-                
+                <span
+                  class="md:hidden w-1.5 h-1.5 rounded-full bg-[#5E0B15]/40 group-hover/link:bg-[#5E0B15] group-hover/link:scale-125 transition-all duration-300"
+                ></span>
+
                 <!-- Line indicator for desktop -->
-                <span class="hidden md:block w-0 h-px bg-[#5E0B15] group-hover/link:w-6 transition-all duration-300"></span>
-                
-                <span class="group-hover/link:translate-x-0.5 md:group-hover/link:translate-x-1 transition-transform duration-300 font-medium text-base">Inicio</span>
-                
+                <span
+                  class="hidden md:block w-0 h-px bg-[#5E0B15] group-hover/link:w-6 transition-all duration-300"
+                ></span>
+
+                <span
+                  class="group-hover/link:translate-x-0.5 md:group-hover/link:translate-x-1 transition-transform duration-300 font-medium text-base"
+                  >Inicio</span
+                >
+
                 <!-- Arrow for mobile -->
-                <svg class="md:hidden w-4 h-4 opacity-0 group-hover/link:opacity-100 -translate-x-2 group-hover/link:translate-x-0 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                <svg
+                  class="md:hidden w-4 h-4 opacity-0 group-hover/link:opacity-100 -translate-x-2 group-hover/link:translate-x-0 transition-all duration-300"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2.5"
+                    d="M9 5l7 7-7 7"></path>
                 </svg>
               </a>
             </li>
@@ -90,11 +129,27 @@
                 href="/sobrenosotros"
                 class="relative flex items-center justify-center md:justify-start gap-3 px-6 py-3 md:px-0 md:py-0 rounded-md md:rounded-none bg-gradient-to-r from-[#5E0B15]/0 via-[#5E0B15]/0 to-[#5E0B15]/0 hover:from-[#5E0B15]/5 hover:via-[#5E0B15]/8 hover:to-[#5E0B15]/5 md:bg-none text-[#1c1c14]/75 hover:text-[#5E0B15] transition-all duration-300 border border-[#5E0B15]/0 hover:border-[#5E0B15]/20 md:border-none"
               >
-                <span class="md:hidden w-1.5 h-1.5 rounded-full bg-[#5E0B15]/40 group-hover/link:bg-[#5E0B15] group-hover/link:scale-125 transition-all duration-300"></span>
-                <span class="hidden md:block w-0 h-px bg-[#5E0B15] group-hover/link:w-6 transition-all duration-300"></span>
-                <span class="group-hover/link:translate-x-0.5 md:group-hover/link:translate-x-1 transition-transform duration-300 font-medium text-base">Sobre Nosotros</span>
-                <svg class="md:hidden w-4 h-4 opacity-0 group-hover/link:opacity-100 -translate-x-2 group-hover/link:translate-x-0 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                <span
+                  class="md:hidden w-1.5 h-1.5 rounded-full bg-[#5E0B15]/40 group-hover/link:bg-[#5E0B15] group-hover/link:scale-125 transition-all duration-300"
+                ></span>
+                <span
+                  class="hidden md:block w-0 h-px bg-[#5E0B15] group-hover/link:w-6 transition-all duration-300"
+                ></span>
+                <span
+                  class="group-hover/link:translate-x-0.5 md:group-hover/link:translate-x-1 transition-transform duration-300 font-medium text-base"
+                  >Sobre Nosotros</span
+                >
+                <svg
+                  class="md:hidden w-4 h-4 opacity-0 group-hover/link:opacity-100 -translate-x-2 group-hover/link:translate-x-0 transition-all duration-300"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2.5"
+                    d="M9 5l7 7-7 7"></path>
                 </svg>
               </a>
             </li>
@@ -103,11 +158,27 @@
                 href="/publicaciones"
                 class="relative flex items-center justify-center md:justify-start gap-3 px-6 py-3 md:px-0 md:py-0 rounded-md md:rounded-none bg-gradient-to-r from-[#5E0B15]/0 via-[#5E0B15]/0 to-[#5E0B15]/0 hover:from-[#5E0B15]/5 hover:via-[#5E0B15]/8 hover:to-[#5E0B15]/5 md:bg-none text-[#1c1c14]/75 hover:text-[#5E0B15] transition-all duration-300 border border-[#5E0B15]/0 hover:border-[#5E0B15]/20 md:border-none"
               >
-                <span class="md:hidden w-1.5 h-1.5 rounded-full bg-[#5E0B15]/40 group-hover/link:bg-[#5E0B15] group-hover/link:scale-125 transition-all duration-300"></span>
-                <span class="hidden md:block w-0 h-px bg-[#5E0B15] group-hover/link:w-6 transition-all duration-300"></span>
-                <span class="group-hover/link:translate-x-0.5 md:group-hover/link:translate-x-1 transition-transform duration-300 font-medium text-base">Publicaciones</span>
-                <svg class="md:hidden w-4 h-4 opacity-0 group-hover/link:opacity-100 -translate-x-2 group-hover/link:translate-x-0 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                <span
+                  class="md:hidden w-1.5 h-1.5 rounded-full bg-[#5E0B15]/40 group-hover/link:bg-[#5E0B15] group-hover/link:scale-125 transition-all duration-300"
+                ></span>
+                <span
+                  class="hidden md:block w-0 h-px bg-[#5E0B15] group-hover/link:w-6 transition-all duration-300"
+                ></span>
+                <span
+                  class="group-hover/link:translate-x-0.5 md:group-hover/link:translate-x-1 transition-transform duration-300 font-medium text-base"
+                  >Publicaciones</span
+                >
+                <svg
+                  class="md:hidden w-4 h-4 opacity-0 group-hover/link:opacity-100 -translate-x-2 group-hover/link:translate-x-0 transition-all duration-300"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2.5"
+                    d="M9 5l7 7-7 7"></path>
                 </svg>
               </a>
             </li>
@@ -117,14 +188,23 @@
         <!-- Redes Sociales mejoradas -->
         <div class="mt-12 pt-8 border-t border-[#5E0B15]/15 relative">
           <!-- Decorative element -->
-          <div class="absolute top-0 left-1/2 md:left-0 -translate-x-1/2 md:translate-x-0 w-16 h-px bg-[#5E0B15]/40 -translate-y-px"></div>
-          
+          <div
+            class="absolute top-0 left-1/2 md:left-0 -translate-x-1/2 md:translate-x-0 w-16 h-px bg-[#5E0B15]/40 -translate-y-px"
+          >
+          </div>
+
           <div class="flex flex-col gap-6">
             <div class="text-center md:text-left">
-              <p class="text-xs uppercase tracking-[0.2em] text-[#5E0B15] font-label font-bold mb-2">Síguenos</p>
-              <p class="text-xs text-[#1c1c14]/50 font-body">Únete a nuestra comunidad</p>
+              <p
+                class="text-xs uppercase tracking-[0.2em] text-[#5E0B15] font-label font-bold mb-2"
+              >
+                Síguenos
+              </p>
+              <p class="text-xs text-[#1c1c14]/50 font-body">
+                Únete a nuestra comunidad
+              </p>
             </div>
-            
+
             <div class="flex gap-4 justify-center md:justify-start flex-wrap">
               <!-- Facebook -->
               <a
@@ -135,23 +215,43 @@
                 aria-label="Facebook de DETRA"
               >
                 <!-- Outer decorative ring -->
-                <div class="absolute -inset-2 rounded-full bg-gradient-to-br from-[#5E0B15]/20 via-transparent to-[#5E0B15]/20 opacity-0 group-hover/social:opacity-100 transition-opacity duration-500 blur-md"></div>
-                
+                <div
+                  class="absolute -inset-2 rounded-full bg-gradient-to-br from-[#5E0B15]/20 via-transparent to-[#5E0B15]/20 opacity-0 group-hover/social:opacity-100 transition-opacity duration-500 blur-md"
+                >
+                </div>
+
                 <!-- Main button -->
-                <div class="relative w-14 h-14 flex items-center justify-center rounded-full bg-gradient-to-br from-[#5E0B15]/10 to-[#5E0B15]/5 border-2 border-[#5E0B15]/25 group-hover/social:border-[#5E0B15] group-hover/social:from-[#5E0B15] group-hover/social:to-[#5E0B15] transition-all duration-500 shadow-lg group-hover/social:shadow-2xl group-hover/social:shadow-[#5E0B15]/30 backdrop-blur-sm">
-                  <svg class="h-6 w-6 text-[#5E0B15] group-hover/social:text-white transition-all duration-500 group-hover/social:scale-110 relative z-10" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clip-rule="evenodd" />
+                <div
+                  class="relative w-14 h-14 flex items-center justify-center rounded-full bg-gradient-to-br from-[#5E0B15]/10 to-[#5E0B15]/5 border-2 border-[#5E0B15]/25 group-hover/social:border-[#5E0B15] group-hover/social:from-[#5E0B15] group-hover/social:to-[#5E0B15] transition-all duration-500 shadow-lg group-hover/social:shadow-2xl group-hover/social:shadow-[#5E0B15]/30 backdrop-blur-sm"
+                >
+                  <svg
+                    class="h-6 w-6 text-[#5E0B15] group-hover/social:text-white transition-all duration-500 group-hover/social:scale-110 relative z-10"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"
+                      clip-rule="evenodd"></path>
                   </svg>
-                  
+
                   <!-- Shimmer effect -->
                   <div class="absolute inset-0 rounded-full overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/social:translate-x-full transition-transform duration-1000"></div>
+                    <div
+                      class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/social:translate-x-full transition-transform duration-1000"
+                    >
+                    </div>
                   </div>
                 </div>
-                
+
                 <!-- Platform label -->
-                <div class="absolute -bottom-6 left-1/2 -translate-x-1/2 opacity-0 group-hover/social:opacity-100 transition-all duration-300 whitespace-nowrap">
-                  <span class="text-xs font-label text-[#5E0B15] font-semibold">Facebook</span>
+                <div
+                  class="absolute -bottom-6 left-1/2 -translate-x-1/2 opacity-0 group-hover/social:opacity-100 transition-all duration-300 whitespace-nowrap"
+                >
+                  <span class="text-xs font-label text-[#5E0B15] font-semibold"
+                    >Facebook</span
+                  >
                 </div>
               </a>
 
@@ -164,23 +264,43 @@
                 aria-label="Instagram de DETRA"
               >
                 <!-- Outer decorative ring -->
-                <div class="absolute -inset-2 rounded-full bg-gradient-to-br from-[#5E0B15]/20 via-transparent to-[#5E0B15]/20 opacity-0 group-hover/social:opacity-100 transition-opacity duration-500 blur-md"></div>
-                
+                <div
+                  class="absolute -inset-2 rounded-full bg-gradient-to-br from-[#5E0B15]/20 via-transparent to-[#5E0B15]/20 opacity-0 group-hover/social:opacity-100 transition-opacity duration-500 blur-md"
+                >
+                </div>
+
                 <!-- Main button -->
-                <div class="relative w-14 h-14 flex items-center justify-center rounded-full bg-gradient-to-br from-[#5E0B15]/10 to-[#5E0B15]/5 border-2 border-[#5E0B15]/25 group-hover/social:border-[#5E0B15] group-hover/social:from-[#5E0B15] group-hover/social:to-[#5E0B15] transition-all duration-500 shadow-lg group-hover/social:shadow-2xl group-hover/social:shadow-[#5E0B15]/30 backdrop-blur-sm">
-                  <svg class="h-6 w-6 text-[#5E0B15] group-hover/social:text-white transition-all duration-500 group-hover/social:scale-110 relative z-10" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd" />
+                <div
+                  class="relative w-14 h-14 flex items-center justify-center rounded-full bg-gradient-to-br from-[#5E0B15]/10 to-[#5E0B15]/5 border-2 border-[#5E0B15]/25 group-hover/social:border-[#5E0B15] group-hover/social:from-[#5E0B15] group-hover/social:to-[#5E0B15] transition-all duration-500 shadow-lg group-hover/social:shadow-2xl group-hover/social:shadow-[#5E0B15]/30 backdrop-blur-sm"
+                >
+                  <svg
+                    class="h-6 w-6 text-[#5E0B15] group-hover/social:text-white transition-all duration-500 group-hover/social:scale-110 relative z-10"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z"
+                      clip-rule="evenodd"></path>
                   </svg>
-                  
+
                   <!-- Shimmer effect -->
                   <div class="absolute inset-0 rounded-full overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/social:translate-x-full transition-transform duration-1000"></div>
+                    <div
+                      class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/social:translate-x-full transition-transform duration-1000"
+                    >
+                    </div>
                   </div>
                 </div>
-                
+
                 <!-- Platform label -->
-                <div class="absolute -bottom-6 left-1/2 -translate-x-1/2 opacity-0 group-hover/social:opacity-100 transition-all duration-300 whitespace-nowrap">
-                  <span class="text-xs font-label text-[#5E0B15] font-semibold">Instagram</span>
+                <div
+                  class="absolute -bottom-6 left-1/2 -translate-x-1/2 opacity-0 group-hover/social:opacity-100 transition-all duration-300 whitespace-nowrap"
+                >
+                  <span class="text-xs font-label text-[#5E0B15] font-semibold"
+                    >Instagram</span
+                  >
                 </div>
               </a>
             </div>
@@ -189,62 +309,95 @@
       </div>
 
       <!-- Column 3: Featured Magazine -->
-      <div class="flex flex-col items-center md:items-start text-center md:text-left">
+      <div
+        class="flex flex-col items-center md:items-start text-center md:text-left"
+      >
         <div class="relative inline-block mb-6">
-          <h3 class="text-[#5E0B15] text-xl font-semibold tracking-wider font-headline uppercase relative">
+          <h3
+            class="text-[#5E0B15] text-xl font-semibold tracking-wider font-headline uppercase relative"
+          >
             Conoce Nuestra Revista
-            <span class="absolute -bottom-2 left-0 w-12 h-0.5 bg-[#5E0B15]"></span>
+            <span class="absolute -bottom-2 left-0 w-12 h-0.5 bg-[#5E0B15]"
+            ></span>
           </h3>
         </div>
-        
+
         <div class="relative group/magazine mb-6">
           <!-- Decorative frame -->
-          
-          <div class="absolute -inset-4 bg-[#5E0B15]/5 rounded-md blur-lg opacity-0 group-hover/magazine:opacity-100 transition-opacity duration-500 -z-10"></div>
-          
+
+          <div
+            class="absolute -inset-4 bg-[#5E0B15]/5 rounded-md blur-lg opacity-0 group-hover/magazine:opacity-100 transition-opacity duration-500 -z-10"
+          >
+          </div>
+
           <img
             src="/revista.png"
             alt="Revista DETRA N° 01"
             class="relative w-40 rounded-sm transition-all duration-500 group-hover/magazine:scale-105"
           />
-          
+
           <!-- Badge -->
-          <div class="absolute -top-3 -right-10 bg-[#5E0B15] text-white text-xs font-bold px-3 py-1.5 rounded-full font-label shadow-lg animate-pulse">
+          <div
+            class="absolute -top-3 -right-10 bg-[#5E0B15] text-white text-xs font-bold px-3 py-1.5 rounded-full font-label shadow-lg animate-pulse"
+          >
             ¡Primera edición!
           </div>
         </div>
-        
+
         <div class="space-y-3">
-          <p class="font-label text-xs uppercase tracking-[0.25em] text-[#5E0B15]/80 font-semibold">
-            N° 01 <span class="text-[#1c1c14]/40">|</span> Año 01 <span class="text-[#1c1c14]/40">|</span> 2024
+          <p
+            class="font-label text-xs uppercase tracking-[0.25em] text-[#5E0B15]/80 font-semibold"
+          >
+            N° 01 <span class="text-[#1c1c14]/40">|</span> Año 01 <span
+              class="text-[#1c1c14]/40">|</span
+            > 2024
           </p>
-          
-          <p class="text-sm text-[#1c1c14]/75 font-body leading-relaxed max-w-xs">
-            Adquiere nuestra primera edición impresa con artículos de investigación jurídico-laboral.
+
+          <p
+            class="text-sm text-[#1c1c14]/75 font-body leading-relaxed max-w-xs"
+          >
+            Adquiere nuestra primera edición impresa con artículos de
+            investigación jurídico-laboral.
           </p>
-          
+
           <a
             href="/publicaciones"
             class="group/btn mt-5 inline-flex items-center gap-3 bg-[#5E0B15] text-white px-6 py-3 rounded-sm font-label font-bold text-sm hover:bg-[#1c1c14] transition-all duration-300 shadow-md hover:shadow-xl relative overflow-hidden"
           >
-            <span class="absolute inset-0 bg-white opacity-0 group-hover/btn:opacity-10 transition-opacity duration-300"></span>
-            <span class="relative">Ver más</span>
-            <svg class="w-4 h-4 group-hover/btn:translate-x-1 transition-transform duration-300 relative" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+            <span
+              class="absolute inset-0 bg-white opacity-0 group-hover/btn:opacity-10 transition-opacity duration-300"
+            ></span>
+            <span class="relative">¡Quiero adquirirla!</span>
+            <svg
+              class="w-4 h-4 group-hover/btn:translate-x-1 transition-transform duration-300 relative"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.5"
+                d="M9 5l7 7-7 7"></path>
             </svg>
           </a>
         </div>
       </div>
-
     </div>
 
     <!-- Footer Bottom -->
-    <div class="mt-4 pt-2 border-t border-[#5E0B15]/15 flex justify-center items-center gap-6 relative">
+    <div
+      class="mt-4 pt-2 border-t border-[#5E0B15]/15 flex justify-center items-center gap-6 relative"
+    >
       <!-- Decorative element at border -->
-      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-px bg-[#5E0B15]/30 -translate-y-px"></div>
+      <div
+        class="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-px bg-[#5E0B15]/30 -translate-y-px"
+      >
+      </div>
 
       <p class="text-sm text-[#1c1c14]/60 font-body tracking-wide text-center">
-        <span class="text-[#5E0B15]">&copy;</span> 2026 Círculo de Estudios DETRA. Todos los derechos reservados.
+        <span class="text-[#5E0B15]">&copy;</span> 2026 Círculo de Estudios DETRA.
+        Todos los derechos reservados.
       </p>
     </div>
   </div>

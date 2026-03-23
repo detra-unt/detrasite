@@ -88,51 +88,91 @@ const foto           = juntaDirectiva?.fotoGeneral   ?? null;
 </template>
 
 <script>
-  // ── Inject modal into <body> (escape stacking context) ──
-  const tpl = document.getElementById('junta-modal-tpl') as HTMLTemplateElement | null;
-  if (tpl) {
-    document.body.appendChild(tpl.content.cloneNode(true));
+  function initJuntaModal() {
+    // ── Inject modal into <body> once (escape stacking context) ──
+    if (!document.getElementById('junta-modal')) {
+      const tpl = document.getElementById('junta-modal-tpl') as HTMLTemplateElement | null;
+      if (tpl) {
+        document.body.appendChild(tpl.content.cloneNode(true));
+      }
+    }
+
+    const modal    = document.getElementById('junta-modal') as HTMLElement | null;
+    const backdrop = document.getElementById('junta-modal-backdrop') as HTMLElement | null;
+    const closeBtn = document.getElementById('junta-modal-close') as HTMLElement | null;
+    const modalImg = document.getElementById('junta-modal-img') as HTMLImageElement | null;
+    const caption  = document.getElementById('junta-modal-caption') as HTMLElement | null;
+    const trigger  = document.getElementById('junta-open-trigger');
+    const card     = document.getElementById('junta-card');
+
+    if (!modal || !backdrop || !closeBtn || !modalImg || !caption) return;
+
+    function openModal() {
+      if (!modal || !card || !modalImg || !caption || !closeBtn) return;
+      const src  = card.dataset.src  ?? '';
+      const alt  = card.dataset.alt  ?? '';
+      const year = card.dataset.year ?? '';
+
+      modalImg.src = src;
+      modalImg.alt = alt;
+      caption.textContent = year ? `Junta Directiva ${year}` : '';
+
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      requestAnimationFrame(() => modal!.classList.add('jm-open'));
+      closeBtn.focus();
+    }
+
+    function closeModal() {
+      if (!modal) return;
+      modal.classList.remove('jm-open');
+      // Use a one-shot transition listener — but re-create it each time
+      // so it always fires correctly after re-opens.
+      const onEnd = () => {
+        modal!.style.display = 'none';
+        document.body.style.overflow = '';
+      };
+      modal.addEventListener('transitionend', onEnd, { once: true });
+    }
+
+    // Re-attach listeners by cloning nodes to remove any stale listeners
+    // from previous navigations.
+    const newTrigger = trigger?.cloneNode(true) as HTMLElement | null;
+    if (trigger && newTrigger) trigger.replaceWith(newTrigger);
+
+    const newClose = closeBtn.cloneNode(true) as HTMLElement;
+    closeBtn.replaceWith(newClose);
+
+    const newBackdrop = backdrop.cloneNode(true) as HTMLElement;
+    backdrop.replaceWith(newBackdrop);
+
+    // Resolve fresh references after cloning
+    const freshClose    = document.getElementById('junta-modal-close');
+    const freshBackdrop = document.getElementById('junta-modal-backdrop');
+    const freshTrigger  = document.getElementById('junta-open-trigger');
+
+    freshTrigger?.addEventListener('click',  openModal);
+    freshBackdrop?.addEventListener('click', closeModal);
+    freshClose?.addEventListener('click',   closeModal);
   }
 
-  const modal    = document.getElementById('junta-modal')!;
-  const backdrop = document.getElementById('junta-modal-backdrop')!;
-  const closeBtn = document.getElementById('junta-modal-close')!;
-  const modalImg = document.getElementById('junta-modal-img') as HTMLImageElement;
-  const caption  = document.getElementById('junta-modal-caption')!;
-  const trigger  = document.getElementById('junta-open-trigger');
-  const card     = document.getElementById('junta-card');
-
-  function openModal() {
-    if (!modal || !card) return;
-    const src  = card.dataset.src  ?? '';
-    const alt  = card.dataset.alt  ?? '';
-    const year = card.dataset.year ?? '';
-
-    modalImg.src = src;
-    modalImg.alt = alt;
-    caption.textContent = year ? `Junta Directiva ${year}` : '';
-
-    modal.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-    requestAnimationFrame(() => modal.classList.add('jm-open'));
-    closeBtn.focus();
+  // Keyboard Escape — attach once per page lifetime via a guard flag on window.
+  if (!(window as any).__juntaEscBound) {
+    (window as any).__juntaEscBound = true;
+    document.addEventListener('keydown', (e: KeyboardEvent) => {
+      const modal = document.getElementById('junta-modal');
+      if (e.key === 'Escape' && modal?.classList.contains('jm-open')) {
+        modal.classList.remove('jm-open');
+        modal.addEventListener('transitionend', () => {
+          modal.style.display = 'none';
+          document.body.style.overflow = '';
+        }, { once: true });
+      }
+    });
   }
 
-  function closeModal() {
-    if (!modal) return;
-    modal.classList.remove('jm-open');
-    modal.addEventListener('transitionend', () => {
-      modal.style.display = 'none';
-      document.body.style.overflow = '';
-    }, { once: true });
-  }
-
-  trigger?.addEventListener('click',  openModal);
-  backdrop?.addEventListener('click', closeModal);
-  closeBtn?.addEventListener('click', closeModal);
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modal?.classList.contains('jm-open')) closeModal();
-  });
+  document.addEventListener('DOMContentLoaded', initJuntaModal);
+  document.addEventListener('astro:page-load',  initJuntaModal);
 </script>
 
 <style>
