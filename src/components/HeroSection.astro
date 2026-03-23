@@ -2,40 +2,240 @@
 
 ---
 
+<style>
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(-40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 1s ease-out forwards;
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 1.2s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.8s ease-out forwards;
+  }
+
+  .hero-badge {
+    animation: scaleIn 0.6s ease-out 0.2s backwards;
+  }
+
+  .hero-title-line-1 {
+    animation: slideInRight 0.9s ease-out 0.4s backwards;
+  }
+
+  .hero-title-line-2 {
+    animation: slideInRight 0.9s ease-out 0.6s backwards;
+  }
+
+  .hero-description {
+    animation: fadeInUp 1s ease-out 0.8s backwards;
+  }
+
+  .hero-cta-primary {
+    animation: fadeInUp 0.8s ease-out 1s backwards;
+  }
+
+  .hero-cta-secondary {
+    animation: fadeInUp 0.8s ease-out 1.1s backwards;
+  }
+
+  .text-shimmer {
+    background: linear-gradient(
+      90deg,
+      rgba(94, 11, 21, 0.3) 0%,
+      rgba(94, 11, 21, 0.3) 40%,
+      rgba(94, 11, 21, 1) 50%,
+      rgba(94, 11, 21, 0.3) 60%,
+      rgba(94, 11, 21, 0.3) 100%
+    );
+    background-size: 200% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 3s infinite;
+  }
+
+  .text-grain {
+    position: relative;
+  }
+
+  .text-grain::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    opacity: 0.03;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+  }
+
+  .button-primary {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .button-primary::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+
+  .button-primary:hover::before {
+    width: 300px;
+    height: 300px;
+  }
+
+  .button-secondary {
+    position: relative;
+    backdrop-filter: blur(10px);
+  }
+
+  .button-secondary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 0.5rem;
+    padding: 2px;
+    background: linear-gradient(135deg, rgba(94, 11, 21, 0.4), transparent, rgba(94, 11, 21, 0.2));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .button-secondary:hover::after {
+    opacity: 1;
+  }
+
+  .image-parallax {
+    transition: transform 0.3s ease-out;
+  }
+
+  section:hover .image-parallax {
+    transform: scale(1.03);
+  }
+</style>
+
 <section class="relative min-h-[calc(100dvh-80px)] flex items-center overflow-hidden bg-[#fcfaec] py-8 md:py-12">
+  <!-- Background with enhanced visual depth -->
   <div class="absolute inset-0 z-0">
     <img 
       alt="Arquitectura clasica de biblioteca universitaria con techos altos"
-      class="w-full h-full object-cover opacity-80 grayscale mix-blend-multiply"
+      class="image-parallax w-full h-full object-cover opacity-80 grayscale mix-blend-multiply"
       src="/principalv2.jpeg" 
     />
     <div class="absolute inset-0 bg-gradient-to-r from-[#fcfaec] via-[#fcfaec]/60 to-transparent"></div>
+    <!-- Subtle grain texture overlay -->
+    <div class="absolute inset-0 opacity-[0.015] mix-blend-overlay pointer-events-none" 
+         style="background-image: url('data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E'); background-repeat: repeat;"></div>
   </div>
   
+  <!-- Decorative geometric accents -->
+  <div class="absolute left-0 top-1/4 w-1 h-32 bg-gradient-to-b from-transparent via-[#5E0B15]/30 to-transparent z-10 hidden md:block"></div>
+  <div class="absolute right-0 bottom-1/3 w-1 h-40 bg-gradient-to-b from-transparent via-[#5E0B15]/20 to-transparent z-10 hidden lg:block"></div>
+  
   <div class="relative z-10 max-w-7xl mx-auto px-6 md:px-8 w-full grid md:grid-cols-12 gap-8 md:gap-12 items-center">
-    <div class="md:col-span-8">
-      <span class="inline-block px-3 py-1 bg-[#000000] text-[#fff] text-[10px] uppercase tracking-widest font-label font-bold mb-4 md:mb-6 rounded-sm">
-        CÍRCULO DE ESTUDIOS DETRA - UNT
+    <div class="md:col-span-9 lg:col-span-8">
+      <!-- Badge with refined styling -->
+      <span class="hero-badge inline-block px-4 py-1.5 bg-[#000000] text-[#fcfaec] text-[9px] md:text-[10px] uppercase tracking-[0.2em] font-label font-bold mb-6 md:mb-8 shadow-lg shadow-black/20 relative">
+        <span class="relative z-10">CÍRCULO DE ESTUDIOS DETRA - UNT</span>
+        <span class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"></span>
       </span>
-      <h1 class="text-3xl sm:text-5xl md:text-6xl lg:text-6xl font-headline font-bold text-[#5E0B15] leading-[1.1] md:leading-[0.9] tracking-tighter mb-4 md:mb-8 italic">
-        <span class="block pb-1 md:pb-2 ">Construyendo una visión crítica</span>
-        <span class="block">del Derecho del Trabajo.</span>
+
+      <!-- Title with enhanced typography and staggered animation -->
+      <h1 class="text-3xl sm:text-3xl md:text-4xl lg:text-5xl font-headline font-bold text-[#5E0B15] leading-[1.1] md:leading-[1] tracking-[-0.02em] mb-6 md:mb-10 italic text-grain">
+        <span class="hero-title-line-1 block pb-1 md:pb-2 relative">
+          Construyendo una visión crítica
+        </span>
+        <span class="hero-title-line-2 block relative text-shimmer" style="animation: slideInRight 0.9s ease-out 0.6s backwards, shimmer 3s infinite 1.5s;">
+          del Derecho del Trabajo.
+        </span>
       </h1>
-      <p class="text-sm md:text-xl lg:text-2xl font-body text-[#1c1c14]/70 max-w-2xl leading-relaxed mb-6 md:mb-10">
-        Promoviendo la investigación jurídica y el análisis crítico de la realidad nacional en el ámbito del Derecho del Trabajo y la Seguridad Social. Buscamos impulsar un modelo útil que atienda las verdaderas necesidades de la clase trabajadora.
-      </p>
-      <div class="flex flex-col sm:flex-row flex-wrap gap-4">
-        <a href="/publicaciones" class="w-full sm:w-auto flex">
-          <button class="w-full cursor-pointer bg-[#5e0b15d2] text-white px-8 md:px-10 py-3 md:py-4 rounded-lg font-label font-bold text-base md:text-lg hover:bg-[#5E0B15] transition-all shadow-xl shadow-[#2e0007]/10">
-          Ver publicaciones
-        </button>
+
+      <!-- Description with refined spacing -->
+      <div class="hero-description relative">
+        <div class="absolute -left-4 top-0 w-0.5 h-full bg-gradient-to-b from-[#5E0B15]/40 via-[#5E0B15]/20 to-transparent hidden md:block"></div>
+        <p class="text-base md:text-xl lg:text-2xl font-body text-[#1c1c14]/75 max-w-2xl leading-relaxed mb-8 md:mb-12 md:pl-2">
+          Promoviendo la investigación jurídica y el análisis crítico de la realidad nacional en el ámbito del Derecho del Trabajo y la Seguridad Social. Buscamos impulsar un modelo útil que atienda las verdaderas necesidades de la clase trabajadora.
+        </p>
+      </div>
+
+      <!-- CTAs with enhanced interactions -->
+      <div class="flex flex-col sm:flex-row flex-wrap gap-4 md:gap-5">
+        <a href="/publicaciones" class="w-full sm:w-auto group">
+          <button class="button-primary hero-cta-primary w-full cursor-pointer bg-[#5E0B15] text-white px-10 md:px-12 py-4 md:py-5 rounded-lg font-label font-bold text-base md:text-lg hover:bg-[#7a0e1c] transition-all duration-300 shadow-2xl shadow-[#5E0B15]/25 hover:shadow-[#5E0B15]/40 hover:-translate-y-0.5 relative">
+            <span class="relative z-10 flex items-center justify-center gap-2">
+              Ver publicaciones
+              <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+              </svg>
+            </span>
+          </button>
         </a>
-        <a href="/sobrenosotros">
-          <button class="w-full bg-[#ffffff88] sm:w-auto cursor-pointer text-[#5E0B15] px-8 md:px-10 py-3 md:py-4 rounded-lg font-label font-bold text-base md:text-lg hover:bg-white transition-all">
-            Sobre nosotros
+        <a href="/sobrenosotros" class="w-full sm:w-auto group">
+          <button class="button-secondary hero-cta-secondary w-full cursor-pointer bg-[#fcfaec]/90 text-[#5E0B15] px-10 md:px-12 py-4 md:py-5 rounded-lg font-label font-bold text-base md:text-lg hover:bg-white transition-all duration-300 hover:-translate-y-0.5 shadow-lg shadow-black/5 hover:shadow-xl hover:shadow-black/10">
+            <span class="flex items-center justify-center gap-2">
+              Sobre nosotros
+              <svg class="w-4 h-4 opacity-60 group-hover:opacity-100 transition-opacity duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </span>
           </button>
         </a>
       </div>
     </div>
   </div>
+
+  <!-- Bottom decorative accent -->
+  <div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#5E0B15]/20 to-transparent"></div>
 </section>
