@@ -2,20 +2,115 @@
 
 ---
 
-<section class="mb-20 md:mb-32">
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-2.5 items-end">
-    <div class="lg:col-span-8">
-      <span class="bg-[#000000] text-[#FFF] text-[10px] px-3 py-1 rounded-full font-label uppercase tracking-widest mb-4 md:mb-6 inline-block">
+<section class="relative mb-20 md:mb-32 overflow-hidden">
+  <!-- Decorative background texture -->
+  <div
+    class="absolute inset-0 pointer-events-none select-none"
+    aria-hidden="true"
+  >
+    <div
+      class="absolute top-0 left-0 w-64 h-64 opacity-[0.04] rounded-full bg-[#5E0B15] blur-3xl -translate-x-1/2 -translate-y-1/2"
+    >
+    </div>
+    <div
+      class="absolute bottom-0 right-0 w-96 h-96 opacity-[0.04] rounded-full bg-[#5E0B15] blur-3xl translate-x-1/3 translate-y-1/3"
+    >
+    </div>
+  </div>
+
+  <!-- Badge + Heading row -->
+  <div
+    class="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-6 items-end relative"
+  >
+    <!-- Left: Headline -->
+    <div class="lg:col-span-8 about-hero-heading">
+      <span
+        class="bg-[#2e0007] text-[#ffdadb] text-[10px] px-3 py-1.5 rounded-full font-label uppercase tracking-widest mb-6 inline-block letter-spacing-widest"
+      >
         Desde 2023
       </span>
-      <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[0.9] text-[#5E0B15] tracking-tighter italic font-semibold">
-        <p class="pb-2 md:pb-6 ">Hacia un nuevo enfoque</p> <span class="not-italic font-black">del Derecho del Trabajo</span>
+      <h1
+        class="text-4xl sm:text-5xl md:text-6xl lg:text-[5rem] leading-[0.9] text-[#5E0B15] tracking-tighter font-headline"
+      >
+        <span class="block italic font-semibold pb-2 md:pb-4"
+          >Hacia un nuevo enfoque</span
+        >
+        <span class="block font-black not-italic relative">
+          del Derecho del Trabajo
+          <!-- Underline accent -->
+          <span
+            class="absolute -bottom-3 left-0 w-24 h-[3px] bg-[#5E0B15] rounded-full hero-underline"
+          ></span>
+        </span>
       </h1>
     </div>
-    <!-- <div class="lg:col-span-4 pb-4">
-      <p class="font-body text-base md:text-lg text-[#564243] leading-relaxed text-right">
-        En DETRA-UNT, nos encontramos en la interseccion de la tradicion legal y la exploracion academica moderna. Nuestro compromiso con la excelencia editorial define cada publicacion y evento.
+
+    <!-- Right: Description -->
+    <div class="lg:col-span-4 pb-2 about-hero-desc">
+      <!-- Vertical divider (desktop) -->
+      <div class="hidden lg:block w-px h-16 bg-[#5E0B15]/20 mb-6 ml-2"></div>
+      <p class="font-body text-base md:text-lg text-[#564243] leading-relaxed">
+        En DETRA-UNT nos encontramos en la intersección de la tradición legal y
+        la exploración académica moderna. Nuestro compromiso con la excelencia
+        editorial define cada publicación y evento.
       </p>
-    </div> -->
+    </div>
+  </div>
+
+  <!-- Bottom decorative rule -->
+  <div class="mt-16 md:mt-20 flex items-center gap-4 about-hero-rule">
+    <div
+      class="h-px flex-1 bg-gradient-to-r from-[#5E0B15]/30 via-[#5E0B15]/10 to-transparent"
+    >
+    </div>
+    <span
+      class="font-label text-[10px] uppercase tracking-[0.2em] text-[#5E0B15]/50"
+      >DETRA · UNT · Derecho Laboral</span
+    >
+    <div class="h-px w-12 bg-[#5E0B15]/20"></div>
   </div>
 </section>
+
+<style>
+  /* Staggered reveal animations */
+  @keyframes fadeSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes expandWidth {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  .about-hero-heading {
+    animation: fadeSlideUp 0.7s ease both;
+    animation-delay: 0.1s;
+  }
+
+  .about-hero-desc {
+    animation: fadeSlideUp 0.7s ease both;
+    animation-delay: 0.3s;
+  }
+
+  .about-hero-rule {
+    animation: fadeSlideUp 0.7s ease both;
+    animation-delay: 0.5s;
+  }
+
+  .hero-underline {
+    transform-origin: left center;
+    animation: expandWidth 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: 0.6s;
+  }
+</style>

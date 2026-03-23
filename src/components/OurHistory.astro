@@ -1,34 +1,132 @@
 ---
-
+const milestones = [
+  {
+    year: "2023",
+    month: "Octubre",
+    event: "Fundación de DETRA por iniciativa estudiantil de la Facultad de Derecho, con la asesoría del Dr. Gustavo Vicuña Gonzales.",
+  },
+  {
+    year: "2024",
+    month: "Abril",
+    event: "Reconocimiento institucional formal por parte de la Facultad de Derecho de la UNT.",
+  },
+  {
+    year: "2024",
+    month: "Diciembre",
+    event: "Inscripción en Registros Públicos, obteniendo personería jurídica plena.",
+  },
+];
 ---
 
-<section class="mb-20 md:mb-32 flow-root">
-  <div class="w-full md:w-1/2 lg:w-5/12 md:float-left relative aspect-[4/3] lg:aspect-[16/10] bg-[#f0eee0] overflow-hidden rounded-xl mb-6 md:mb-4 md:mr-8 lg:mr-10">
-    <img 
-      alt="Biblioteca academica vintage con libros encuadernados en cuero"
-      class="w-full h-full object-cover grayscale opacity-80 mix-blend-multiply"
-      src="/historia.jpeg"
-    >
-    <div class="absolute inset-0 bg-gradient-to-t from-[#5E0B15]/20 to-transparent"></div>
-  </div>
-  
-  <h2 class="text-3xl md:text-4xl text-[#5E0B15] mb-6 md:mb-8 font-bold">Nuestra Historia</h2>
-  <div class="text-justify space-y-4 md:space-y-6 font-body text-[#1c1c14]/80 leading-relaxed text-base md:text-lg">
-    <p>
-      El Círculo de Estudios de Derecho del Trabajo y de la Seguridad Social de la UNT, conocido como DETRA, surgió en octubre de 2023 por iniciativa de estudiantes de la Facultad de Derecho y la asesoría del Dr. Gustavo Vicuña Gonzales.
-    </p>
-    <p>
-      Su misión fundacional es recuperar la histórica tradición laboralista de la Universidad Nacional de Trujillo, reconocida en el pasado por formar juristas especializados que forjaron los primeros congresos de Derecho del Trabajo en el Perú.
-    </p>
-    <p>
-      Esta organización se consolidó institucionalmente con el reconocimiento formal de la Facultad de Derecho en abril de 2024, alcanzando su personería jurídica mediante su inscripción en los Registros Públicos en diciembre del mismo año.
-    </p>
-    <p>
-      En la actualidad, DETRA busca revalorizar la tradición jurídico-laboral trujillana y promover la formación rigurosa en la comunidad universitaria, proyectando la construcción de una escuela de pensamiento laboralista propia en nuestro país.
-    </p>
-  </div>
-  <div class="mt-8 md:mt-10 flex items-center gap-4 text-[#5E0B15] font-bold font-label tracking-tighter text-sm md:text-base clear-none md:clear-left lg:clear-none pt-4">
-    <span class="w-8 md:w-12 h-[2px] bg-[#5E0B15]"></span>
-    <span>2 AÑOS DE TRAYECTORIA</span>
+<section class="mb-20 md:mb-32 history-section">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+
+    <!-- LEFT: Image column -->
+    <div class="relative history-image-col">
+      <!-- Offset frame decoration -->
+      <div class="absolute -top-4 -left-4 w-full h-full border border-[#5E0B15]/20 rounded-xl pointer-events-none" aria-hidden="true"></div>
+
+      <div class="relative aspect-[4/3] bg-[#f0eee0] overflow-hidden rounded-xl">
+        <img
+          alt="Biblioteca académica vintage con libros encuadernados en cuero"
+          class="w-full h-full object-cover grayscale opacity-80 mix-blend-multiply"
+          src="/historia.jpeg"
+          loading="lazy"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-[#5E0B15]/40 via-transparent to-transparent"></div>
+
+        <!-- Bottom caption inside image -->
+        <div class="absolute bottom-0 left-0 right-0 p-5">
+          <p class="font-label text-[10px] uppercase tracking-[0.2em] text-white/70">
+            Universidad Nacional de Trujillo · Facultad de Derecho
+          </p>
+        </div>
+      </div>
+
+      <!-- Stat badge -->
+      <div class="absolute -bottom-5 -right-5 bg-[#2e0007] text-white rounded-xl px-5 py-3 shadow-lg shadow-[#2e0007]/25 history-badge">
+        <p class="font-label text-[10px] uppercase tracking-widest text-[#ffdadb]/70 mb-0.5">Trayectoria</p>
+        <p class="font-headline italic text-2xl font-semibold leading-none">2 años</p>
+      </div>
+    </div>
+
+    <!-- RIGHT: Content column -->
+    <div class="history-content-col">
+      <h2 class="font-headline italic text-3xl md:text-4xl lg:text-5xl text-[#5E0B15] mb-4 leading-tight">
+        Nuestra <span class="not-italic font-black">Historia</span>
+      </h2>
+      <p class="font-body text-[#564243] text-base md:text-lg leading-relaxed mb-10 max-w-lg">
+        El Círculo de Estudios de Derecho del Trabajo y de la Seguridad Social de la UNT nace por la voluntad de recuperar una tradición jurídica laboral de excelencia.
+      </p>
+
+      <!-- Timeline -->
+      <ol class="relative pl-6 space-y-0">
+        <!-- Vertical line -->
+        <div class="absolute left-[0.4375rem] top-1.5 bottom-1.5 w-px bg-gradient-to-b from-[#5E0B15]/60 via-[#5E0B15]/30 to-transparent" aria-hidden="true"></div>
+
+        {milestones.map((m, i) => (
+          <li class="relative pb-8 last:pb-0 timeline-item" style={`animation-delay: ${0.1 + i * 0.15}s`}>
+            <!-- Dot -->
+            <div
+              class="absolute left-0 -translate-x-1/2 w-3.5 h-3.5 rounded-full border-2 border-[#5E0B15] bg-[#fcfaec] top-1"
+              aria-hidden="true"
+            ></div>
+
+            <div class="pl-4">
+              <div class="flex items-baseline gap-2 mb-1.5">
+                <span class="font-headline font-black text-[#5E0B15] text-lg leading-none">{m.year}</span>
+                <span class="font-label text-[10px] uppercase tracking-widest text-[#897172]">{m.month}</span>
+              </div>
+              <p class="font-body text-[#564243]/90 text-sm md:text-base leading-relaxed">
+                {m.event}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ol>
+
+      <!-- Mission pull-quote -->
+      <blockquote class="mt-10 pl-5 border-l-2 border-[#5E0B15]/30 history-quote">
+        <p class="font-headline italic text-base md:text-lg text-[#5E0B15]/80 leading-snug">
+          "Recuperar la histórica tradición laboralista de la UNT y proyectar una escuela de pensamiento jurídico-laboral propia."
+        </p>
+      </blockquote>
+    </div>
   </div>
 </section>
+
+<style>
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0);    }
+  }
+
+  @keyframes fadeSlideLeft {
+    from { opacity: 0; transform: translateX(-20px); }
+    to   { opacity: 1; transform: translateX(0);     }
+  }
+
+  .history-image-col {
+    animation: fadeSlideLeft 0.7s ease both;
+    animation-delay: 0.1s;
+  }
+
+  .history-content-col {
+    animation: fadeSlideUp 0.7s ease both;
+    animation-delay: 0.25s;
+  }
+
+  .timeline-item {
+    animation: fadeSlideUp 0.5s ease both;
+  }
+
+  .history-quote {
+    animation: fadeSlideUp 0.6s ease both;
+    animation-delay: 0.6s;
+  }
+
+  .history-badge {
+    animation: fadeSlideUp 0.5s ease both;
+    animation-delay: 0.4s;
+  }
+</style>

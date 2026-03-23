@@ -2,34 +2,189 @@
 
 ---
 
-<section class="mb-20 md:mb-32">
-  <div class="text-justify grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-    <!-- Mission -->
-    <div class="md:col-span-2 bg-[#f6f4e6] p-8 md:p-12 rounded-xl flex flex-col justify-between">
-      <div>
-        <h2 class="font-bold text-2xl md:text-3xl text-[#2e0007] mb-4 md:mb-6">Nuestra Misión</h2>
-        <p class="text-base md:text-xl font-body text-[#564243] max-w-2xl leading-relaxed">
-          Promover un espacio de reflexión, análisis e investigación para profundizar en el conocimiento del Derecho del Trabajo y de la Seguridad Social , formando estudiantes universitarios con una perspectiva crítica y un firme compromiso social que les permita analizar la realidad nacional y plantear alternativas de solución concretas frente a la problemática socio-laboral.
-        </p>
+<section class="mb-20 md:mb-32 mv-section">
+  <!-- Section label -->
+  <div class="flex items-center gap-3 mb-10 md:mb-14 mv-label">
+    <span class="w-8 h-px bg-[#5E0B15]/40"></span>
+    <span
+      class="font-label text-[10px] uppercase tracking-[0.2em] text-[#897172]"
+      >Identidad institucional</span
+    >
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
+    <!-- MISSION: spanning 2 cols -->
+    <div
+      class="md:col-span-2 group relative bg-[#f6f4e6] rounded-2xl overflow-hidden mv-mission-card"
+    >
+      <!-- Decorative corner accent -->
+      <div
+        class="absolute top-0 right-0 w-40 h-40 opacity-[0.06] rounded-bl-full bg-[#5E0B15] pointer-events-none"
+        aria-hidden="true"
+      >
       </div>
-      <div class="mt-8 md:mt-12">
-        <span class="material-symbols-outlined text-3xl md:text-4xl text-[#2e0007]/40">menu_book</span>
+
+      <div
+        class="relative p-8 md:p-12 flex flex-col justify-between h-full min-h-[320px] md:min-h-[380px]"
+      >
+        <div>
+          <!-- Icon + Label row -->
+          <div class="flex items-center gap-3 mb-6">
+            <div
+              class="w-9 h-9 rounded-full bg-[#2e0007]/8 flex items-center justify-center"
+            >
+              <span
+                class="material-symbols-outlined text-lg text-[#2e0007]"
+                style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;"
+                >menu_book</span
+              >
+            </div>
+            <span
+              class="font-label text-[10px] uppercase tracking-[0.2em] text-[#897172]"
+              >Misión</span
+            >
+          </div>
+
+          <h2
+            class="font-headline font-black text-2xl md:text-3xl lg:text-4xl text-[#2e0007] mb-5 leading-tight"
+          >
+            Nuestra Misión
+          </h2>
+          <p
+            class="font-body text-base md:text-lg text-[#564243] leading-relaxed max-w-xl"
+          >
+            Promover un espacio de reflexión, análisis e investigación para
+            profundizar en el conocimiento del Derecho del Trabajo y de la
+            Seguridad Social, formando estudiantes universitarios con una
+            perspectiva crítica y un firme compromiso social que les permita
+            analizar la realidad nacional y plantear alternativas de solución
+            concretas frente a la problemática socio-laboral.
+          </p>
+        </div>
+
+        <!-- Bottom feature row -->
+        <div
+          class="mt-10 pt-6 border-t border-[#5E0B15]/10 grid grid-cols-3 gap-4"
+        >
+          {
+            [
+              { label: "Investigación", icon: "science" },
+              { label: "Formación", icon: "school" },
+              { label: "Compromiso social", icon: "groups" },
+            ].map((item) => (
+              <div class="flex flex-col gap-1.5">
+                <span
+                  class="material-symbols-outlined text-base text-[#5E0B15]/50"
+                  style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;"
+                >
+                  {item.icon}
+                </span>
+                <span class="font-label text-[10px] uppercase tracking-wider text-[#564243]/70">
+                  {item.label}
+                </span>
+              </div>
+            ))
+          }
+        </div>
       </div>
     </div>
-    
-    <!-- Vision -->
-    <div class="bg-[#550015] p-8 md:p-12 rounded-xl text-white flex flex-col justify-between">
-      <div>
-        <h2 class="font-bold text-2xl md:text-3xl mb-4 md:mb-6 font-headline">Nuestra Visión</h2>
-        <p class="font-body opacity-90 leading-relaxed text-sm md:text-base">
-          Trascender como una organización académica de alcance social que logre sentar las bases de un nuevo enfoque crítico del Derecho del Trabajo , impulsando la transformación del orden jurídico laboral hacia un modelo verdaderamente útil que atienda las necesidades de la clase trabajadora y contribuya al progreso material y al bienestar colectivo de la sociedad peruana.
-        </p>
+
+    <!-- VISION: single col -->
+    <div
+      class="group relative bg-[#550015] rounded-2xl overflow-hidden mv-vision-card"
+    >
+      <!-- Decorative radial glow -->
+      <div
+        class="absolute -bottom-12 -right-12 w-48 h-48 rounded-full bg-[#ffdadb]/10 blur-2xl pointer-events-none"
+        aria-hidden="true"
+      >
       </div>
-      <div class="mt-8 md:mt-12 flex justify-end">
-        <span class="material-symbols-outlined text-3xl md:text-4xl text-white/40" style="font-variation-settings: 'FILL' 1;">
-          visibility
-        </span>
+
+      <div
+        class="relative p-8 md:p-10 flex flex-col justify-between h-full min-h-[320px]"
+      >
+        <div>
+          <!-- Icon + Label row -->
+          <div class="flex items-center gap-3 mb-6">
+            <div
+              class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center"
+            >
+              <span
+                class="material-symbols-outlined text-lg text-[#ffdadb]"
+                style="font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24;"
+                >visibility</span
+              >
+            </div>
+            <span
+              class="font-label text-[10px] uppercase tracking-[0.2em] text-[#ffdadb]/60"
+              >Visión</span
+            >
+          </div>
+
+          <h2
+            class="font-headline font-black text-2xl md:text-3xl text-white mb-5 leading-tight"
+          >
+            Nuestra Visión
+          </h2>
+          <p
+            class="font-body text-sm md:text-base text-[#ffdadb]/80 leading-relaxed"
+          >
+            Trascender como una organización académica de alcance social que
+            logre sentar las bases de un nuevo enfoque crítico del Derecho del
+            Trabajo, impulsando la transformación del orden jurídico laboral
+            hacia un modelo verdaderamente útil que atienda las necesidades de
+            la clase trabajadora y contribuya al progreso material y al
+            bienestar colectivo de la sociedad peruana.
+          </p>
+        </div>
+
+        <!-- Decorative bottom label -->
+        <div class="mt-10 flex items-center gap-2">
+          <div class="w-6 h-px bg-[#ffdadb]/30"></div>
+          <span
+            class="font-label text-[10px] uppercase tracking-widest text-[#ffdadb]/40"
+            >DETRA · UNT</span
+          >
+        </div>
       </div>
     </div>
   </div>
 </section>
+
+<style>
+  @keyframes fadeSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .mv-label {
+    animation: fadeSlideUp 0.6s ease both;
+    animation-delay: 0.05s;
+  }
+
+  .mv-mission-card {
+    animation: fadeSlideUp 0.65s ease both;
+    animation-delay: 0.15s;
+    transition: box-shadow 0.3s ease;
+  }
+
+  .mv-mission-card:hover {
+    box-shadow: 0 8px 40px -8px rgba(94, 11, 21, 0.15);
+  }
+
+  .mv-vision-card {
+    animation: fadeSlideUp 0.65s ease both;
+    animation-delay: 0.3s;
+    transition: box-shadow 0.3s ease;
+  }
+
+  .mv-vision-card:hover {
+    box-shadow: 0 8px 40px -8px rgba(94, 11, 21, 0.4);
+  }
+</style>
