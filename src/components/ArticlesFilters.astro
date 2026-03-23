@@ -15,101 +15,228 @@ const articleTypes = Object.entries(ARTICLE_TYPES).map(([label, slug]) => ({
 }));
 ---
 
-<section class:list={['bg-surface-container-low py-8 md:py-10', className]}>
-  <div class="max-w-7xl mx-auto px-6 md:px-8">
-    <form id="articles-filter-form" class="flex flex-col lg:flex-row gap-4 lg:gap-6 lg:items-end">
+<style>
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .filter-container {
+    animation: slideDown 0.6s ease-out;
+  }
+
+  .filter-input {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+  }
+
+  .filter-input:focus {
+    transform: translateY(-1px);
+  }
+
+  .filter-input::placeholder {
+    transition: opacity 0.3s ease;
+  }
+
+  .filter-input:focus::placeholder {
+    opacity: 0.4;
+  }
+
+  .filter-tag {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  .glass-effect {
+    background: rgba(252, 250, 236, 0.95);
+    backdrop-filter: blur(10px);
+  }
+
+  .search-icon-wrapper {
+    transition: all 0.3s ease;
+  }
+
+  .filter-input:focus ~ .search-icon-wrapper {
+    color: #5E0B15;
+    transform: scale(1.1);
+  }
+
+  .button-ripple {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .button-ripple::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.5s, height 0.5s;
+  }
+
+  .button-ripple:hover::before {
+    width: 200px;
+    height: 200px;
+  }
+
+  .select-wrapper::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #5E0B15, transparent);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+
+  .select-wrapper:focus-within::after {
+    transform: scaleX(1);
+  }
+</style>
+
+<section class:list={['relative py-8 md:py-12 overflow-hidden', className]}>
+  <!-- Background decorativo -->
+  <div class="absolute inset-0 bg-[#fcfaec] opacity-60"></div>
+  <div class="absolute inset-0 opacity-[0.02]" 
+       style="background-image: url('data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E');"></div>
+  
+  <!-- Líneas decorativas -->
+  <div class="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-[#5E0B15]/10 to-transparent hidden lg:block"></div>
+  <div class="absolute top-0 right-1/4 w-px h-full bg-gradient-to-b from-transparent via-[#5E0B15]/10 to-transparent hidden lg:block"></div>
+
+  <div class="relative max-w-7xl mx-auto px-6 md:px-8">
+    <!-- Header del filtro -->
+    <div class="mb-6 md:mb-8">
+      <h2 class="text-xl md:text-2xl font-headline font-bold text-[#5E0B15] flex items-center gap-3">
+        <span class="material-symbols-outlined text-2xl md:text-3xl">tune</span>
+        Filtrar publicaciones
+      </h2>
+      <p class="mt-2 text-sm text-[#1c1c14]/60 font-body">Encuentra artículos por título, autor, fecha o tipo</p>
+    </div>
+
+    <form id="articles-filter-form" class="filter-container glass-effect rounded-2xl p-6 md:p-8 shadow-2xl shadow-[#5E0B15]/5 border border-[#5E0B15]/10">
+      <div class="flex flex-col lg:flex-row gap-6 lg:gap-8 lg:items-end">
       
-      <!-- Buscador por título o autor -->
-      <div class="flex-grow lg:max-w-md">
-        <label for="search" class="block font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant mb-2">
-          Buscar artículo
-        </label>
-        <div class="relative">
-          <input
-            type="text"
-            id="search"
-            name="search"
-            placeholder="Título o nombre del autor..."
-            class="w-full bg-white border border-outline-variant/30 rounded-lg py-3 pl-4 pr-12 font-body text-sm text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-          />
-          <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">
-            search
-          </span>
-        </div>
-      </div>
-      
-      <!-- Filtro por fechas -->
-      <div class="flex gap-3 flex-wrap sm:flex-nowrap">
-        <div class="flex-1 min-w-[140px]">
-          <label for="date-from" class="block font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant mb-2">
-            Desde
+        <!-- Buscador por título o autor -->
+        <div class="flex-grow lg:max-w-md group">
+          <label for="search" class="block font-label text-xs font-bold uppercase tracking-[0.15em] text-[#5E0B15]/70 mb-3 flex items-center gap-2">
+            <span class="w-1 h-4 bg-[#5E0B15] rounded-full"></span>
+            Buscar artículo
           </label>
-          <input
-            type="date"
-            id="date-from"
-            name="dateFrom"
-            class="w-full bg-white border border-outline-variant/30 rounded-lg py-3 px-4 font-body text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-          />
+          <div class="relative">
+            <input
+              type="text"
+              id="search"
+              name="search"
+              placeholder="Título o nombre del autor..."
+              class="filter-input w-full bg-white border-2 border-[#5E0B15]/20 rounded-xl py-3.5 pl-5 pr-12 font-body text-sm text-[#1c1c14] placeholder:text-[#1c1c14]/40 focus:outline-none focus:ring-2 focus:ring-[#5E0B15]/30 focus:border-[#5E0B15]/50 shadow-sm hover:border-[#5E0B15]/30"
+            />
+            <span class="search-icon-wrapper material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-[#5E0B15]/40 pointer-events-none">
+              search
+            </span>
+          </div>
         </div>
-        <div class="flex-1 min-w-[140px]">
-          <label for="date-to" class="block font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant mb-2">
-            Hasta
-          </label>
-          <input
-            type="date"
-            id="date-to"
-            name="dateTo"
-            class="w-full bg-white border border-outline-variant/30 rounded-lg py-3 px-4 font-body text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-          />
-        </div>
-      </div>
       
-      <!-- Lista desplegable tipo de artículo -->
-      <div class="min-w-[200px]">
-        <label for="article-type" class="block font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant mb-2">
-          Tipo de artículo
-        </label>
-        <div class="relative">
-          <select
-            id="article-type"
-            name="articleType"
-            class="w-full appearance-none bg-white border border-outline-variant/30 rounded-lg py-3 pl-4 pr-10 font-body text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all cursor-pointer"
+        <!-- Filtro por fechas -->
+        <div class="flex gap-4 flex-wrap sm:flex-nowrap">
+          <div class="flex-1 min-w-[140px]">
+            <label for="date-from" class="block font-label text-xs font-bold uppercase tracking-[0.15em] text-[#5E0B15]/70 mb-3 flex items-center gap-2">
+              <span class="w-1 h-4 bg-[#5E0B15] rounded-full"></span>
+              Desde
+            </label>
+            <input
+              type="date"
+              id="date-from"
+              name="dateFrom"
+              class="filter-input w-full bg-white border-2 border-[#5E0B15]/20 rounded-xl py-3.5 px-4 font-body text-sm text-[#1c1c14] focus:outline-none focus:ring-2 focus:ring-[#5E0B15]/30 focus:border-[#5E0B15]/50 shadow-sm hover:border-[#5E0B15]/30 cursor-pointer"
+            />
+          </div>
+          <div class="flex-1 min-w-[140px]">
+            <label for="date-to" class="block font-label text-xs font-bold uppercase tracking-[0.15em] text-[#5E0B15]/70 mb-3 flex items-center gap-2">
+              <span class="w-1 h-4 bg-[#5E0B15] rounded-full"></span>
+              Hasta
+            </label>
+            <input
+              type="date"
+              id="date-to"
+              name="dateTo"
+              class="filter-input w-full bg-white border-2 border-[#5E0B15]/20 rounded-xl py-3.5 px-4 font-body text-sm text-[#1c1c14] focus:outline-none focus:ring-2 focus:ring-[#5E0B15]/30 focus:border-[#5E0B15]/50 shadow-sm hover:border-[#5E0B15]/30 cursor-pointer"
+            />
+          </div>
+        </div>
+      
+        <!-- Lista desplegable tipo de artículo -->
+        <div class="min-w-[200px]">
+          <label for="article-type" class="block font-label text-xs font-bold uppercase tracking-[0.15em] text-[#5E0B15]/70 mb-3 flex items-center gap-2">
+            <span class="w-1 h-4 bg-[#5E0B15] rounded-full"></span>
+            Tipo de artículo
+          </label>
+          <div class="relative select-wrapper">
+            <select
+              id="article-type"
+              name="articleType"
+              class="filter-input w-full appearance-none bg-white border-2 border-[#5E0B15]/20 rounded-xl py-3.5 pl-5 pr-11 font-body text-sm text-[#1c1c14] focus:outline-none focus:ring-2 focus:ring-[#5E0B15]/30 focus:border-[#5E0B15]/50 shadow-sm hover:border-[#5E0B15]/30 cursor-pointer"
+            >
+              <option value="">Todos los artículos</option>
+              {articleTypes.map(({ label, slug }) => (
+                <option value={slug}>{label}</option>
+              ))}
+            </select>
+            <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-[#5E0B15]/40 pointer-events-none transition-transform duration-300">
+              expand_more
+            </span>
+          </div>
+        </div>
+      
+        <!-- Botones de acción -->
+        <div class="flex gap-3 lg:gap-4">
+          <button
+            type="submit"
+            class="button-ripple flex items-center justify-center gap-2 bg-[#5E0B15] text-white px-7 py-3.5 rounded-xl font-label font-bold text-sm hover:bg-[#7a0e1c] transition-all duration-300 shadow-lg shadow-[#5E0B15]/20 hover:shadow-xl hover:shadow-[#5E0B15]/30 hover:-translate-y-0.5 group"
           >
-            <option value="">Todos los artículos</option>
-            {articleTypes.map(({ label, slug }) => (
-              <option value={slug}>{label}</option>
-            ))}
-          </select>
-          <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">
-            expand_more
-          </span>
+            <span class="material-symbols-outlined text-lg group-hover:scale-110 transition-transform duration-300">filter_alt</span>
+            <span class="relative">Filtrar</span>
+          </button>
+          <button
+            type="reset"
+            id="clear-filters"
+            class="flex items-center justify-center gap-2 bg-white border-2 border-[#5E0B15]/20 text-[#5E0B15] px-6 py-3.5 rounded-xl font-label font-semibold text-sm hover:bg-[#fcfaec] hover:border-[#5E0B15]/40 transition-all duration-300 shadow-sm hover:shadow-md group"
+          >
+            <span class="material-symbols-outlined text-lg group-hover:rotate-90 transition-transform duration-300">clear</span>
+            Limpiar
+          </button>
         </div>
-      </div>
-      
-      <!-- Botones de acción -->
-      <div class="flex gap-3">
-        <button
-          type="submit"
-          class="flex items-center justify-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-lg font-label font-semibold text-sm hover:bg-primary-container hover:text-on-primary-container transition-colors"
-        >
-          <span class="material-symbols-outlined text-lg">filter_alt</span>
-          Filtrar
-        </button>
-        <button
-          type="reset"
-          id="clear-filters"
-          class="flex items-center justify-center gap-2 bg-surface-container text-on-surface px-4 py-3 rounded-lg font-label text-sm hover:bg-surface-container-high transition-colors"
-        >
-          <span class="material-symbols-outlined text-lg">clear</span>
-          Limpiar
-        </button>
       </div>
     </form>
     
     <!-- Indicador de filtros activos -->
-    <div id="active-filters" class="hidden mt-4 pt-4 border-t border-outline-variant/20">
-      <div class="flex flex-wrap items-center gap-2">
-        <span class="font-label text-xs text-on-surface-variant">Filtros activos:</span>
+    <div id="active-filters" class="hidden mt-6 glass-effect rounded-xl p-4 md:p-5 border border-[#5E0B15]/10 shadow-lg">
+      <div class="flex flex-wrap items-center gap-3">
+        <span class="font-label text-xs font-bold uppercase tracking-wider text-[#5E0B15]/70 flex items-center gap-2">
+          <span class="material-symbols-outlined text-sm">label</span>
+          Filtros activos:
+        </span>
         <div id="filter-tags" class="flex flex-wrap gap-2">
           <!-- Los tags se agregan dinámicamente -->
         </div>
@@ -196,7 +323,7 @@ const articleTypes = Object.entries(ARTICLE_TYPES).map(([label, slug]) => ({
         hasFilters = true;
         
         const tag = document.createElement('span');
-        tag.className = 'inline-flex items-center gap-1 bg-primary-fixed text-on-primary-fixed px-2 py-1 rounded text-xs font-label';
+        tag.className = 'filter-tag inline-flex items-center gap-2 bg-[#5E0B15] text-white px-3 py-1.5 rounded-lg text-xs font-label font-semibold shadow-sm hover:shadow-md transition-shadow';
         
         let label = '';
         switch (key) {
@@ -214,7 +341,7 @@ const articleTypes = Object.entries(ARTICLE_TYPES).map(([label, slug]) => ({
             break;
         }
         
-        tag.innerHTML = `${label} <button type="button" data-remove="${key}" class="hover:text-primary"><span class="material-symbols-outlined text-sm">close</span></button>`;
+        tag.innerHTML = `${label} <button type="button" data-remove="${key}" class="hover:bg-white/20 rounded-full p-0.5 transition-colors"><span class="material-symbols-outlined text-sm">close</span></button>`;
         filterTagsDiv.appendChild(tag);
       });
       
