@@ -58,6 +58,14 @@ export interface Article {
   };
 }
 
+// Junta Directiva
+export interface JuntaDirectiva {
+  description: string;
+  managmentYear: number;
+  juntaActiva: boolean;
+  fotoGeneral: ContentfulAsset;
+}
+
 export interface ArticlePreview {
   sys: { id: string };
   title: string;
@@ -417,4 +425,43 @@ export function getAuthorInitials(fullName: string): string {
     .slice(0, 2)
     .join('')
     .toUpperCase();
+}
+
+// Obtener la junta directiva activa
+interface JuntaDirectivaResponse {
+  juntaDirectivaCollection: {
+    items: JuntaDirectiva[];
+  };
+}
+
+export async function getActiveJuntaDirectiva(): Promise<JuntaDirectiva | null> {
+  const query = `
+    query {
+      juntaDirectivaCollection(
+        limit: 1
+        where: { juntaActiva: true }
+      ) {
+        items {
+          description
+          managmentYear
+          juntaActiva
+          fotoGeneral {
+            url
+            title
+            description
+            width
+            height
+          }
+        }
+      }
+    }
+  `;
+
+  try {
+    const data = await fetchGraphQL<JuntaDirectivaResponse>(query);
+    return data.juntaDirectivaCollection.items[0] || null;
+  } catch (e) {
+    console.error('Error fetching junta directiva:', e);
+    return null;
+  }
 }
