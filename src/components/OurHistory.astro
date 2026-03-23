@@ -22,7 +22,7 @@ const milestones = [
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
 
     <!-- LEFT: Image column -->
-    <div class="relative history-image-col">
+    <div class="relative history-image-col" data-scroll-reveal data-reveal-delay="0">
       <!-- Offset frame decoration -->
       <div class="absolute -top-4 -left-4 w-full h-full border border-[#5E0B15]/20 rounded-xl pointer-events-none" aria-hidden="true"></div>
 
@@ -44,14 +44,14 @@ const milestones = [
       </div>
 
       <!-- Stat badge -->
-      <div class="absolute -bottom-5 -right-5 bg-[#2e0007] text-white rounded-xl px-5 py-3 shadow-lg shadow-[#2e0007]/25 history-badge">
+      <div class="absolute -bottom-5 -right-5 bg-[#2e0007] text-white rounded-xl px-5 py-3 shadow-lg shadow-[#2e0007]/25 history-badge" data-scroll-reveal data-reveal-delay="250">
         <p class="font-label text-[10px] uppercase tracking-widest text-[#ffdadb]/70 mb-0.5">Trayectoria</p>
         <p class="font-headline italic text-2xl font-semibold leading-none">2 años</p>
       </div>
     </div>
 
     <!-- RIGHT: Content column -->
-    <div class="history-content-col">
+    <div class="history-content-col" data-scroll-reveal data-reveal-delay="100">
       <h2 class="font-headline italic text-3xl md:text-4xl lg:text-5xl text-[#5E0B15] mb-4 leading-tight">
         Nuestra <span class="not-italic font-black">Historia</span>
       </h2>
@@ -65,7 +65,7 @@ const milestones = [
         <div class="absolute left-[0.4375rem] top-1.5 bottom-1.5 w-px bg-gradient-to-b from-[#5E0B15]/60 via-[#5E0B15]/30 to-transparent" aria-hidden="true"></div>
 
         {milestones.map((m, i) => (
-          <li class="relative pb-8 last:pb-0 timeline-item" style={`animation-delay: ${0.1 + i * 0.15}s`}>
+          <li class="relative pb-8 last:pb-0 timeline-item" data-scroll-reveal data-reveal-delay={200 + i * 120}>
             <!-- Dot -->
             <div
               class="absolute left-0 -translate-x-1/2 w-3.5 h-3.5 rounded-full border-2 border-[#5E0B15] bg-[#fcfaec] top-1"
@@ -86,7 +86,7 @@ const milestones = [
       </ol>
 
       <!-- Mission pull-quote -->
-      <blockquote class="mt-10 pl-5 border-l-2 border-[#5E0B15]/30 history-quote">
+      <blockquote class="mt-10 pl-5 border-l-2 border-[#5E0B15]/30 history-quote" data-scroll-reveal data-reveal-delay="560">
         <p class="font-headline italic text-base md:text-lg text-[#5E0B15]/80 leading-snug">
           "Recuperar la histórica tradición laboralista de la UNT y proyectar una escuela de pensamiento jurídico-laboral propia."
         </p>
@@ -107,26 +107,22 @@ const milestones = [
   }
 
   .history-image-col {
-    animation: fadeSlideLeft 0.7s ease both;
-    animation-delay: 0.1s;
+    animation: fadeSlideLeft 0.7s ease;
   }
 
   .history-content-col {
-    animation: fadeSlideUp 0.7s ease both;
-    animation-delay: 0.25s;
+    animation: fadeSlideUp 0.7s ease;
   }
 
   .timeline-item {
-    animation: fadeSlideUp 0.5s ease both;
+    animation: fadeSlideUp 0.5s ease;
   }
 
   .history-quote {
-    animation: fadeSlideUp 0.6s ease both;
-    animation-delay: 0.6s;
+    animation: fadeSlideUp 0.6s ease;
   }
 
   .history-badge {
-    animation: fadeSlideUp 0.5s ease both;
-    animation-delay: 0.4s;
+    animation: fadeSlideUp 0.5s ease;
   }
 </style>

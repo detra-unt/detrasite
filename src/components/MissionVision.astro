@@ -4,7 +4,7 @@
 
 <section class="mb-20 md:mb-32 mv-section">
   <!-- Section label -->
-  <div class="flex items-center gap-3 mb-10 md:mb-14 mv-label">
+  <div class="flex items-center gap-3 mb-10 md:mb-14 mv-label" data-scroll-reveal data-reveal-delay="0">
     <span class="w-8 h-px bg-[#5E0B15]/40"></span>
     <span
       class="font-label text-[10px] uppercase tracking-[0.2em] text-[#897172]"
@@ -16,6 +16,7 @@
     <!-- MISSION: spanning 2 cols -->
     <div
       class="md:col-span-2 group relative bg-[#f6f4e6] rounded-2xl overflow-hidden mv-mission-card"
+      data-scroll-reveal data-reveal-delay="80"
     >
       <!-- Decorative corner accent -->
       <div
@@ -92,6 +93,7 @@
     <!-- VISION: single col -->
     <div
       class="group relative bg-[#550015] rounded-2xl overflow-hidden mv-vision-card"
+      data-scroll-reveal data-reveal-delay="200"
     >
       <!-- Decorative radial glow -->
       <div
@@ -164,13 +166,11 @@
   }
 
   .mv-label {
-    animation: fadeSlideUp 0.6s ease both;
-    animation-delay: 0.05s;
+    animation: fadeSlideUp 0.6s ease;
   }
 
   .mv-mission-card {
-    animation: fadeSlideUp 0.65s ease both;
-    animation-delay: 0.15s;
+    animation: fadeSlideUp 0.65s ease;
     transition: box-shadow 0.3s ease;
   }
 
@@ -179,8 +179,7 @@
   }
 
   .mv-vision-card {
-    animation: fadeSlideUp 0.65s ease both;
-    animation-delay: 0.3s;
+    animation: fadeSlideUp 0.65s ease;
     transition: box-shadow 0.3s ease;
   }
 

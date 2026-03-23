@@ -23,7 +23,7 @@
     class="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-6 items-end relative"
   >
     <!-- Left: Headline -->
-    <div class="lg:col-span-8 about-hero-heading">
+    <div class="lg:col-span-8 about-hero-heading" data-scroll-reveal data-reveal-delay="0">
       <span
         class="bg-[#2e0007] text-[#ffdadb] text-[10px] px-3 py-1.5 rounded-full font-label uppercase tracking-widest mb-6 inline-block letter-spacing-widest"
       >
@@ -46,7 +46,7 @@
     </div>
 
     <!-- Right: Description -->
-    <div class="lg:col-span-4 pb-2 about-hero-desc">
+    <div class="lg:col-span-4 pb-2 about-hero-desc" data-scroll-reveal data-reveal-delay="150">
       <!-- Vertical divider (desktop) -->
       <div class="hidden lg:block w-px h-16 bg-[#5E0B15]/20 mb-6 ml-2"></div>
       <p class="font-body text-base md:text-lg text-[#564243] leading-relaxed">
@@ -58,7 +58,7 @@
   </div>
 
   <!-- Bottom decorative rule -->
-  <div class="mt-16 md:mt-20 flex items-center gap-4 about-hero-rule">
+  <div class="mt-16 md:mt-20 flex items-center gap-4 about-hero-rule" data-scroll-reveal data-reveal-delay="300">
     <div
       class="h-px flex-1 bg-gradient-to-r from-[#5E0B15]/30 via-[#5E0B15]/10 to-transparent"
     >
@@ -94,23 +94,22 @@
   }
 
   .about-hero-heading {
-    animation: fadeSlideUp 0.7s ease both;
-    animation-delay: 0.1s;
+    animation: fadeSlideUp 0.7s ease;
   }
 
   .about-hero-desc {
-    animation: fadeSlideUp 0.7s ease both;
-    animation-delay: 0.3s;
+    animation: fadeSlideUp 0.7s ease;
+    animation-delay: 0.15s;
   }
 
   .about-hero-rule {
-    animation: fadeSlideUp 0.7s ease both;
-    animation-delay: 0.5s;
+    animation: fadeSlideUp 0.7s ease;
+    animation-delay: 0.1s;
   }
 
   .hero-underline {
     transform-origin: left center;
-    animation: expandWidth 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
-    animation-delay: 0.6s;
+    animation: expandWidth 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    animation-delay: 0.35s;
   }
 </style>

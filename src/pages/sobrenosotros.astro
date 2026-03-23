@@ -14,3 +14,54 @@ import TeamSection from '../components/TeamSection.astro';
     <TeamSection />
   </div>
 </Layout>
+
+<!--
+  Scroll-reveal: progressive enhancement.
+  - Elements with [data-scroll-reveal] are VISIBLE by default (no hidden state in CSS).
+  - JS adds class 'will-reveal' to prepare the animation (paused at frame 0).
+  - IntersectionObserver adds 'revealed' to play the animation when in viewport.
+  - If JS never runs → elements remain fully visible. Zero blank-content risk.
+  - Uses astro:page-load to work with Astro View Transitions (ClientRouter).
+-->
+<style is:global>
+  /* Only active when JS has run (class added programmatically) */
+  [data-scroll-reveal].will-reveal {
+    animation-play-state: paused;
+    animation-fill-mode: both;
+  }
+
+  [data-scroll-reveal].will-reveal.revealed {
+    animation-play-state: running;
+  }
+</style>
+
+<script is:inline>
+  function initScrollReveal() {
+    const els = document.querySelectorAll('[data-scroll-reveal]');
+    if (!els.length) return;
+
+    // Mark elements as "ready to animate" — paused at frame 0
+    els.forEach((el) => el.classList.add('will-reveal'));
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const el = entry.target;
+            const delay = parseInt(el.dataset.revealDelay ?? '0', 10);
+            setTimeout(() => el.classList.add('revealed'), delay);
+            observer.unobserve(el);
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+
+    els.forEach((el) => observer.observe(el));
+  }
+
+  // Run on initial load
+  document.addEventListener('DOMContentLoaded', initScrollReveal);
+  // Re-run after Astro View Transitions navigation
+  document.addEventListener('astro:page-load', initScrollReveal);
+</script>
