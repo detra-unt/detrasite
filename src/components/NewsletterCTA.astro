@@ -1,93 +1,1115 @@
 ---
-// src/components/ContactCTA.astro - Formulario de contacto
+// src/components/NewsletterCTA.astro - Formulario de contacto con EmailJS
+const SUBJECTS = [
+  "Consulta general",
+  "Propuesta de colaboración",
+  "Información sobre la revista",
+  "Proceso de admisión",
+  "Otro",
+];
 ---
 
-<section id="contacto" class="py-16 md:py-24 bg-[#5E0B15] text-white overflow-hidden relative">
-  <div class="absolute top-0 right-0 w-1/3 h-full opacity-10 hidden md:block">
-    <span class="material-symbols-outlined text-[300px] lg:text-[400px] -mr-32 -mt-16" style="font-variation-settings: 'FILL' 1;">
-      mail
-    </span>
+<section id="contacto" class="contact-section">
+  <!-- ── Decorative background elements ── -->
+  <div class="contact-bg-number" aria-hidden="true">DEL</div>
+  <div class="contact-bg-lines" aria-hidden="true">
+    {
+      Array.from({ length: 7 }).map((_, i) => (
+        <span class="contact-bg-line" style={`animation-delay: ${i * 0.18}s`} />
+      ))
+    }
   </div>
 
-  <div class="max-w-5xl mx-auto px-6 md:px-8 relative z-10">
-    <div class="grid md:grid-cols-2 gap-12 items-center">
-
-      <div class="text-center md:text-left">
-        <h2 class="text-3xl md:text-4xl lg:text-5xl font-headline font-bold mb-6">
-          Contáctanos
-        </h2>
-        <p class="text-lg md:text-xl font-body text-[#ffb2b7] mb-8 leading-relaxed">
-          ¿Tienes alguna consulta, propuesta o deseas colaborar con nosotros? Escríbenos y te responderemos a la brevedad.
+  <div class="max-w-6xl mx-auto px-6 md:px-10 relative z-10">
+    <div class="contact-grid">
+      <!-- ── Left: Info ── -->
+      <div class="contact-info">
+        <p class="contact-eyebrow">
+          <span class="contact-eyebrow__line"></span>
+          Escríbenos
         </p>
-        <div class="space-y-4 text-[#ffdadb]">
-          <div class="flex items-center gap-3 justify-center md:justify-start">
-            <span class="material-symbols-outlined text-2xl">location_on</span>
-            <span class="font-body">Trujillo, La Libertad - Perú</span>
-          </div>
-          <div class="flex items-center gap-3 justify-center md:justify-start">
-            <span class="material-symbols-outlined text-2xl">school</span>
-            <span class="font-body">Universidad Nacional de Trujillo</span>
-          </div>
-        </div>
+        <h2 class="contact-headline">
+          ¿Tienes algo<br />
+          <em>que decirnos?</em>
+        </h2>
+        <p class="contact-description">
+          Consultas, propuestas de colaboración o simplemente compartir tu
+          entusiasmo por el Derecho. Estamos aquí.
+        </p>
+        <ul class="contact-details">
+          <li class="contact-detail">
+            <span
+              class="contact-detail__icon material-symbols-outlined"
+              style="font-variation-settings:'FILL' 1">location_on</span
+            >
+            <span>Trujillo, La Libertad — Perú</span>
+          </li>
+          <li class="contact-detail">
+            <span
+              class="contact-detail__icon material-symbols-outlined"
+              style="font-variation-settings:'FILL' 1">school</span
+            >
+            <span>Universidad Nacional de Trujillo</span>
+          </li>
+        </ul>
       </div>
 
-      <div class="bg-[#40000e] rounded-2xl p-6 md:p-8 shadow-xl shadow-black/20">
-        <form class="space-y-4" action="#" method="POST">
-          <div>
-            <label for="nombre" class="block text-sm font-label text-[#ffb2b7] mb-2">Nombre completo</label>
-            <input
-              id="nombre"
-              type="text"
-              placeholder="Ingresa tu nombre"
-              class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder:text-white/40 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-[#ffdadb] transition-all font-body"
-              required
-            />
+      <!-- ── Right: Form card ── -->
+      <div class="contact-card">
+        <!-- Success state -->
+        <div
+          id="success-message"
+          class="contact-success"
+          aria-live="polite"
+          hidden
+        >
+          <span
+            class="contact-success__icon material-symbols-outlined"
+            style="font-variation-settings:'FILL' 1">check_circle</span
+          >
+          <h3 class="contact-success__title">¡Mensaje enviado!</h3>
+          <p class="contact-success__body">
+            Nos pondremos en contacto contigo a la brevedad.
+          </p>
+          <button
+            id="send-another"
+            class="contact-success__reset"
+            type="button"
+          >
+            Enviar otro mensaje
+          </button>
+        </div>
+
+        <!-- Error banner -->
+        <div id="error-message" class="contact-error" role="alert" hidden>
+          <span class="material-symbols-outlined text-base shrink-0">error</span
+          >
+          <p class="text-sm font-body">
+            Hubo un error al enviar. Por favor inténtalo de nuevo.
+          </p>
+        </div>
+
+        <!-- Form -->
+        <form
+          id="contact-form"
+          class="contact-form"
+          novalidate
+          aria-label="Formulario de contacto"
+        >
+          <!-- Name + Email row -->
+          <div class="contact-form__row">
+            <!-- Name -->
+            <div class="contact-field" id="field-nombre">
+              <label for="nombre" class="contact-field__label"
+                >Nombre completo</label
+              >
+              <input
+                id="nombre"
+                name="from_name"
+                type="text"
+                placeholder="Tu nombre"
+                autocomplete="name"
+                class="contact-field__input"
+                aria-describedby="error-nombre"
+                minlength="2"
+                required
+              />
+              <span class="contact-field__bar" aria-hidden="true"></span>
+              <span id="error-nombre" class="contact-field__error" role="alert"
+              ></span>
+            </div>
+            <!-- Email -->
+            <div class="contact-field" id="field-email">
+              <label for="email" class="contact-field__label"
+                >Correo electrónico</label
+              >
+              <input
+                id="email"
+                name="from_email"
+                type="email"
+                placeholder="ejemplo@correo.com"
+                autocomplete="email"
+                class="contact-field__input"
+                aria-describedby="error-email"
+                required
+              />
+              <span class="contact-field__bar" aria-hidden="true"></span>
+              <span id="error-email" class="contact-field__error" role="alert"
+              ></span>
+            </div>
           </div>
-          <div>
-            <label for="email" class="block text-sm font-label text-[#ffb2b7] mb-2">Correo electrónico</label>
-            <input
-              id="email"
-              type="email"
-              placeholder="ejemplo@correo.com"
-              class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder:text-white/40 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-[#ffdadb] transition-all font-body"
-              required
-            />
-          </div>
-          <div>
-            <label for="asunto" class="block text-sm font-label text-[#ffb2b7] mb-2">Asunto</label>
-            <select
-              id="asunto"
-              class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-[#ffdadb] transition-all font-body appearance-none cursor-pointer"
-              required
+
+          <!-- Custom Subject Dropdown -->
+          <div class="contact-field" id="field-asunto">
+            <label id="asunto-label" class="contact-field__label">Asunto</label>
+            <!-- Hidden input that EmailJS reads -->
+            <input type="hidden" id="asunto-value" name="subject" />
+            <!-- Custom trigger -->
+            <button
+              type="button"
+              id="asunto-trigger"
+              class="contact-field__input cselect-trigger"
+              aria-haspopup="listbox"
+              aria-expanded="false"
+              aria-labelledby="asunto-label"
+              aria-describedby="error-asunto"
             >
-              <option value="" class="bg-[#40000e]">Selecciona un asunto</option>
-              <option value="consulta" class="bg-[#40000e]">Consulta general</option>
-              <option value="colaboracion" class="bg-[#40000e]">Propuesta de colaboración</option>
-              <option value="revista" class="bg-[#40000e]">Información sobre la revista</option>
-              <option value="admision" class="bg-[#40000e]">Proceso de admisión</option>
-              <option value="otro" class="bg-[#40000e]">Otro</option>
-            </select>
+              <span id="asunto-display" class="cselect-trigger__text"
+                >Selecciona un asunto</span
+              >
+              <svg
+                class="cselect-trigger__chevron"
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <!-- Dropdown panel -->
+            <ul
+              id="asunto-listbox"
+              class="cselect-list"
+              role="listbox"
+              aria-labelledby="asunto-label"
+              aria-hidden="true"
+            >
+              {
+                SUBJECTS.map((s, i) => (
+                  <li
+                    class="cselect-option"
+                    role="option"
+                    aria-selected="false"
+                    data-value={s}
+                    id={`asunto-opt-${i}`}
+                    tabindex="-1"
+                  >
+                    <span
+                      class="cselect-option__check material-symbols-outlined"
+                      aria-hidden="true"
+                    >
+                      check
+                    </span>
+                    {s}
+                  </li>
+                ))
+              }
+            </ul>
+            <span class="contact-field__bar" aria-hidden="true"></span>
+            <span id="error-asunto" class="contact-field__error" role="alert"
+            ></span>
           </div>
-          <div>
-            <label for="mensaje" class="block text-sm font-label text-[#ffb2b7] mb-2">Mensaje</label>
+
+          <!-- Message -->
+          <div class="contact-field" id="field-mensaje">
+            <label for="mensaje" class="contact-field__label">Mensaje</label>
             <textarea
               id="mensaje"
-              placeholder="Escribe tu mensaje aquí..."
+              name="message"
+              placeholder="Escribe tu mensaje aquí…"
               rows="4"
-              class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder:text-white/40 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-[#ffdadb] transition-all font-body resize-none"
-              required
-            ></textarea>
+              class="contact-field__input contact-field__textarea"
+              aria-describedby="error-mensaje"
+              minlength="10"
+              required></textarea>
+            <span class="contact-field__bar" aria-hidden="true"></span>
+            <span id="error-mensaje" class="contact-field__error" role="alert"
+            ></span>
           </div>
-          <button
-            type="submit"
-            class="w-full cursor-pointer bg-[#ffdadb] text-[#40000e] px-8 py-4 rounded-lg font-label font-bold text-lg hover:bg-white transition-all flex items-center justify-center gap-2"
-          >
-            <span>Enviar mensaje</span>
-            <span class="material-symbols-outlined">send</span>
+
+          <!-- Submit -->
+          <button type="submit" id="submit-btn" class="contact-submit">
+            <span id="btn-text">Enviar mensaje</span>
+            <span
+              id="btn-icon"
+              class="contact-submit__icon material-symbols-outlined"
+              aria-hidden="true">send</span
+            >
+            <svg
+              id="btn-spinner"
+              class="contact-submit__spinner"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              aria-label="Enviando…"
+              style="display: none;"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
           </button>
         </form>
-      </div>
-
+      </div><!-- /contact-card -->
     </div>
   </div>
 </section>
+
+<!-- EmailJS SDK -->
+<script
+  type="text/javascript"
+  src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"
+></script>
+
+<script>
+  // ─── EmailJS credentials ──────────────────
+  const EMAILJS_PUBLIC_KEY = "QWFVMY56nLoAU0N86";
+  const EMAILJS_SERVICE_ID = "service_go2sg9l";
+  const EMAILJS_TEMPLATE_ID = "template_82l7ns5";
+  // ──────────────────────────────────────────
+
+  // ─── EmailJS type declaration ─────────────
+  declare const emailjs: {
+    init: (config: { publicKey: string }) => void;
+    sendForm: (serviceId: string, templateId: string, form: HTMLFormElement) => Promise<unknown>;
+  };
+
+  // ── Validation helpers ──────────────────────
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  type FieldId = "nombre" | "email" | "asunto" | "mensaje";
+
+  interface ValidationRule {
+    test: (v: string) => boolean;
+    msg: string;
+  }
+
+  const RULES: Record<FieldId, ValidationRule[]> = {
+    nombre: [
+      { test: (v: string) => v.trim().length >= 2, msg: "Ingresa tu nombre completo." },
+    ],
+    email: [
+      { test: (v: string) => v.trim() !== "", msg: "El correo es obligatorio." },
+      {
+        test: (v: string) => EMAIL_RE.test(v.trim()),
+        msg: "Ingresa un correo válido.",
+      },
+    ],
+    asunto: [{ test: (v: string) => v.trim() !== "", msg: "Selecciona un asunto." }],
+    mensaje: [
+      {
+        test: (v: string) => v.trim().length >= 10,
+        msg: "El mensaje debe tener al menos 10 caracteres.",
+      },
+    ],
+  };
+
+  function getError(id: FieldId, value: string): string {
+    const rules = RULES[id] || [];
+    for (const rule of rules) {
+      if (!rule.test(value)) return rule.msg;
+    }
+    return "";
+  }
+
+  function setFieldState(fieldId: FieldId, errorMsg: string): void {
+    const wrapper = document.getElementById(`field-${fieldId}`);
+    const errEl = document.getElementById(`error-${fieldId}`);
+    if (!wrapper || !errEl) return;
+    if (errorMsg) {
+      wrapper.classList.add("is-invalid");
+      wrapper.classList.remove("is-valid");
+      errEl.textContent = errorMsg;
+    } else {
+      wrapper.classList.remove("is-invalid");
+      wrapper.classList.add("is-valid");
+      errEl.textContent = "";
+    }
+  }
+
+  function shakeForm(form: HTMLFormElement): void {
+    form.classList.add("shake");
+    form.addEventListener(
+      "animationend",
+      () => form.classList.remove("shake"),
+      { once: true },
+    );
+  }
+
+  // ── Custom Select ──────────────────────────
+  function initCustomSelect(): void {
+    const triggerEl = document.getElementById("asunto-trigger");
+    const listboxEl = document.getElementById("asunto-listbox");
+    const displayEl = document.getElementById("asunto-display");
+    const hiddenEl = document.getElementById("asunto-value") as HTMLInputElement | null;
+    if (!triggerEl || !listboxEl || !displayEl || !hiddenEl) return;
+
+    // Prevent attaching multiple times
+    if (triggerEl.dataset.initialized) return;
+    triggerEl.dataset.initialized = "true";
+
+    // Now we know these are not null after the check above
+    const trigger = triggerEl;
+    const listbox = listboxEl;
+    const display = displayEl;
+    const hidden = hiddenEl;
+
+    const options = listbox.querySelectorAll<HTMLElement>("[role='option']");
+
+    function openList(): void {
+      listbox.classList.add("is-open");
+      listbox.removeAttribute("aria-hidden");
+      trigger.setAttribute("aria-expanded", "true");
+      trigger.classList.add("is-open");
+      if (options[0]) options[0].focus();
+    }
+
+    function closeList(): void {
+      listbox.classList.remove("is-open");
+      listbox.setAttribute("aria-hidden", "true");
+      trigger.setAttribute("aria-expanded", "false");
+      trigger.classList.remove("is-open");
+    }
+
+    function selectOption(opt: HTMLElement): void {
+      const val = opt.dataset.value || "";
+      hidden.value = val;
+      display.textContent = val;
+      trigger.classList.add("has-value");
+      options.forEach((o) => {
+        const selected = o === opt;
+        o.setAttribute("aria-selected", String(selected));
+        o.classList.toggle("is-selected", selected);
+      });
+      setFieldState("asunto", getError("asunto", val));
+      closeList();
+      trigger.focus();
+    }
+
+    trigger.addEventListener("click", () => {
+      listbox.classList.contains("is-open") ? closeList() : openList();
+    });
+
+    options.forEach((opt) => {
+      opt.addEventListener("click", () => selectOption(opt));
+      opt.addEventListener("keydown", (e: KeyboardEvent) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          selectOption(opt);
+        }
+        if (e.key === "Escape") {
+          closeList();
+          trigger.focus();
+        }
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          (opt.nextElementSibling as HTMLElement | null)?.focus();
+        }
+        if (e.key === "ArrowUp") {
+          e.preventDefault();
+          (opt.previousElementSibling as HTMLElement | null)?.focus();
+        }
+      });
+    });
+
+    // Close on outside click
+    document.addEventListener("click", (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (!trigger.contains(target) && !listbox.contains(target)) {
+        closeList();
+      }
+    });
+
+    // Close on Escape anywhere
+    document.addEventListener("keydown", (e: KeyboardEvent) => {
+      if (e.key === "Escape" && listbox.classList.contains("is-open"))
+        closeList();
+    });
+  }
+
+  // ── Main form init ─────────────────────────
+  function initContactForm(): void {
+    const form = document.getElementById("contact-form") as HTMLFormElement | null;
+    if (!form) return;
+    if (form.dataset.initialized) return;
+    form.dataset.initialized = "true";
+
+    initCustomSelect();
+
+    const submitBtn = document.getElementById("submit-btn") as HTMLButtonElement | null;
+    const btnText = document.getElementById("btn-text");
+    const btnIcon = document.getElementById("btn-icon") as HTMLElement | null;
+    const btnSpinner = document.getElementById("btn-spinner") as HTMLElement | null;
+    const successMsg = document.getElementById("success-message") as HTMLElement | null;
+    const errorMsg = document.getElementById("error-message") as HTMLElement | null;
+    const sendAnother = document.getElementById("send-another");
+    const nombreInput = document.getElementById("nombre") as HTMLInputElement | null;
+    const emailInput = document.getElementById("email") as HTMLInputElement | null;
+    const mensajeInput = document.getElementById("mensaje") as HTMLTextAreaElement | null;
+    const asuntoHidden = document.getElementById("asunto-value") as HTMLInputElement | null;
+
+    if (!submitBtn) return;
+
+    // ── Per-field real-time validation (on blur) ──
+    [
+      { el: nombreInput, id: "nombre" as FieldId },
+      { el: emailInput, id: "email" as FieldId },
+      { el: mensajeInput, id: "mensaje" as FieldId },
+    ].forEach(({ el, id }) => {
+      if (!el) return;
+      el.addEventListener("blur", () => {
+        setFieldState(id, getError(id, el.value));
+      });
+      el.addEventListener("input", () => {
+        // Clear error optimistically while typing if field was invalid
+        const wrapper = document.getElementById(`field-${id}`);
+        if (wrapper?.classList.contains("is-invalid")) {
+          setFieldState(id, getError(id, el.value));
+        }
+      });
+    });
+
+    // ── Reset ──
+    sendAnother?.addEventListener("click", () => {
+      if (successMsg) successMsg.hidden = true;
+      form.classList.remove("hidden");
+      form.reset();
+      if (asuntoHidden) asuntoHidden.value = "";
+      const display = document.getElementById("asunto-display");
+      if (display) display.textContent = "Selecciona un asunto";
+      const trigger = document.getElementById("asunto-trigger");
+      trigger?.classList.remove("has-value");
+      document.querySelectorAll(".cselect-option").forEach((o) => {
+        o.setAttribute("aria-selected", "false");
+        o.classList.remove("is-selected");
+      });
+      document.querySelectorAll(".contact-field").forEach((f) => {
+        f.classList.remove("is-invalid", "is-valid");
+      });
+    });
+
+    // ── Submit ──
+    form.addEventListener("submit", async (e: SubmitEvent) => {
+      e.preventDefault();
+      if (errorMsg) errorMsg.hidden = true;
+
+      // Validate all fields
+      const fields: Array<{ id: FieldId; value: string }> = [
+        { id: "nombre", value: nombreInput?.value || "" },
+        { id: "email", value: emailInput?.value || "" },
+        { id: "asunto", value: asuntoHidden?.value || "" },
+        { id: "mensaje", value: mensajeInput?.value || "" },
+      ];
+
+      let hasError = false;
+      fields.forEach(({ id, value }) => {
+        const err = getError(id, value);
+        setFieldState(id, err);
+        if (err) hasError = true;
+      });
+
+      if (hasError) {
+        shakeForm(form);
+        return;
+      }
+
+      // Check EmailJS
+      if (typeof emailjs === "undefined") {
+        console.error("EmailJS SDK no se cargo correctamente.");
+        if (errorMsg) {
+          errorMsg.hidden = false;
+          const errP = errorMsg.querySelector("p");
+          if (errP) errP.textContent =
+            "Servicio de correo temporalmente inactivo. Por favor, intenta de nuevo más tarde.";
+        }
+        return;
+      }
+
+      // Send
+      submitBtn.disabled = true;
+      if (btnText) btnText.textContent = "Enviando…";
+      if (btnIcon) btnIcon.style.display = "none";
+      if (btnSpinner) btnSpinner.style.display = "block";
+
+      try {
+        emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+        await emailjs.sendForm(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, form);
+        form.classList.add("hidden");
+        if (successMsg) successMsg.hidden = false;
+      } catch (err) {
+        console.error("EmailJS error:", err);
+        if (errorMsg) {
+          errorMsg.hidden = false;
+          const errP = errorMsg.querySelector("p");
+          if (errP) errP.textContent =
+            "Hubo un error al enviar. Por favor inténtalo de nuevo.";
+        }
+      } finally {
+        submitBtn.disabled = false;
+        if (btnText) btnText.textContent = "Enviar mensaje";
+        if (btnIcon) btnIcon.style.display = "inline";
+        if (btnSpinner) btnSpinner.style.display = "none";
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", initContactForm);
+  document.addEventListener("astro:page-load", initContactForm);
+</script>
+
+<style>
+  /* ═══════════════════════════════════════
+     SECTION SHELL
+  ═══════════════════════════════════════ */
+  .contact-section {
+    position: relative;
+    overflow: hidden;
+    background: #5e0b15;
+    color: #fff;
+    padding: 5rem 0 6rem;
+  }
+  @media (min-width: 768px) {
+    .contact-section {
+      padding: 7rem 0 8rem;
+    }
+  }
+
+  .contact-bg-number {
+    position: absolute;
+    top: -0.5rem;
+    right: -2rem;
+    font-size: clamp(10rem, 22vw, 22rem);
+    font-weight: 900;
+    letter-spacing: -0.06em;
+    color: rgba(255, 255, 255, 0.025);
+    line-height: 1;
+    user-select: none;
+    pointer-events: none;
+    font-family: Georgia, serif;
+  }
+
+  .contact-bg-lines {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    gap: 4rem;
+    pointer-events: none;
+    opacity: 0.04;
+  }
+  .contact-bg-line {
+    display: block;
+    width: 1px;
+    height: 100%;
+    background: #fff;
+  }
+
+  /* ═══════════════════════════════════════
+     GRID
+  ═══════════════════════════════════════ */
+  .contact-grid {
+    display: grid;
+    gap: 3.5rem;
+    align-items: center;
+  }
+  @media (min-width: 768px) {
+    .contact-grid {
+      grid-template-columns: 1fr 1.1fr;
+      gap: 4rem;
+    }
+  }
+
+  /* ═══════════════════════════════════════
+     LEFT — INFO
+  ═══════════════════════════════════════ */
+  .contact-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: #ffdadb;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+  .contact-eyebrow__line {
+    display: inline-block;
+    width: 2rem;
+    height: 1px;
+    background: #ffdadb;
+    opacity: 0.6;
+  }
+  .contact-headline {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(2rem, 4.5vw, 3.5rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+    color: #fff;
+  }
+  .contact-headline em {
+    font-style: italic;
+    color: #ffdadb;
+  }
+
+  .contact-description {
+    font-size: 1rem;
+    line-height: 1.75;
+    color: rgba(255, 178, 183, 0.85);
+    max-width: 32ch;
+    margin-bottom: 2.5rem;
+  }
+  @media (max-width: 767px) {
+    .contact-description {
+      max-width: 100%;
+    }
+  }
+
+  .contact-details {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 2rem;
+  }
+  .contact-detail {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: rgba(255, 218, 219, 0.8);
+    font-size: 0.9rem;
+  }
+  .contact-detail__icon {
+    font-size: 1.15rem;
+    color: #ffdadb;
+    opacity: 0.75;
+  }
+
+  /* ═══════════════════════════════════════
+     RIGHT — CARD
+  ═══════════════════════════════════════ */
+  .contact-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 1.25rem;
+    padding: 2.25rem;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+      0 32px 64px rgba(0, 0, 0, 0.22);
+  }
+  @media (min-width: 768px) {
+    .contact-card {
+      padding: 2.75rem;
+    }
+  }
+
+  /* ─── Success ─── */
+  .contact-success {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.9rem;
+    padding: 2rem 1rem;
+  }
+  .contact-success[hidden] {
+    display: none;
+  }
+  .contact-success__icon {
+    font-size: 3.5rem;
+    color: #ffdadb;
+  }
+  .contact-success__title {
+    font-family: Georgia, serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #fff;
+  }
+  .contact-success__body {
+    font-size: 0.9rem;
+    color: #ffb2b7;
+    line-height: 1.6;
+  }
+  .contact-success__reset {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255, 218, 219, 0.7);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  .contact-success__reset:hover {
+    color: #fff;
+  }
+
+  /* ─── Error banner ─── */
+  .contact-error {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: rgba(180, 20, 30, 0.35);
+    border: 1px solid rgba(255, 100, 100, 0.25);
+    border-radius: 0.625rem;
+    padding: 0.75rem 1rem;
+    color: #ffb2b7;
+    margin-bottom: 1.25rem;
+    font-size: 0.85rem;
+  }
+  .contact-error[hidden] {
+    display: none;
+  }
+
+  /* ─── Form ─── */
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .contact-form.hidden {
+    display: none;
+  }
+
+  .contact-form__row {
+    display: grid;
+    gap: 1.5rem;
+  }
+  @media (min-width: 520px) {
+    .contact-form__row {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  /* Shake animation for invalid submit */
+  @keyframes cf-shake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    20% {
+      transform: translateX(-6px);
+    }
+    40% {
+      transform: translateX(6px);
+    }
+    60% {
+      transform: translateX(-4px);
+    }
+    80% {
+      transform: translateX(4px);
+    }
+  }
+  .contact-form.shake {
+    animation: cf-shake 0.4s ease;
+  }
+
+  /* ─── Fields ─── */
+  .contact-field {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .contact-field__label {
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: rgba(255, 178, 183, 0.75);
+    transition: color 0.2s;
+  }
+  .contact-field:focus-within .contact-field__label,
+  .contact-field.is-valid .contact-field__label {
+    color: #ffdadb;
+  }
+  .contact-field.is-invalid .contact-field__label {
+    color: #ffa0a8;
+  }
+
+  .contact-field__input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-size: 0.95rem;
+    padding: 0.55rem 0;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.25s;
+    font-family: inherit;
+  }
+  .contact-field__input::placeholder {
+    color: rgba(255, 255, 255, 0.28);
+  }
+  .contact-field__input:focus {
+    border-color: rgba(255, 218, 219, 0.5);
+  }
+
+  .contact-field.is-invalid .contact-field__input {
+    border-color: rgba(255, 100, 110, 0.55);
+  }
+  .contact-field.is-valid .contact-field__input {
+    border-color: rgba(255, 218, 219, 0.35);
+  }
+
+  /* Animated focus bar */
+  .contact-field__bar {
+    position: absolute;
+    bottom: 1.35rem;
+    left: 0;
+    width: 0;
+    height: 1.5px;
+    background: #ffdadb;
+    transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+  .contact-field:focus-within .contact-field__bar {
+    width: 100%;
+  }
+  .contact-field.is-invalid .contact-field__bar {
+    background: #ff7882;
+    width: 100%;
+  }
+
+  /* Per-field error message */
+  .contact-field__error {
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    color: #ff9aa2;
+    min-height: 0.9rem;
+    transition: opacity 0.2s;
+    opacity: 0;
+  }
+  .contact-field.is-invalid .contact-field__error {
+    opacity: 1;
+  }
+
+  /* Textarea */
+  .contact-field__textarea {
+    resize: none;
+    line-height: 1.6;
+  }
+
+  /* ═══════════════════════════════════════
+     CUSTOM SELECT DROPDOWN
+  ═══════════════════════════════════════ */
+
+  /* Trigger button */
+  .cselect-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    text-align: left;
+    gap: 0.5rem;
+    padding-right: 0.25rem;
+    /* override default button styles */
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+  }
+
+  .cselect-trigger__text {
+    flex: 1;
+    color: rgba(255, 255, 255, 0.28); /* placeholder color */
+    transition: color 0.2s;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .cselect-trigger.has-value .cselect-trigger__text {
+    color: #fff;
+  }
+
+  .cselect-trigger__chevron {
+    flex-shrink: 0;
+    color: rgba(255, 218, 219, 0.5);
+    transition:
+      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      color 0.2s;
+  }
+
+  .cselect-trigger.is-open .cselect-trigger__chevron {
+    transform: rotate(180deg);
+    color: #ffdadb;
+  }
+
+  /* Dropdown list panel */
+  .cselect-list {
+    position: absolute;
+    top: calc(100% + 0.35rem);
+    left: -1px;
+    right: -1px;
+    z-index: 50;
+    list-style: none;
+    margin: 0;
+    padding: 0.35rem;
+    background: #1e0007;
+    border: 1px solid rgba(255, 218, 219, 0.18);
+    border-radius: 0.625rem;
+    box-shadow:
+      0 16px 48px rgba(0, 0, 0, 0.55),
+      0 4px 12px rgba(0, 0, 0, 0.3);
+    /* Animated open/close */
+    opacity: 0;
+    transform: translateY(-6px) scaleY(0.94);
+    transform-origin: top center;
+    pointer-events: none;
+    transition:
+      opacity 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .cselect-list.is-open {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+    pointer-events: auto;
+  }
+
+  /* Option items */
+  .cselect-option {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 0.85rem;
+    font-size: 0.9rem;
+    color: rgba(255, 218, 219, 0.78);
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition:
+      background 0.15s,
+      color 0.15s;
+    outline: none;
+  }
+
+  .cselect-option:hover,
+  .cselect-option:focus {
+    background: rgba(255, 218, 219, 0.1);
+    color: #fff;
+  }
+
+  .cselect-option.is-selected {
+    color: #ffdadb;
+    background: rgba(255, 218, 219, 0.08);
+  }
+
+  .cselect-option__check {
+    font-size: 0.9rem;
+    color: #ffdadb;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .cselect-option.is-selected .cselect-option__check {
+    opacity: 1;
+  }
+
+  /* Divider between options */
+  .cselect-option + .cselect-option {
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+  }
+
+  /* Adjust bar position for the subject field (has the extra listbox) */
+  #field-asunto .contact-field__bar {
+    bottom: 1.75rem;
+  }
+
+  /* ─── Submit button ─── */
+  .contact-submit {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    width: 100%;
+    padding: 0.9rem 2rem;
+    margin-top: 0.5rem;
+    border: 1px solid rgba(255, 218, 219, 0.55);
+    border-radius: 0.5rem;
+    background: transparent;
+    color: #ffdadb;
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 700;
+    cursor: pointer;
+    overflow: hidden;
+    transition:
+      color 0.35s ease,
+      border-color 0.35s ease;
+  }
+
+  .contact-submit::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: #ffdadb;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: 0;
+  }
+  .contact-submit:hover::before,
+  .contact-submit:focus-visible::before {
+    transform: scaleX(1);
+  }
+  .contact-submit:hover,
+  .contact-submit:focus-visible {
+    color: #40000e;
+    border-color: #ffdadb;
+  }
+  .contact-submit > * {
+    position: relative;
+    z-index: 1;
+  }
+  .contact-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .contact-submit__icon {
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
+  }
+  .contact-submit:hover .contact-submit__icon {
+    transform: translateX(3px) rotate(-10deg);
+  }
+
+  .contact-submit__spinner {
+    width: 1.1rem;
+    height: 1.1rem;
+    animation: spin 0.8s linear infinite;
+  }
+  .contact-submit__spinner[hidden] {
+    display: none;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>
