@@ -246,9 +246,24 @@ const articleTypes = Object.entries(ARTICLE_TYPES).map(([label, slug]) => ({
 </section>
 
 <script>
+  // Controller global para limpiar event listeners entre navegaciones SPA
+  let filterAbortController: AbortController | null = null;
+
   // Lógica de filtrado del lado del cliente
   document.addEventListener('astro:page-load', () => {
+    // Limpiar event listeners viejos si existen
+    if (filterAbortController) {
+      filterAbortController.abort();
+    }
+
     const form = document.getElementById('articles-filter-form') as HTMLFormElement;
+    // Si no estamos en la página del filtro, salir silenciosamente
+    if (!form) return;
+
+    // Crear nuevo controller para esta instancia
+    filterAbortController = new AbortController();
+    const { signal } = filterAbortController;
+
     const clearBtn = document.getElementById('clear-filters');
     const activeFiltersDiv = document.getElementById('active-filters');
     const filterTagsDiv = document.getElementById('filter-tags');
@@ -363,7 +378,7 @@ const articleTypes = Object.entries(ARTICLE_TYPES).map(([label, slug]) => ({
     };
     
     // Submit del formulario
-    form?.addEventListener('submit', (e) => {
+    form.addEventListener('submit', (e) => {
       e.preventDefault();
       const formData = new FormData(form);
       const params = new URLSearchParams();
@@ -378,24 +393,30 @@ const articleTypes = Object.entries(ARTICLE_TYPES).map(([label, slug]) => ({
       // Actualizar URL sin recargar
       const newUrl = params.toString() ? `?${params.toString()}` : window.location.pathname;
       window.history.replaceState({}, '', newUrl);
-    });
+    }, { signal });
     
     // Limpiar filtros
-    clearBtn?.addEventListener('click', () => {
-      setTimeout(() => {
-        const params = new URLSearchParams();
-        fetchArticles(params);
-        updateFilterTags(params);
-        window.history.replaceState({}, '', window.location.pathname);
-      }, 0);
-    });
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        setTimeout(() => {
+          const params = new URLSearchParams();
+          fetchArticles(params);
+          updateFilterTags(params);
+          window.history.replaceState({}, '', window.location.pathname);
+        }, 0);
+      }, { signal });
+    }
     
     // Cargar filtros desde URL al iniciar
     const loadFiltersFromUrl = () => {
+      // Validar primero si el formulario prevalece (por si acaso ocurre en un cambio en caliente)
+      const currentForm = document.getElementById('articles-filter-form') as HTMLFormElement;
+      if (!currentForm) return;
+
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.toString()) {
         urlParams.forEach((value, key) => {
-          const input = form.elements.namedItem(key) as HTMLInputElement | HTMLSelectElement;
+          const input = currentForm.elements.namedItem(key) as HTMLInputElement | HTMLSelectElement;
           if (input) input.value = value;
         });
         fetchArticles(urlParams);
@@ -405,8 +426,7 @@ const articleTypes = Object.entries(ARTICLE_TYPES).map(([label, slug]) => ({
     
     loadFiltersFromUrl();
     
-    // Re-inicializar filtros después de navegación SPA
-    document.addEventListener('astro:after-swap', loadFiltersFromUrl);
-    window.addEventListener('popstate', loadFiltersFromUrl);
+    // Opcional: Reaccionar a botones nativos de historia (Solo popstate en window usando la señal actual)
+    window.addEventListener('popstate', loadFiltersFromUrl, { signal });
   });
 </script>

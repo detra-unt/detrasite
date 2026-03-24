@@ -36,58 +36,49 @@ export default function ContactForm() {
     emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
   }, []);
 
-  // ── Effect 2: Autocompletar desde footer (motivo=revista) ──
+  // ── Effect 2 Definitivo: Autocompletar desde url (motivos dinámicos) ──
   useEffect(() => {
-    const check = () => {
-      let isRevista = false;
+    //Paso 1 : Definir el diccionario de motivos
+    const PREFILL_CONFIG: Record<string, { asunto: string, mensaje: string }> = {
+      revista: {
+        asunto: 'Información sobre la revista',
+        mensaje: 'Hola, me gustaría mas información sobre cómo adquirir la revista. Quedo atento a su respuesta'
+      },
+      contacto: {
+        asunto: 'Consulta general',
+        mensaje: 'Hola quisiera ponerme en contacto con ustedes. Estaré al tanto de su respuesta.'
+      },
+      //Permite la integración de más motivos
+    }
+
+    const checkMotive = () => {
+      //Paso 2 : Extraer el motivo de la URL (ya sea de los parámetros o del hash)
       const searchParams = new URLSearchParams(window.location.search);
-      if (searchParams.get('motivo') === 'revista') {
-        isRevista = true;
-      } else if (window.location.hash.includes('motivo=revista')) {
-        isRevista = true;
+      let motivo = searchParams.get('motivo');
+
+      if (!motivo) {
+        // Expresión regular para extraer el motivo del hash si viene como #contacto?motivo=revista
+        const hashMatch = window.location.hash.match(/motivo=([^&]+)/);
+        if (hashMatch) motivo = hashMatch[1];
       }
 
-      if (!isRevista) return;
-
-      setAsunto('Información sobre la revista');
-      setMensaje(prev =>
-        prev || 'Hola, me gustaría más información sobre cómo adquirir la revista. Quedo atento a su respuesta'
-      );
-      setErrors(prev => ({ ...prev, asunto: '', mensaje: '' }));
-
-      // Limpiar el param de la URL para que no persista al recargar
-      const cleanUrl = window.location.pathname + window.location.hash.split('?')[0];
-      window.history.replaceState({}, '', cleanUrl);
-    };
-
-    check();
-    window.addEventListener('hashchange', check);
-    return () => window.removeEventListener('hashchange', check);
-  }, []);
-
-  useEffect(() => {
-    const check = () => {
-      let isContacto = false;
-      const searchParams = new URLSearchParams(window.location.search);
-      if (searchParams.get('motivo') === 'contacto') {
-        isContacto = true;
-      } else if (window.location.hash.includes('motivo=revista')) {
-        isContacto = true;
+      //Paso 3: Verificación de la existencia del motivo dentro del diccionario definido en el paso 1
+      if (motivo && PREFILL_CONFIG[motivo]) {
+        const { asunto: nuevoAsunto, mensaje: nuevoMensaje } = PREFILL_CONFIG[motivo];
+        //Paso 4: Actualizar los estados
+        setAsunto(nuevoAsunto);
+        setMensaje(prev => (prev || nuevoMensaje));
+        setErrors(prev => ({ ...prev, asunto: '', mensaje: '' }));
+        //Paso 5: Limpiar la URL de manera general
+        const cleanUrl = window.location.pathname + window.location.hash.split('?')[0];
+        window.history.replaceState({}, '', cleanUrl);
       }
-
-      if (!isContacto) return;
-
-      setMensaje(prev => prev || 'Hola, quisiera ponerme en contacto con ustedes. Estaré al tanto de su respuesta.');
-      setErrors(prev => ({ ...prev, asunto: '', mensaje: '' }));
-      const cleanUrl = window.location.pathname + window.location.hash.split('?')[0];
-      window.history.replaceState({}, '', cleanUrl);
-
-      setAsunto('Consulta general');
     };
 
-    check();
-    window.addEventListener('hashchange', check);
-    return () => window.removeEventListener('hashchange', check);
+    //Ejecutar el montar y cambiar el hash
+    checkMotive();
+    window.addEventListener('hashchange', checkMotive);
+    return () => window.removeEventListener('hashchange', checkMotive);
   }, []);
 
   // ── Effect 3: Cerrar dropdown al hacer click fuera ──
