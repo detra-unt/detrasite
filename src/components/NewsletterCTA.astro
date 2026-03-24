@@ -276,7 +276,11 @@ const SUBJECTS = [
   // ─── EmailJS type declaration ─────────────
   declare const emailjs: {
     init: (config: { publicKey: string }) => void;
-    sendForm: (serviceId: string, templateId: string, form: HTMLFormElement) => Promise<unknown>;
+    sendForm: (
+      serviceId: string,
+      templateId: string,
+      form: HTMLFormElement,
+    ) => Promise<unknown>;
   };
 
   // ── Validation helpers ──────────────────────
@@ -291,16 +295,24 @@ const SUBJECTS = [
 
   const RULES: Record<FieldId, ValidationRule[]> = {
     nombre: [
-      { test: (v: string) => v.trim().length >= 2, msg: "Ingresa tu nombre completo." },
+      {
+        test: (v: string) => v.trim().length >= 2,
+        msg: "Ingresa tu nombre completo.",
+      },
     ],
     email: [
-      { test: (v: string) => v.trim() !== "", msg: "El correo es obligatorio." },
+      {
+        test: (v: string) => v.trim() !== "",
+        msg: "El correo es obligatorio.",
+      },
       {
         test: (v: string) => EMAIL_RE.test(v.trim()),
         msg: "Ingresa un correo válido.",
       },
     ],
-    asunto: [{ test: (v: string) => v.trim() !== "", msg: "Selecciona un asunto." }],
+    asunto: [
+      { test: (v: string) => v.trim() !== "", msg: "Selecciona un asunto." },
+    ],
     mensaje: [
       {
         test: (v: string) => v.trim().length >= 10,
@@ -346,7 +358,9 @@ const SUBJECTS = [
     const triggerEl = document.getElementById("asunto-trigger");
     const listboxEl = document.getElementById("asunto-listbox");
     const displayEl = document.getElementById("asunto-display");
-    const hiddenEl = document.getElementById("asunto-value") as HTMLInputElement | null;
+    const hiddenEl = document.getElementById(
+      "asunto-value",
+    ) as HTMLInputElement | null;
     if (!triggerEl || !listboxEl || !displayEl || !hiddenEl) return;
 
     // Prevent attaching multiple times
@@ -434,24 +448,42 @@ const SUBJECTS = [
 
   // ── Main form init ─────────────────────────
   function initContactForm(): void {
-    const form = document.getElementById("contact-form") as HTMLFormElement | null;
+    const form = document.getElementById(
+      "contact-form",
+    ) as HTMLFormElement | null;
     if (!form) return;
     if (form.dataset.initialized) return;
     form.dataset.initialized = "true";
 
     initCustomSelect();
 
-    const submitBtn = document.getElementById("submit-btn") as HTMLButtonElement | null;
+    const submitBtn = document.getElementById(
+      "submit-btn",
+    ) as HTMLButtonElement | null;
     const btnText = document.getElementById("btn-text");
     const btnIcon = document.getElementById("btn-icon") as HTMLElement | null;
-    const btnSpinner = document.getElementById("btn-spinner") as HTMLElement | null;
-    const successMsg = document.getElementById("success-message") as HTMLElement | null;
-    const errorMsg = document.getElementById("error-message") as HTMLElement | null;
+    const btnSpinner = document.getElementById(
+      "btn-spinner",
+    ) as HTMLElement | null;
+    const successMsg = document.getElementById(
+      "success-message",
+    ) as HTMLElement | null;
+    const errorMsg = document.getElementById(
+      "error-message",
+    ) as HTMLElement | null;
     const sendAnother = document.getElementById("send-another");
-    const nombreInput = document.getElementById("nombre") as HTMLInputElement | null;
-    const emailInput = document.getElementById("email") as HTMLInputElement | null;
-    const mensajeInput = document.getElementById("mensaje") as HTMLTextAreaElement | null;
-    const asuntoHidden = document.getElementById("asunto-value") as HTMLInputElement | null;
+    const nombreInput = document.getElementById(
+      "nombre",
+    ) as HTMLInputElement | null;
+    const emailInput = document.getElementById(
+      "email",
+    ) as HTMLInputElement | null;
+    const mensajeInput = document.getElementById(
+      "mensaje",
+    ) as HTMLTextAreaElement | null;
+    const asuntoHidden = document.getElementById(
+      "asunto-value",
+    ) as HTMLInputElement | null;
 
     if (!submitBtn) return;
 
@@ -524,8 +556,9 @@ const SUBJECTS = [
         if (errorMsg) {
           errorMsg.hidden = false;
           const errP = errorMsg.querySelector("p");
-          if (errP) errP.textContent =
-            "Servicio de correo temporalmente inactivo. Por favor, intenta de nuevo más tarde.";
+          if (errP)
+            errP.textContent =
+              "Servicio de correo temporalmente inactivo. Por favor, intenta de nuevo más tarde.";
         }
         return;
       }
@@ -546,8 +579,9 @@ const SUBJECTS = [
         if (errorMsg) {
           errorMsg.hidden = false;
           const errP = errorMsg.querySelector("p");
-          if (errP) errP.textContent =
-            "Hubo un error al enviar. Por favor inténtalo de nuevo.";
+          if (errP)
+            errP.textContent =
+              "Hubo un error al enviar. Por favor inténtalo de nuevo.";
         }
       } finally {
         submitBtn.disabled = false;
@@ -558,8 +592,62 @@ const SUBJECTS = [
     });
   }
 
-  document.addEventListener("DOMContentLoaded", initContactForm);
-  document.addEventListener("astro:page-load", initContactForm);
+  function checkRevistaMotive() {
+    let isRevista = false;
+    const searchParams = new URLSearchParams(window.location.search);
+    if (searchParams.get("motivo") === "revista") {
+      isRevista = true;
+    } else if (window.location.hash.includes("motivo=revista")) {
+      isRevista = true;
+    }
+
+    if (!isRevista) return;
+
+    //Autocompleta el asunto
+    const asuntoHidden = document.getElementById(
+      "asunto-value",
+    ) as HTMLInputElement | null; //Busca un elemento con el id asunto value y lo tipa, en caso de no existir le da valor null
+    const display = document.getElementById("asunto-display");
+    const trigger = document.getElementById("asunto-trigger");
+    const options = document.querySelectorAll<HTMLElement>(".cselect-option");
+
+    if (asuntoHidden && display && trigger) {
+      const targetValue = "Información sobre la revista";
+      asuntoHidden.value = targetValue;
+      display.textContent = targetValue;
+      trigger.classList.add("has-value");
+      options.forEach((opt) => {
+        const isTarget = opt.dataset.value === targetValue;
+        opt.setAttribute("aria-selected", String(isTarget));
+        opt.classList.toggle("is-selected", isTarget);
+      });
+      setFieldState("asunto", "");
+    }
+
+    const mensajeInput = document.getElementById(
+      "mensaje",
+    ) as HTMLTextAreaElement | null;
+    if (mensajeInput && !mensajeInput.value) {
+      mensajeInput.value =
+        "Hola, me gustaría más información sobre cómo adquirir la revista. Quedo atento a su respuesta";
+      setFieldState("mensaje", "");
+    }
+
+    //Limpiar el param de la URL para que no persista al recargar
+    const cleanUrl =
+      window.location.pathname + window.location.hash.split("?")[0];
+    window.history.replaceState({}, "", cleanUrl);
+  }
+
+  function initAll() {
+    initContactForm();
+    checkRevistaMotive();
+  }
+
+  // Escuchar a múltiples eventos para asegurar que se ejecute a tiempo
+  document.addEventListener("DOMContentLoaded", initAll);
+  document.addEventListener("astro:page-load", initAll);
+  window.addEventListener("hashchange", checkRevistaMotive);
 </script>
 
 <style>

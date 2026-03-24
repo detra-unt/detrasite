@@ -1,9 +1,9 @@
 ---
 interface Props {
-  currentPage?: 'home' | 'publications' | 'about';
+  currentPage?: "home" | "publications" | "about";
 }
 
-const { currentPage = 'home' } = Astro.props;
+const { currentPage = "home" } = Astro.props;
 ---
 
 <nav
@@ -11,10 +11,14 @@ const { currentPage = 'home' } = Astro.props;
   class="bg-[#fcfaec]/80 backdrop-blur-md sticky top-0 z-50 transition-all duration-500"
 >
   <!-- Línea decorativa superior — acento editorial -->
-  <div class="h-[2px] w-full bg-gradient-to-r from-transparent via-[#5E0B15]/60 to-transparent"></div>
+  <div
+    class="h-[2px] w-full bg-gradient-to-r from-transparent via-[#5E0B15]/60 to-transparent"
+  >
+  </div>
 
-  <div class="flex justify-between items-center w-full px-6 md:px-10 py-3 max-w-7xl mx-auto">
-
+  <div
+    class="flex justify-between items-center w-full px-6 md:px-10 py-3 max-w-7xl mx-auto"
+  >
     <!-- Brand Logo -->
     <a
       href="/"
@@ -25,7 +29,7 @@ const { currentPage = 'home' } = Astro.props;
         src="/logoDetravf.png"
         alt="Detra logo"
         class="h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-[1.03]"
-      >
+      />
     </a>
 
     <!-- Navigation Links — desktop -->
@@ -33,9 +37,9 @@ const { currentPage = 'home' } = Astro.props;
       <a
         class:list={[
           "nav-link relative font-label text-xs tracking-[0.14em] uppercase transition-colors duration-200",
-          currentPage === 'home'
+          currentPage === "home"
             ? "text-[#5E0B15] font-bold nav-link--active"
-            : "text-[#1c1c14]/60 hover:text-[#5E0B15]"
+            : "text-[#1c1c14]/60 hover:text-[#5E0B15]",
         ]}
         href="/"
       >
@@ -44,9 +48,9 @@ const { currentPage = 'home' } = Astro.props;
       <a
         class:list={[
           "nav-link relative font-label text-xs tracking-[0.14em] uppercase transition-colors duration-200",
-          currentPage === 'publications'
+          currentPage === "publications"
             ? "text-[#550015] font-bold nav-link--active"
-            : "text-[#1c1c14]/60 hover:text-[#550015]"
+            : "text-[#1c1c14]/60 hover:text-[#550015]",
         ]}
         href="/publicaciones"
       >
@@ -55,9 +59,9 @@ const { currentPage = 'home' } = Astro.props;
       <a
         class:list={[
           "nav-link relative font-label text-xs tracking-[0.14em] uppercase transition-colors duration-200",
-          currentPage === 'about'
+          currentPage === "about"
             ? "text-[#5E0B15] font-bold nav-link--active"
-            : "text-[#1c1c14]/60 hover:text-[#5E0B15]"
+            : "text-[#1c1c14]/60 hover:text-[#5E0B15]",
         ]}
         href="/sobrenosotros"
       >
@@ -73,7 +77,7 @@ const { currentPage = 'home' } = Astro.props;
       >
         account_balance
       </button>
-      <a href="#formularioUnirse">
+      <a href="/">
         <button
           class="group relative overflow-hidden bg-[#5E0B15] cursor-pointer text-white px-5 py-2 rounded-[3px] font-label text-xs tracking-[0.12em] uppercase font-semibold transition-all duration-300 hover:shadow-[0_4px_20px_rgba(94,11,21,0.35)]"
         >
@@ -81,7 +85,7 @@ const { currentPage = 'home' } = Astro.props;
           <span
             class="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-500 bg-gradient-to-r from-transparent via-white/15 to-transparent"
           ></span>
-          <span class="relative">Quiero unirme</span>
+          <span class="relative">CONTACTO</span>
         </button>
       </a>
     </div>
@@ -94,9 +98,15 @@ const { currentPage = 'home' } = Astro.props;
       aria-expanded="false"
       aria-controls="mobile-menu"
     >
-      <span class="hamburger-line block w-[18px] h-[1.5px] bg-[#5E0B15] rounded-full transition-all duration-300 origin-center"></span>
-      <span class="hamburger-line block w-[18px] h-[1.5px] bg-[#5E0B15] rounded-full transition-all duration-300 mt-[5px] origin-center"></span>
-      <span class="hamburger-line block w-[18px] h-[1.5px] bg-[#5E0B15] rounded-full transition-all duration-300 mt-[5px] origin-center"></span>
+      <span
+        class="hamburger-line block w-[18px] h-[1.5px] bg-[#5E0B15] rounded-full transition-all duration-300 origin-center"
+      ></span>
+      <span
+        class="hamburger-line block w-[18px] h-[1.5px] bg-[#5E0B15] rounded-full transition-all duration-300 mt-[5px] origin-center"
+      ></span>
+      <span
+        class="hamburger-line block w-[18px] h-[1.5px] bg-[#5E0B15] rounded-full transition-all duration-300 mt-[5px] origin-center"
+      ></span>
     </button>
   </div>
 
@@ -107,16 +117,17 @@ const { currentPage = 'home' } = Astro.props;
     style="max-height: 0; opacity: 0;"
     aria-hidden="true"
   >
-    <div class="bg-[#fcfaec] border-t border-[#dcc0c1]/40 px-8 py-6 flex flex-col gap-6">
-      
+    <div
+      class="bg-[#fcfaec] border-t border-[#dcc0c1]/40 px-8 py-6 flex flex-col gap-6"
+    >
       <!-- Links móvil -->
       <div class="flex flex-col gap-5">
         <a
           class:list={[
             "font-label text-xs tracking-[0.14em] uppercase transition-colors duration-200 w-fit",
-            currentPage === 'home'
+            currentPage === "home"
               ? "text-[#5E0B15] font-bold mobile-link--active"
-              : "text-[#1c1c14]/60 hover:text-[#5E0B15]"
+              : "text-[#1c1c14]/60 hover:text-[#5E0B15]",
           ]}
           href="/"
         >
@@ -125,9 +136,9 @@ const { currentPage = 'home' } = Astro.props;
         <a
           class:list={[
             "font-label text-xs tracking-[0.14em] uppercase transition-colors duration-200 w-fit",
-            currentPage === 'publications'
+            currentPage === "publications"
               ? "text-[#5E0B15] font-bold mobile-link--active"
-              : "text-[#1c1c14]/60 hover:text-[#5E0B15]"
+              : "text-[#1c1c14]/60 hover:text-[#5E0B15]",
           ]}
           href="/publicaciones"
         >
@@ -136,9 +147,9 @@ const { currentPage = 'home' } = Astro.props;
         <a
           class:list={[
             "font-label text-xs tracking-[0.14em] uppercase transition-colors duration-200 w-fit",
-            currentPage === 'about'
+            currentPage === "about"
               ? "text-[#5E0B15] font-bold mobile-link--active"
-              : "text-[#1c1c14]/60 hover:text-[#5E0B15]"
+              : "text-[#1c1c14]/60 hover:text-[#5E0B15]",
           ]}
           href="/sobrenosotros"
         >
@@ -157,9 +168,11 @@ const { currentPage = 'home' } = Astro.props;
         >
           account_balance
         </button>
-        <a href="#formularioUnirse" class="flex-1">
-          <button class="w-full bg-[#5E0B15] text-white px-5 py-2.5 rounded-[3px] font-label text-xs tracking-[0.12em] uppercase font-semibold hover:opacity-90 transition-all duration-200 cursor-pointer">
-            Quiero unirme
+        <a href="/" class="flex-1">
+          <button
+            class="w-full bg-[#5E0B15] text-white px-5 py-2.5 rounded-[3px] font-label text-xs tracking-[0.12em] uppercase font-semibold hover:opacity-90 transition-all duration-200 cursor-pointer"
+          >
+            CONTACTO
           </button>
         </a>
       </div>
@@ -170,13 +183,13 @@ const { currentPage = 'home' } = Astro.props;
 <style>
   /* Indicador de página activa — línea inferior animada */
   .nav-link::after {
-    content: '';
+    content: "";
     position: absolute;
     bottom: -4px;
     left: 0;
     width: 100%;
     height: 1.5px;
-    background-color: #5E0B15;
+    background-color: #5e0b15;
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.25s ease;
@@ -194,14 +207,14 @@ const { currentPage = 'home' } = Astro.props;
     padding-left: 12px;
   }
   .mobile-link--active::before {
-    content: '';
+    content: "";
     position: absolute;
     left: 0;
     top: 50%;
     transform: translateY(-50%);
     width: 3px;
     height: 100%;
-    background-color: #5E0B15;
+    background-color: #5e0b15;
     border-radius: 2px;
   }
 
@@ -220,70 +233,72 @@ const { currentPage = 'home' } = Astro.props;
   /* Scrolled state */
   #main-nav.scrolled {
     background-color: rgba(252, 250, 236, 0.96);
-    box-shadow: 0 1px 0 rgba(220, 192, 193, 0.5), 0 4px 16px rgba(46, 0, 7, 0.06);
+    box-shadow:
+      0 1px 0 rgba(220, 192, 193, 0.5),
+      0 4px 16px rgba(46, 0, 7, 0.06);
   }
 </style>
 
 <script>
   function initMobileMenu() {
-    const btn = document.getElementById('mobile-menu-btn');
-    const menu = document.getElementById('mobile-menu');
-    const nav = document.getElementById('main-nav');
+    const btn = document.getElementById("mobile-menu-btn");
+    const menu = document.getElementById("mobile-menu");
+    const nav = document.getElementById("main-nav");
     if (!btn || !menu || !nav) return;
 
-    const inner = menu.querySelector('div') as HTMLElement | null;
+    const inner = menu.querySelector("div") as HTMLElement | null;
 
     // Scroll effect: add `.scrolled` class when page is scrolled
     const handleScroll = () => {
       if (window.scrollY > 12) {
-        nav.classList.add('scrolled');
+        nav.classList.add("scrolled");
       } else {
-        nav.classList.remove('scrolled');
+        nav.classList.remove("scrolled");
       }
     };
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll(); // run on init
 
-    btn.addEventListener('click', () => {
-      const isOpen = btn.classList.contains('is-open');
+    btn.addEventListener("click", () => {
+      const isOpen = btn.classList.contains("is-open");
 
       if (isOpen) {
-        menu.style.maxHeight = '0px';
-        menu.style.opacity = '0';
-        btn.classList.remove('is-open');
-        btn.setAttribute('aria-expanded', 'false');
-        menu.setAttribute('aria-hidden', 'true');
+        menu.style.maxHeight = "0px";
+        menu.style.opacity = "0";
+        btn.classList.remove("is-open");
+        btn.setAttribute("aria-expanded", "false");
+        menu.setAttribute("aria-hidden", "true");
       } else {
         const contentHeight = inner ? inner.scrollHeight : 300;
         menu.style.maxHeight = `${contentHeight}px`;
-        menu.style.opacity = '1';
-        btn.classList.add('is-open');
-        btn.setAttribute('aria-expanded', 'true');
-        menu.setAttribute('aria-hidden', 'false');
+        menu.style.opacity = "1";
+        btn.classList.add("is-open");
+        btn.setAttribute("aria-expanded", "true");
+        menu.setAttribute("aria-hidden", "false");
       }
     });
 
-    menu.querySelectorAll('a').forEach((link) => {
-      link.addEventListener('click', () => {
-        menu.style.maxHeight = '0px';
-        menu.style.opacity = '0';
-        btn.classList.remove('is-open');
-        btn.setAttribute('aria-expanded', 'false');
-        menu.setAttribute('aria-hidden', 'true');
+    menu.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", () => {
+        menu.style.maxHeight = "0px";
+        menu.style.opacity = "0";
+        btn.classList.remove("is-open");
+        btn.setAttribute("aria-expanded", "false");
+        menu.setAttribute("aria-hidden", "true");
       });
     });
 
-    window.addEventListener('resize', () => {
-      if (window.innerWidth >= 768 && btn.classList.contains('is-open')) {
-        menu.style.maxHeight = '0px';
-        menu.style.opacity = '0';
-        btn.classList.remove('is-open');
-        btn.setAttribute('aria-expanded', 'false');
-        menu.setAttribute('aria-hidden', 'true');
+    window.addEventListener("resize", () => {
+      if (window.innerWidth >= 768 && btn.classList.contains("is-open")) {
+        menu.style.maxHeight = "0px";
+        menu.style.opacity = "0";
+        btn.classList.remove("is-open");
+        btn.setAttribute("aria-expanded", "false");
+        menu.setAttribute("aria-hidden", "true");
       }
     });
   }
 
   initMobileMenu();
-  document.addEventListener('astro:after-swap', initMobileMenu);
+  document.addEventListener("astro:after-swap", initMobileMenu);
 </script>
