@@ -11,5 +11,11 @@ export default defineConfig({
     plugins: [tailwindcss()]
   },
 
+  // Prefetch de rutas al hacer hover sobre links (mejora SPA transitions)
+  prefetch: {
+    prefetchAll: false,
+    defaultStrategy: 'hover',
+  },
+
   integrations: [react()]
 });

@@ -1,6 +1,7 @@
 // Cliente GraphQL para Contentful
 import { documentToHtmlString } from '@contentful/rich-text-html-renderer';
 import type { Document } from '@contentful/rich-text-types';
+import { cached } from './cache';
 
 // Configuración de Contentful
 const SPACE_ID = import.meta.env.CONTENTFUL_SPACE_ID;
@@ -217,18 +218,23 @@ export async function getArticles(options: GetArticlesOptions = {}): Promise<{
     }
   `;
 
-  const data = await fetchGraphQL<ArticlesResponse>(query, preview);
+  // Cache key única por combinación de parámetros
+  const cacheKey = `articles:${limit}:${skip}:${articleType ?? ''}:${searchQuery ?? ''}:${startDate ?? ''}:${endDate ?? ''}:${preview}`;
 
-  return {
-    articles: data.articleCollection.items,
-    total: data.articleCollection.total,
-  };
+  return cached(cacheKey, async () => {
+    const data = await fetchGraphQL<ArticlesResponse>(query, preview);
+    return {
+      articles: data.articleCollection.items,
+      total: data.articleCollection.total,
+    };
+  });
 }
 
 // Obtener artículos recientes (para la página principal)
 export async function getRecentArticles(limit = 3): Promise<ArticlePreview[]> {
   const { articles } = await getArticles({ limit });
   return articles;
+  // Hereda el caché de getArticles automáticamente
 }
 
 // Obtener artículos destacados (los más recientes de cada tipo)
@@ -256,15 +262,16 @@ export async function getFeaturedArticles(): Promise<ArticlePreview[]> {
     }
   `;
 
-  const data = await fetchGraphQL<{
-    estudiantes: { items: ArticlePreview[] };
-    invitados: { items: ArticlePreview[] };
-  }>(query);
-
-  return [
-    ...data.estudiantes.items,
-    ...data.invitados.items,
-  ];
+  return cached('featured-articles', async () => {
+    const data = await fetchGraphQL<{
+      estudiantes: { items: ArticlePreview[] };
+      invitados: { items: ArticlePreview[] };
+    }>(query);
+    return [
+      ...data.estudiantes.items,
+      ...data.invitados.items,
+    ];
+  });
 }
 
 // Obtener un artículo completo por slug y tipo
@@ -330,9 +337,10 @@ export async function getArticleBySlug(
     }
   `;
 
-  const data = await fetchGraphQL<ArticleResponse>(query, preview);
-
-  return data.articleCollection.items[0] || null;
+  return cached(`article:${slug}:${articleTypeSlug}:${preview}`, async () => {
+    const data = await fetchGraphQL<ArticleResponse>(query, preview);
+    return data.articleCollection.items[0] || null;
+  });
 }
 
 // Obtener todos los slugs de artículos (para generación estática)
@@ -356,12 +364,13 @@ export async function getAllArticleSlugs(): Promise<
     }
   `;
 
-  const data = await fetchGraphQL<AllSlugsResponse>(query);
-
-  return data.articleCollection.items.map((item) => ({
-    slug: item.slug,
-    tipo: getArticleTypeSlug(item.articleType),
-  }));
+  return cached('all-article-slugs', async () => {
+    const data = await fetchGraphQL<AllSlugsResponse>(query);
+    return data.articleCollection.items.map((item) => ({
+      slug: item.slug,
+      tipo: getArticleTypeSlug(item.articleType),
+    }));
+  });
 }
 
 // Búsqueda de artículos por título o autor
@@ -457,11 +466,13 @@ export async function getActiveJuntaDirectiva(): Promise<JuntaDirectiva | null> 
     }
   `;
 
-  try {
-    const data = await fetchGraphQL<JuntaDirectivaResponse>(query);
-    return data.juntaDirectivaCollection.items[0] || null;
-  } catch (e) {
-    console.error('Error fetching junta directiva:', e);
-    return null;
-  }
+  return cached('active-junta-directiva', async () => {
+    try {
+      const data = await fetchGraphQL<JuntaDirectivaResponse>(query);
+      return data.juntaDirectivaCollection.items[0] || null;
+    } catch (e) {
+      console.error('Error fetching junta directiva:', e);
+      return null;
+    }
+  });
 }
