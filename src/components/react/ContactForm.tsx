@@ -65,6 +65,31 @@ export default function ContactForm() {
     return () => window.removeEventListener('hashchange', check);
   }, []);
 
+  useEffect(() => {
+    const check = () => {
+      let isContacto = false;
+      const searchParams = new URLSearchParams(window.location.search);
+      if (searchParams.get('motivo') === 'contacto') {
+        isContacto = true;
+      } else if (window.location.hash.includes('motivo=revista')) {
+        isContacto = true;
+      }
+
+      if (!isContacto) return;
+
+      setMensaje(prev => prev || 'Hola, quisiera ponerme en contacto con ustedes. Estaré al tanto de su respuesta.');
+      setErrors(prev => ({ ...prev, asunto: '', mensaje: '' }));
+      const cleanUrl = window.location.pathname + window.location.hash.split('?')[0];
+      window.history.replaceState({}, '', cleanUrl);
+
+      setAsunto('Consulta general');
+    };
+
+    check();
+    window.addEventListener('hashchange', check);
+    return () => window.removeEventListener('hashchange', check);
+  }, []);
+
   // ── Effect 3: Cerrar dropdown al hacer click fuera ──
   useEffect(() => {
     if (!isDropdownOpen) return;
