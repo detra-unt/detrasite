@@ -1,9 +1,4 @@
 ---
-/* import { getArticles } from '../lib/contentful';
-
-// Obtener conteo total de artículos
-const { total } = await getArticles({ limit: 1 }); */
-
 interface Props {
   total: number;
 }
@@ -11,58 +6,518 @@ interface Props {
 const { total } = Astro.props;
 ---
 
-<header class="max-w-7xl mx-auto px-6 md:px-8 py-12 md:py-20 lg:py-32">
-  <div class="grid lg:grid-cols-12 gap-8 md:gap-12 items-center">
-    <div class="lg:col-span-7">
-      <p
-        class="font-label text-xs uppercase tracking-[0.3em] text-[#5E0B15] mb-4"
-      >
-        PRODUCCIÓN ACADÉMICA Y EDITORIAL
+<header class="ph-root">
+  <!-- Fondo decorativo: líneas tipográficas verticales -->
+  <div class="ph-bg" aria-hidden="true">
+    <span class="ph-bg__line"></span>
+    <span class="ph-bg__line"></span>
+    <span class="ph-bg__line"></span>
+    <span class="ph-bg__line"></span>
+    <span class="ph-bg__line"></span>
+    <span class="ph-bg__line"></span>
+  </div>
+  <!-- Ruido de papel -->
+  <div class="ph-bg__noise" aria-hidden="true"></div>
+
+  <div class="ph-container">
+
+    <!-- ══════════════════════════════════════════
+         COLUMNA IZQUIERDA — Portal digital
+    ══════════════════════════════════════════ -->
+    <div class="ph-editorial">
+      <!-- Eyebrow label -->
+      <p class="ph-eyebrow">
+        <span class="ph-eyebrow__rule"></span>
+        Producción Académica &amp; Editorial
       </p>
-      <h1
-        class="font-headline text-4xl sm:text-5xl md:text-6xl lg:text-8xl text-[#5E0B15] font-bold leading-none tracking-tighter mb-6 md:mb-8"
-      >
-        Artículos <br /><span class="italic font-normal">de Investigación.</span
-        >
+
+      <!-- Título principal -->
+      <h1 class="ph-title">
+        Artículos<br />
+        <em>de Investigación.</em>
       </h1>
-      <p
-        class="font-body text-lg md:text-xl text-on-surface-variant max-w-2xl leading-relaxed"
-      >
+
+      <!-- Descripción -->
+      <p class="ph-description">
         Explora nuestra producción editorial, donde miembros e invitados
         analizan la problemática socio-laboral peruana. A través de una
         perspectiva crítica, abordamos los desafíos del Derecho del Trabajo y de
         la Seguridad Social para plantear y difundir alternativas de solución.
       </p>
-    </div>
-    <div class="lg:col-span-5 flex flex-col gap-6 lg:items-end">
-      <div class="w-full max-w-sm mx-auto lg:mx-0 lg:ml-auto">
-        <p
-          class="font-label text-xs uppercase tracking-[0.3em] text-[#5E0B15] mb-3 text-center lg:text-right"
-        >
-          Conoce nuestra revista
-        </p>
-        <img
-          src="/revista.png"
-          alt="Portada de la revista"
-          class="w-full rounded-sm"
-        />
-        <p
-          class="font-label text-xs uppercase tracking-[0.25em] text-on-surface-variant mt-3 text-center lg:text-right"
-        >
-          N° 01 | Año 01 | 2024
-        </p>
+
+      <!-- Contador de artículos — con contexto claro -->
+      <div class="ph-stat">
+        <div class="ph-stat__inner">
+          <span class="ph-stat__rule"></span>
+          <div>
+            <span class="ph-stat__number">{total}</span>
+            <span class="ph-stat__label">artículos publicados<br />en este portal</span>
+          </div>
+        </div>
       </div>
-      <div
-        class="w-full max-w-sm mx-auto lg:max-w-none lg:mx-0 flex flex-col items-center lg:items-end gap-4 pb-4"
-      >
-        <div class="text-center lg:text-right">
-          <p class="font-headline text-4xl font-bold text-[#5E0B15]">{total}</p>
-          <p class="font-label text-sm text-on-surface-variant">
-            Artículos publicados
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         COLUMNA DERECHA — Tarjeta de la revista
+    ══════════════════════════════════════════ -->
+    <div class="ph-revista-wrapper">
+
+      <!-- Badge "Edición impresa" para distinguir del portal -->
+      <div class="ph-revista-badge">
+        <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1; font-size: 0.85rem;">auto_stories</span>
+        Edición Impresa
+      </div>
+
+      <!-- Tarjeta principal de la revista -->
+      <div class="ph-revista-card">
+
+        <!-- Portada con efecto de sombra profunda -->
+        <div class="ph-cover">
+          <div class="ph-cover__shadow"></div>
+          <img
+            src="/revista.png"
+            alt="Portada de la Revista DETRA-UNT N° 01"
+            class="ph-cover__img"
+            loading="eager"
+          />
+          <!-- Brillo sutil de portada -->
+          <div class="ph-cover__sheen" aria-hidden="true"></div>
+        </div>
+
+        <!-- Info de la revista -->
+        <div class="ph-revista-info">
+          <p class="ph-revista-meta">Revista DETRA-UNT</p>
+          <h2 class="ph-revista-title">N.&deg; 01 <span>/ 2024</span></h2>
+          <p class="ph-revista-desc">
+            Nuestra publicación inaugural. Un compendio de investigación
+            jurídica de calidad, disponible para adquisición.
+          </p>
+
+          <!-- Separador dorado -->
+          <div class="ph-revista-rule"></div>
+
+          <!-- CTA de adquisición -->
+          <a
+            href="/?motivo=revista#contacto"
+            class="ph-cta"
+            aria-label="Adquirir la revista DETRA-UNT N° 01"
+          >
+            <!-- Shimmer animado -->
+            <span class="ph-cta__shimmer" aria-hidden="true"></span>
+            <span class="ph-cta__icon material-symbols-outlined" aria-hidden="true">shopping_bag</span>
+            <span class="ph-cta__text">Adquirir la revista</span>
+            <span class="ph-cta__arrow material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+          </a>
+
+          <!-- Nota de precio / disponibilidad -->
+          <p class="ph-revista-note">
+            <span class="material-symbols-outlined" style="font-size:0.85rem; vertical-align: middle;">info</span>
+            Consulta disponibilidad y precio por esta vía
           </p>
         </div>
-        <div class="w-full h-px bg-outline-variant/30"></div>
       </div>
+
     </div>
   </div>
 </header>
+
+
+<style>
+  /* ══════════════════════════════════════════
+     RAÍZ Y FONDO
+  ══════════════════════════════════════════ */
+  .ph-root {
+    position: relative;
+    background: #fcfaec;
+    overflow: hidden;
+    padding: 5rem 1.5rem 4rem;
+  }
+  @media (min-width: 768px) {
+    .ph-root { padding: 6rem 2rem 5rem; }
+  }
+  @media (min-width: 1024px) {
+    .ph-root { padding: 7rem 2rem 6rem; }
+  }
+
+  /* Líneas decorativas verticales */
+  .ph-bg {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+  }
+  .ph-bg__line {
+    display: block;
+    width: 1px;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent, rgba(94,11,21,0.07) 30%, rgba(94,11,21,0.07) 70%, transparent);
+  }
+
+  /* Ruido de papel */
+  .ph-bg__noise {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
+  }
+
+  /* ══════════════════════════════════════════
+     LAYOUT
+  ══════════════════════════════════════════ */
+  .ph-container {
+    position: relative;
+    z-index: 1;
+    max-width: 80rem;
+    margin: 0 auto;
+    display: grid;
+    gap: 4rem;
+    align-items: center;
+  }
+  @media (min-width: 1024px) {
+    .ph-container {
+      grid-template-columns: 1fr 420px;
+      gap: 5rem;
+    }
+  }
+
+  /* ══════════════════════════════════════════
+     COLUMNA IZQUIERDA — Editorial
+  ══════════════════════════════════════════ */
+
+  /* Eyebrow */
+  .ph-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: #5E0B15;
+    opacity: 0.75;
+    margin-bottom: 1.5rem;
+  }
+  .ph-eyebrow__rule {
+    display: inline-block;
+    width: 2.5rem;
+    height: 1px;
+    background: #5E0B15;
+    opacity: 0.5;
+  }
+
+  /* Título */
+  .ph-title {
+    font-family: 'Newsreader', Georgia, serif;
+    font-size: clamp(3rem, 7vw, 6.5rem);
+    font-weight: 700;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    color: #5E0B15;
+    margin: 0 0 1.75rem;
+  }
+  .ph-title em {
+    font-style: italic;
+    font-weight: 300;
+  }
+
+  /* Descripción */
+  .ph-description {
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: rgba(28, 28, 20, 0.65);
+    max-width: 52ch;
+    margin: 0 0 2.5rem;
+  }
+
+  /* Estadística de artículos */
+  .ph-stat {
+    border-top: 1px solid rgba(94, 11, 21, 0.15);
+    padding-top: 1.75rem;
+    margin-top: 0.5rem;
+  }
+  .ph-stat__inner {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+  }
+  .ph-stat__rule {
+    display: block;
+    width: 3px;
+    height: 3rem;
+    background: linear-gradient(to bottom, #5E0B15, #c8a26e);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .ph-stat__number {
+    display: block;
+    font-family: 'Newsreader', Georgia, serif;
+    font-size: 3rem;
+    font-weight: 700;
+    color: #5E0B15;
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+  .ph-stat__label {
+    display: block;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(28, 28, 20, 0.55);
+    font-weight: 600;
+    margin-top: 0.35rem;
+    line-height: 1.6;
+  }
+
+  /* ══════════════════════════════════════════
+     COLUMNA DERECHA — Revista
+  ══════════════════════════════════════════ */
+  .ph-revista-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    /* Centra en mobile */
+    max-width: 420px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  @media (min-width: 1024px) {
+    .ph-revista-wrapper { margin: 0; }
+  }
+
+  /* Badge de edición impresa */
+  .ph-revista-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.8rem;
+    background: rgba(94, 11, 21, 0.08);
+    border: 1px solid rgba(94, 11, 21, 0.18);
+    border-radius: 999px;
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: #5E0B15;
+    width: fit-content;
+  }
+
+  /* Tarjeta de la revista */
+  .ph-revista-card {
+    background: #fff;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 1px rgba(94,11,21,0.08),
+      0 8px 32px rgba(94,11,21,0.10),
+      0 32px 64px rgba(28,20,14,0.10);
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.4s ease, transform 0.4s ease;
+  }
+  .ph-revista-card:hover {
+    box-shadow:
+      0 0 0 1px rgba(94,11,21,0.12),
+      0 12px 48px rgba(94,11,21,0.18),
+      0 40px 80px rgba(28,20,14,0.15);
+    transform: translateY(-3px);
+  }
+  @media (min-width: 480px) {
+    .ph-revista-card {
+      flex-direction: row;
+    }
+  }
+
+  /* ── Portada (columna izquierda de la tarjeta) ── */
+  .ph-cover {
+    position: relative;
+    flex-shrink: 0;
+    width: 100%;
+    background: #f0ece0;
+    overflow: hidden;
+  }
+  @media (min-width: 480px) {
+    .ph-cover {
+      width: 160px;
+    }
+  }
+
+  /* Sombra interna izquierda (efecto encuadernación) */
+  .ph-cover__shadow {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 18px;
+    height: 100%;
+    background: linear-gradient(to right, transparent, rgba(0,0,0,0.12));
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .ph-cover__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    min-height: 180px;
+    transition: transform 0.5s ease;
+  }
+  .ph-revista-card:hover .ph-cover__img {
+    transform: scale(1.03);
+  }
+
+  /* Brillo tipo barniz en la portada */
+  .ph-cover__sheen {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 3;
+    background: linear-gradient(130deg, rgba(255,255,255,0.18) 0%, transparent 55%, rgba(0,0,0,0.04) 100%);
+  }
+
+  /* ── Info (columna derecha de la tarjeta) ── */
+  .ph-revista-info {
+    flex: 1;
+    padding: 1.5rem 1.5rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+  }
+  @media (min-width: 768px) {
+    .ph-revista-info { padding: 1.75rem 1.75rem 1.5rem; }
+  }
+
+  .ph-revista-meta {
+    font-size: 0.58rem;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: #c8a26e;
+    margin: 0 0 0.4rem;
+  }
+
+  .ph-revista-title {
+    font-family: 'Newsreader', Georgia, serif;
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: #1c1c14;
+    letter-spacing: -0.02em;
+    margin: 0 0 0.75rem;
+    line-height: 1;
+  }
+  .ph-revista-title span {
+    font-weight: 300;
+    font-style: italic;
+    color: rgba(28,28,20,0.45);
+    font-size: 1.2rem;
+  }
+
+  .ph-revista-desc {
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: rgba(28, 28, 20, 0.6);
+    margin: 0;
+    flex: 1;
+  }
+
+  /* Línea separadora dorada */
+  .ph-revista-rule {
+    height: 1px;
+    background: linear-gradient(to right, #c8a26e, transparent);
+    margin: 1rem 0;
+    opacity: 0.6;
+  }
+
+  /* ── Botón CTA — adquirir ── */
+  .ph-cta {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    overflow: hidden;
+    padding: 0.7rem 1.1rem;
+    border-radius: 0.5rem;
+    background: #5E0B15;
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 700;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 16px rgba(94,11,21,0.25);
+    cursor: pointer;
+    border: none;
+  }
+  .ph-cta:hover {
+    background: #7a0e1c;
+    box-shadow: 0 6px 24px rgba(94,11,21,0.40);
+  }
+
+  /* Shimmer dorado al hover */
+  .ph-cta__shimmer {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      100deg,
+      transparent 20%,
+      rgba(200, 162, 110, 0.35) 50%,
+      transparent 80%
+    );
+    transform: translateX(-100%);
+    transition: transform 0s;
+    pointer-events: none;
+  }
+  .ph-cta:hover .ph-cta__shimmer {
+    transform: translateX(100%);
+    transition: transform 0.55s ease;
+  }
+
+  .ph-cta__icon {
+    font-size: 1rem;
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+  }
+  .ph-cta__text {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+  }
+  .ph-cta__arrow {
+    font-size: 0.95rem;
+    position: relative;
+    z-index: 1;
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+  }
+  .ph-cta:hover .ph-cta__arrow {
+    transform: translateX(3px);
+  }
+
+  /* Nota de disponibilidad */
+  .ph-revista-note {
+    margin: 0.65rem 0 0;
+    font-size: 0.62rem;
+    color: rgba(28,28,20,0.42);
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  /* ══════════════════════════════════════════
+     ANIMACIONES DE ENTRADA
+  ══════════════════════════════════════════ */
+  @keyframes ph-fade-up {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .ph-eyebrow    { animation: ph-fade-up 0.65s ease both; animation-delay: 0.05s; }
+  .ph-title      { animation: ph-fade-up 0.65s ease both; animation-delay: 0.15s; }
+  .ph-description{ animation: ph-fade-up 0.65s ease both; animation-delay: 0.25s; }
+  .ph-stat       { animation: ph-fade-up 0.65s ease both; animation-delay: 0.35s; }
+  .ph-revista-wrapper { animation: ph-fade-up 0.65s ease both; animation-delay: 0.3s; }
+</style>
