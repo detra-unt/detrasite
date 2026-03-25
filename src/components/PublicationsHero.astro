@@ -20,7 +20,6 @@ const { total } = Astro.props;
   <div class="ph-bg__noise" aria-hidden="true"></div>
 
   <div class="ph-container">
-
     <!-- ══════════════════════════════════════════
          COLUMNA IZQUIERDA — Portal digital
     ══════════════════════════════════════════ -->
@@ -51,7 +50,9 @@ const { total } = Astro.props;
           <span class="ph-stat__rule"></span>
           <div>
             <span class="ph-stat__number">{total}</span>
-            <span class="ph-stat__label">artículos publicados<br />en este portal</span>
+            <span class="ph-stat__label"
+              >artículos publicados<br />en este portal</span
+            >
           </div>
         </div>
       </div>
@@ -61,21 +62,23 @@ const { total } = Astro.props;
          COLUMNA DERECHA — Tarjeta de la revista
     ══════════════════════════════════════════ -->
     <div class="ph-revista-wrapper">
-
       <!-- Badge "Edición impresa" para distinguir del portal -->
       <div class="ph-revista-badge">
-        <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1; font-size: 0.85rem;">auto_stories</span>
+        <span
+          class="material-symbols-outlined"
+          style="font-variation-settings:'FILL' 1; font-size: 0.85rem;"
+          >auto_stories</span
+        >
         Edición Impresa
       </div>
 
       <!-- Tarjeta principal de la revista -->
       <div class="ph-revista-card">
-
         <!-- Portada con efecto de sombra profunda -->
         <div class="ph-cover">
           <div class="ph-cover__shadow"></div>
           <img
-            src="/revista.png"
+            src="/revistav2.png"
             alt="Portada de la Revista DETRA-UNT N° 01"
             class="ph-cover__img"
             loading="eager"
@@ -104,23 +107,30 @@ const { total } = Astro.props;
           >
             <!-- Shimmer animado -->
             <span class="ph-cta__shimmer" aria-hidden="true"></span>
-            <span class="ph-cta__icon material-symbols-outlined" aria-hidden="true">shopping_bag</span>
+            <span
+              class="ph-cta__icon material-symbols-outlined"
+              aria-hidden="true">shopping_bag</span
+            >
             <span class="ph-cta__text">Adquirir la revista</span>
-            <span class="ph-cta__arrow material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+            <span
+              class="ph-cta__arrow material-symbols-outlined"
+              aria-hidden="true">arrow_forward</span
+            >
           </a>
 
           <!-- Nota de precio / disponibilidad -->
           <p class="ph-revista-note">
-            <span class="material-symbols-outlined" style="font-size:0.85rem; vertical-align: middle;">info</span>
+            <span
+              class="material-symbols-outlined"
+              style="font-size:0.85rem; vertical-align: middle;">info</span
+            >
             Consulta disponibilidad y precio por esta vía
           </p>
         </div>
       </div>
-
     </div>
   </div>
 </header>
-
 
 <style>
   /* ══════════════════════════════════════════
@@ -130,13 +140,20 @@ const { total } = Astro.props;
     position: relative;
     background: #fcfaec;
     overflow: hidden;
-    padding: 5rem 1.5rem 4rem;
+    padding: 2.5rem 1.5rem;
+    min-height: calc(100vh - 74px); /* Asume navbar ~74px */
+    display: flex;
+    align-items: center;
   }
   @media (min-width: 768px) {
-    .ph-root { padding: 6rem 2rem 5rem; }
+    .ph-root {
+      padding: 3rem 2rem;
+    }
   }
   @media (min-width: 1024px) {
-    .ph-root { padding: 7rem 2rem 6rem; }
+    .ph-root {
+      padding: 1.5rem 2rem; /* Menos padding vertical para mejor ajuste en desktop */
+    }
   }
 
   /* Líneas decorativas verticales */
@@ -151,7 +168,13 @@ const { total } = Astro.props;
     display: block;
     width: 1px;
     height: 100%;
-    background: linear-gradient(to bottom, transparent, rgba(94,11,21,0.07) 30%, rgba(94,11,21,0.07) 70%, transparent);
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      rgba(94, 11, 21, 0.07) 30%,
+      rgba(94, 11, 21, 0.07) 70%,
+      transparent
+    );
   }
 
   /* Ruido de papel */
@@ -173,13 +196,14 @@ const { total } = Astro.props;
     max-width: 80rem;
     margin: 0 auto;
     display: grid;
-    gap: 4rem;
+    gap: 2.5rem;
     align-items: center;
+    width: 100%;
   }
   @media (min-width: 1024px) {
     .ph-container {
-      grid-template-columns: 1fr 420px;
-      gap: 5rem;
+      grid-template-columns: 1fr 400px;
+      gap: 3rem;
     }
   }
 
@@ -196,27 +220,27 @@ const { total } = Astro.props;
     letter-spacing: 0.32em;
     text-transform: uppercase;
     font-weight: 700;
-    color: #5E0B15;
+    color: #5e0b15;
     opacity: 0.75;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
   }
   .ph-eyebrow__rule {
     display: inline-block;
     width: 2.5rem;
     height: 1px;
-    background: #5E0B15;
+    background: #5e0b15;
     opacity: 0.5;
   }
 
   /* Título */
   .ph-title {
-    font-family: 'Newsreader', Georgia, serif;
-    font-size: clamp(3rem, 7vw, 6.5rem);
+    font-family: "Newsreader", Georgia, serif;
+    font-size: clamp(3rem, 6vw, 5.5rem);
     font-weight: 700;
     line-height: 0.95;
     letter-spacing: -0.03em;
-    color: #5E0B15;
-    margin: 0 0 1.75rem;
+    color: #5e0b15;
+    margin: 0 0 1.25rem;
   }
   .ph-title em {
     font-style: italic;
@@ -225,18 +249,18 @@ const { total } = Astro.props;
 
   /* Descripción */
   .ph-description {
-    font-size: 1.05rem;
-    line-height: 1.75;
+    font-size: 0.95rem;
+    line-height: 1.6;
     color: rgba(28, 28, 20, 0.65);
     max-width: 52ch;
-    margin: 0 0 2.5rem;
+    margin: 0 0 1.5rem;
   }
 
   /* Estadística de artículos */
   .ph-stat {
     border-top: 1px solid rgba(94, 11, 21, 0.15);
-    padding-top: 1.75rem;
-    margin-top: 0.5rem;
+    padding-top: 1.25rem;
+    margin-top: 0;
   }
   .ph-stat__inner {
     display: flex;
@@ -247,16 +271,16 @@ const { total } = Astro.props;
     display: block;
     width: 3px;
     height: 3rem;
-    background: linear-gradient(to bottom, #5E0B15, #c8a26e);
+    background: linear-gradient(to bottom, #5e0b15, #c8a26e);
     border-radius: 2px;
     flex-shrink: 0;
   }
   .ph-stat__number {
     display: block;
-    font-family: 'Newsreader', Georgia, serif;
+    font-family: "Newsreader", Georgia, serif;
     font-size: 3rem;
     font-weight: 700;
-    color: #5E0B15;
+    color: #5e0b15;
     line-height: 1;
     letter-spacing: -0.04em;
   }
@@ -284,7 +308,9 @@ const { total } = Astro.props;
     width: 100%;
   }
   @media (min-width: 1024px) {
-    .ph-revista-wrapper { margin: 0; }
+    .ph-revista-wrapper {
+      margin: 0;
+    }
   }
 
   /* Badge de edición impresa */
@@ -300,7 +326,7 @@ const { total } = Astro.props;
     letter-spacing: 0.2em;
     text-transform: uppercase;
     font-weight: 700;
-    color: #5E0B15;
+    color: #5e0b15;
     width: fit-content;
   }
 
@@ -310,18 +336,20 @@ const { total } = Astro.props;
     border-radius: 1rem;
     overflow: hidden;
     box-shadow:
-      0 0 0 1px rgba(94,11,21,0.08),
-      0 8px 32px rgba(94,11,21,0.10),
-      0 32px 64px rgba(28,20,14,0.10);
+      0 0 0 1px rgba(94, 11, 21, 0.08),
+      0 8px 32px rgba(94, 11, 21, 0.1),
+      0 32px 64px rgba(28, 20, 14, 0.1);
     display: flex;
     flex-direction: column;
-    transition: box-shadow 0.4s ease, transform 0.4s ease;
+    transition:
+      box-shadow 0.4s ease,
+      transform 0.4s ease;
   }
   .ph-revista-card:hover {
     box-shadow:
-      0 0 0 1px rgba(94,11,21,0.12),
-      0 12px 48px rgba(94,11,21,0.18),
-      0 40px 80px rgba(28,20,14,0.15);
+      0 0 0 1px rgba(94, 11, 21, 0.12),
+      0 12px 48px rgba(94, 11, 21, 0.18),
+      0 40px 80px rgba(28, 20, 14, 0.15);
     transform: translateY(-3px);
   }
   @media (min-width: 480px) {
@@ -351,7 +379,7 @@ const { total } = Astro.props;
     right: 0;
     width: 18px;
     height: 100%;
-    background: linear-gradient(to right, transparent, rgba(0,0,0,0.12));
+    background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.12));
     z-index: 2;
     pointer-events: none;
   }
@@ -374,7 +402,12 @@ const { total } = Astro.props;
     inset: 0;
     pointer-events: none;
     z-index: 3;
-    background: linear-gradient(130deg, rgba(255,255,255,0.18) 0%, transparent 55%, rgba(0,0,0,0.04) 100%);
+    background: linear-gradient(
+      130deg,
+      rgba(255, 255, 255, 0.18) 0%,
+      transparent 55%,
+      rgba(0, 0, 0, 0.04) 100%
+    );
   }
 
   /* ── Info (columna derecha de la tarjeta) ── */
@@ -385,7 +418,9 @@ const { total } = Astro.props;
     flex-direction: column;
   }
   @media (min-width: 768px) {
-    .ph-revista-info { padding: 1.75rem 1.75rem 1.5rem; }
+    .ph-revista-info {
+      padding: 1.75rem 1.75rem 1.5rem;
+    }
   }
 
   .ph-revista-meta {
@@ -398,7 +433,7 @@ const { total } = Astro.props;
   }
 
   .ph-revista-title {
-    font-family: 'Newsreader', Georgia, serif;
+    font-family: "Newsreader", Georgia, serif;
     font-size: 1.7rem;
     font-weight: 700;
     color: #1c1c14;
@@ -409,7 +444,7 @@ const { total } = Astro.props;
   .ph-revista-title span {
     font-weight: 300;
     font-style: italic;
-    color: rgba(28,28,20,0.45);
+    color: rgba(28, 28, 20, 0.45);
     font-size: 1.2rem;
   }
 
@@ -438,21 +473,23 @@ const { total } = Astro.props;
     overflow: hidden;
     padding: 0.7rem 1.1rem;
     border-radius: 0.5rem;
-    background: #5E0B15;
+    background: #5e0b15;
     color: #fff;
     text-decoration: none;
     font-size: 0.72rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     font-weight: 700;
-    transition: background 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 4px 16px rgba(94,11,21,0.25);
+    transition:
+      background 0.3s ease,
+      box-shadow 0.3s ease;
+    box-shadow: 0 4px 16px rgba(94, 11, 21, 0.25);
     cursor: pointer;
     border: none;
   }
   .ph-cta:hover {
     background: #7a0e1c;
-    box-shadow: 0 6px 24px rgba(94,11,21,0.40);
+    box-shadow: 0 6px 24px rgba(94, 11, 21, 0.4);
   }
 
   /* Shimmer dorado al hover */
@@ -500,7 +537,7 @@ const { total } = Astro.props;
   .ph-revista-note {
     margin: 0.65rem 0 0;
     font-size: 0.62rem;
-    color: rgba(28,28,20,0.42);
+    color: rgba(28, 28, 20, 0.42);
     letter-spacing: 0.04em;
     display: flex;
     align-items: center;
@@ -511,13 +548,34 @@ const { total } = Astro.props;
      ANIMACIONES DE ENTRADA
   ══════════════════════════════════════════ */
   @keyframes ph-fade-up {
-    from { opacity: 0; transform: translateY(18px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
-  .ph-eyebrow    { animation: ph-fade-up 0.65s ease both; animation-delay: 0.05s; }
-  .ph-title      { animation: ph-fade-up 0.65s ease both; animation-delay: 0.15s; }
-  .ph-description{ animation: ph-fade-up 0.65s ease both; animation-delay: 0.25s; }
-  .ph-stat       { animation: ph-fade-up 0.65s ease both; animation-delay: 0.35s; }
-  .ph-revista-wrapper { animation: ph-fade-up 0.65s ease both; animation-delay: 0.3s; }
+  .ph-eyebrow {
+    animation: ph-fade-up 0.65s ease both;
+    animation-delay: 0.05s;
+  }
+  .ph-title {
+    animation: ph-fade-up 0.65s ease both;
+    animation-delay: 0.15s;
+  }
+  .ph-description {
+    animation: ph-fade-up 0.65s ease both;
+    animation-delay: 0.25s;
+  }
+  .ph-stat {
+    animation: ph-fade-up 0.65s ease both;
+    animation-delay: 0.35s;
+  }
+  .ph-revista-wrapper {
+    animation: ph-fade-up 0.65s ease both;
+    animation-delay: 0.3s;
+  }
 </style>

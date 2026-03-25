@@ -1,20 +1,315 @@
 ---
-
+// src/components/ContributeCTA.astro
 ---
 
-<section class="bg-[#eae9db] py-16 md:py-24">
-  <div class="max-w-7xl mx-auto px-6 md:px-8 text-center">
-    <h2 class="font-headline text-3xl md:text-4xl lg:text-5xl text-[#2e0007] font-bold mb-6 italic">Contribuye al Archivo.</h2>
-    <p class="font-body text-[#564243] max-w-xl mx-auto mb-8 md:mb-10">
-      Unete a una comunidad de mas de 500 academicos dedicados a avanzar las fronteras de la investigacion legal y ambiental.
-    </p>
-    <div class="flex flex-col sm:flex-row gap-4 justify-center">
-      <button class="bg-[#2e0007] text-white px-8 py-3 rounded-md font-label text-sm hover:opacity-90 transition-opacity">
-        Enviar Manuscrito
-      </button>
-      <button class="bg-white text-[#2e0007] px-8 py-3 rounded-md font-label text-sm border border-[#dcc0c1]/30">
-        Soporte de Biblioteca
-      </button>
+<section class="ccta-root">
+  <!-- Textura de fondo -->
+  <div class="ccta-noise" aria-hidden="true"></div>
+
+  <!-- Líneas sutiles de fondo -->
+  <div class="ccta-lines" aria-hidden="true">
+    <div class="ccta-line"></div>
+    <div class="ccta-line"></div>
+    <div class="ccta-line"></div>
+  </div>
+
+  <div class="ccta-container">
+    <!-- Marco perimetral decorativo tipo certificado/editorial -->
+    <div class="ccta-frame">
+      <!-- Esquinas decorativas -->
+      <div class="ccta-corner ccta-corner--tl" aria-hidden="true"></div>
+      <div class="ccta-corner ccta-corner--tr" aria-hidden="true"></div>
+      <div class="ccta-corner ccta-corner--bl" aria-hidden="true"></div>
+      <div class="ccta-corner ccta-corner--br" aria-hidden="true"></div>
+
+      <div class="ccta-content">
+        <p class="ccta-eyebrow">
+          <span
+            class="material-symbols-outlined ccta-eyebrow__icon"
+            style="font-variation-settings:'FILL' 1">history_edu</span
+          >
+          Convocatoria Abierta
+          <span class="ccta-eyebrow__line"></span>
+        </p>
+
+        <h2 class="ccta-title">
+          Publica en <br />
+          <em>nuestro Blog.</em>
+        </h2>
+
+        <p class="ccta-description">
+          Únete a nuestra prestigiosa red de académicos y profesionales
+          aportando tu visión al Derecho del Trabajo y la Seguridad Social.
+          Buscamos análisis rigurosos, perspectivas críticas y artículos de
+          investigación inéditos para nuestra próxima edición impresa y portal
+          digital.
+        </p>
+
+        <div class="ccta-actions">
+          <!-- CTA Primario con el motifo 'colaboracion' hacia contacto -->
+          <a
+            href="/?motivo=colaboracion#contacto"
+            class="ccta-btn ccta-btn--primary"
+            data-astro-prefetch
+          >
+            <span class="ccta-btn__shimmer" aria-hidden="true"></span>
+            <span class="ccta-btn__text">Presentar Propuesta de Artículo</span>
+            <span class="ccta-btn__icon material-symbols-outlined"
+              >arrow_forward</span
+            >
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 </section>
+
+<style>
+  /* ══════════════════════════════════════════
+     RAÍZ Y FONDOS
+  ══════════════════════════════════════════ */
+  .ccta-root {
+    position: relative;
+    background: #1e0007; /* Rojo extremadamente oscuro, casi negro */
+    color: #fcfaec;
+    padding: 6rem 1.5rem;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+  }
+  @media (min-width: 768px) {
+    .ccta-root {
+      padding: 8rem 2rem;
+    }
+  }
+
+  .ccta-noise {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 150px 150px;
+    z-index: 1;
+  }
+
+  .ccta-lines {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: space-evenly;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .ccta-line {
+    width: 1px;
+    height: 100%;
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      rgba(200, 162, 110, 0.07) 50%,
+      transparent
+    );
+  }
+
+  /* ══════════════════════════════════════════
+     CONTENEDOR Y MARCO
+  ══════════════════════════════════════════ */
+  .ccta-container {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 56rem; /* 896px */
+  }
+
+  .ccta-frame {
+    position: relative;
+    padding: 3rem 1.5rem;
+    border: 1px solid rgba(200, 162, 110, 0.15); /* Borde dorado mate */
+    background: linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.02) 0%,
+      transparent 100%
+    );
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
+  }
+  @media (min-width: 768px) {
+    .ccta-frame {
+      padding: 4.5rem 4rem;
+    }
+  }
+
+  /* Esquinas decorativas del marco */
+  .ccta-corner {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border: 1px solid #c8a26e;
+    opacity: 0.6;
+  }
+  .ccta-corner--tl {
+    top: -4px;
+    left: -4px;
+    border-right: none;
+    border-bottom: none;
+  }
+  .ccta-corner--tr {
+    top: -4px;
+    right: -4px;
+    border-left: none;
+    border-bottom: none;
+  }
+  .ccta-corner--bl {
+    bottom: -4px;
+    left: -4px;
+    border-right: none;
+    border-top: none;
+  }
+  .ccta-corner--br {
+    bottom: -4px;
+    right: -4px;
+    border-left: none;
+    border-top: none;
+  }
+
+  /* ══════════════════════════════════════════
+     CONTENIDO
+  ══════════════════════════════════════════ */
+  .ccta-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .ccta-eyebrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: #c8a26e;
+    margin-bottom: 1.75rem;
+  }
+  .ccta-eyebrow__icon {
+    font-size: 1.1rem;
+    opacity: 0.9;
+  }
+  .ccta-eyebrow__line {
+    display: inline-block;
+    width: 2rem;
+    height: 1px;
+    background: #c8a26e;
+    opacity: 0.5;
+  }
+
+  .ccta-title {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: #fcfaec;
+    margin: 0 0 1.5rem;
+  }
+  .ccta-title em {
+    font-style: italic;
+    font-weight: 300;
+    color: #c8a26e;
+  }
+
+  .ccta-description {
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: rgba(252, 250, 236, 0.65);
+    max-width: 48ch;
+    margin: 0 0 3rem;
+  }
+
+  /* ══════════════════════════════════════════
+     ACCIONES Y BOTONES
+  ══════════════════════════════════════════ */
+  .ccta-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    align-items: center;
+  }
+  @media (min-width: 480px) {
+    .ccta-actions {
+      flex-direction: row;
+      justify-content: center;
+      width: auto;
+    }
+  }
+
+  .ccta-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    font-size: 0.75rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: 700;
+    padding: 1rem 1.8rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    width: 100%;
+  }
+  @media (min-width: 480px) {
+    .ccta-btn {
+      width: auto;
+    }
+  }
+
+  .ccta-btn--primary {
+    background: #c8a26e;
+    color: #1e0007;
+    box-shadow: 0 4px 16px rgba(200, 162, 110, 0.15);
+  }
+  .ccta-btn--primary:hover {
+    background: #d8b584;
+    box-shadow: 0 6px 24px rgba(200, 162, 110, 0.25);
+    transform: translateY(-2px);
+  }
+
+  .ccta-btn__shimmer {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      100deg,
+      transparent 20%,
+      rgba(255, 255, 255, 0.4) 50%,
+      transparent 80%
+    );
+    transform: translateX(-100%);
+    transition: transform 0s;
+    pointer-events: none;
+  }
+  .ccta-btn:hover .ccta-btn__shimmer {
+    transform: translateX(100%);
+    transition: transform 0.6s ease;
+  }
+
+  .ccta-btn__text {
+    position: relative;
+    z-index: 1;
+  }
+  .ccta-btn__icon {
+    position: relative;
+    z-index: 1;
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
+  }
+  .ccta-btn:hover .ccta-btn__icon {
+    transform: translateX(4px);
+  }
+</style>

@@ -48,6 +48,10 @@ export default function ContactForm() {
         asunto: 'Consulta general',
         mensaje: 'Hola quisiera ponerme en contacto con ustedes. Estaré al tanto de su respuesta.'
       },
+      colaboracion: {
+        asunto: 'Propuesta de colaboración',
+        mensaje: 'Hola, me gustaría recibir más información sobre los lineamientos y requisitos para colaborar con un artículo de investigación. Quedo a la espera de sus indicaciones.'
+      },
       //Permite la integración de más motivos
     }
 
