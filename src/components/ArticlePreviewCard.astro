@@ -1,7 +1,7 @@
 ---
 // Componente de preview de artículo - muestra imagen, autores, fecha, tipo y título
 import type { ArticlePreview } from '../lib/contentful';
-import { getArticleUrl, getArticleTypeSlug, formatShortDate, getAuthorInitials } from '../lib/contentful';
+import { getArticleUrl, getArticleTypeSlug, formatDateBySize,getAuthorInitials } from '../lib/contentful';
 import ExpandableArticleTitle from './ExpandableArticleTitle.astro';
 
 interface Props {
@@ -14,7 +14,7 @@ const { article, variant = 'default', class: className = '' } = Astro.props;
 
 const articleUrl = getArticleUrl(article);
 const typeSlug = getArticleTypeSlug(article.articleType);
-const formattedDate = formatShortDate(article.publishDate);
+const formattedDate = formatDateBySize(article.publishDate,'short');
 const authors = article.authorsCollection.items;
 const titleRevealId = `${article.sys.id}-${variant}`;
 ---

@@ -1,23 +1,23 @@
-// Cliente GraphQL para Contentful
-import { documentToHtmlString } from '@contentful/rich-text-html-renderer';
-import type { Document } from '@contentful/rich-text-types';
-import { cached } from './cache';
+// Cliente GraphQL para Contentful, núcleo de la integración de datos del sitio. Actúa como puente o cliente graphQL que conecta la aplicación con el CMS Contentful.
+import { documentToHtmlString } from '@contentful/rich-text-html-renderer'; //Función que convierte el json del richText de contentful en html
+import type { Document } from '@contentful/rich-text-types'; //Tipar el contenido del richText. Evita errores o que sea reconocido de tipo any.
+import { cached } from './cache'; //Funcion personalida que envuelve las consultas a la api. Guarda el resultado de las consultas temporalmente haciendo que la página cargue más rápido.
 
-// Configuración de Contentful
+// Configuración de Contentful, asigna a las variables los valores de las variables de entorno.
 const SPACE_ID = import.meta.env.CONTENTFUL_SPACE_ID;
 const ACCESS_TOKEN = import.meta.env.CONTENTFUL_DELIVERY_TOKEN;
 const PREVIEW_TOKEN = import.meta.env.CONTENTFUL_PREVIEW_TOKEN;
 
-const GRAPHQL_ENDPOINT = `https://graphql.contentful.com/content/v1/spaces/${SPACE_ID}`;
+const GRAPHQL_ENDPOINT = `https://graphql.contentful.com/content/v1/spaces/${SPACE_ID}`; //Connection string con contentful en modo graphql
 
 // Tipos de artículo y mapeo a rutas
 export const ARTICLE_TYPES = {
-  'ARTÍCULO ESTUDIANTIL': 'estudiantes',
+  'ARTÍCULO ESTUDIANTIL': 'estudiantes', //Mapeo del tipo de artículo de contentful a astro
   'ARTÍCULO DE INVITADO': 'invitados',
 } as const;
 
 export const ARTICLE_TYPE_LABELS = {
-  'estudiantes': 'ARTÍCULO ESTUDIANTIL',
+  'estudiantes': 'ARTÍCULO ESTUDIANTIL', //mapeo del tipo de artículo de astro a contentful
   'invitados': 'ARTÍCULO DE INVITADO',
 } as const;
 
@@ -74,33 +74,33 @@ export interface ArticlePreview {
   articleType: ArticleTypeValue;
   coverImage: ContentfulAsset;
   authorsCollection: {
-    items: Pick<Author, 'fullName' | 'academicDegree' | 'profilePicture'>[];
+    items: Pick<Author, 'fullName' | 'academicDegree' | 'profilePicture'>[]; //De author solo toma el nombre, grado académico y foto de perfil.
   };
   publishDate: string;
 }
 
 // Función helper para ejecutar queries GraphQL
-async function fetchGraphQL<T>(
-  query: string,
-  preview = false
+async function fetchGraphQL<T>( //De tipo genérico porque se desconoce el tipo de la consulta
+  query: string, //la consulta
+  preview = false //se refiere a si el contenido no publicado será visible, por defecto está en false
 ): Promise<T> {
-  const response = await fetch(GRAPHQL_ENDPOINT, {
-    method: 'POST',
+  const response = await fetch(GRAPHQL_ENDPOINT, { //se hace un fetch a la connection string
+    method: 'POST', 
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${preview ? PREVIEW_TOKEN : ACCESS_TOKEN}`,
     },
-    body: JSON.stringify({ query }),
+    body: JSON.stringify({ query }), //el cuerpo de la consulta es nuestro query transformado a json
   });
 
-  const json = await response.json();
-
-  if (json.errors) {
+  const json = await response.json(); //se espera por la respuesta en formato json
+ 
+  if (json.errors) { //verifica si hubo errores
     console.error('GraphQL Errors:', json.errors);
-    throw new Error('Error fetching data from Contentful');
+    throw new Error('Error trayendo la data desde Contentful');
   }
 
-  return json.data;
+  return json.data; //si no hubo errores devuelve los datos de la consulta
 }
 
 // Helper para obtener la ruta del tipo de artículo
@@ -406,7 +406,7 @@ export function renderRichText(document: Document): string {
   });
 }
 
-// Helper para formatear fecha
+/* // Helper para formatear fecha
 export function formatDate(dateString: string, locale = 'es-PE'): string {
   const date = new Date(dateString);
   return date.toLocaleDateString(locale, {
@@ -422,6 +422,15 @@ export function formatShortDate(dateString: string, locale = 'es-PE'): string {
   return date.toLocaleDateString(locale, {
     year: 'numeric',
     month: 'short',
+    day: 'numeric',
+  });
+}
+ */
+export function formatDateBySize(dateString: string, size: string, locale = 'es-PE') : string {
+  const date = new Date(dateString);
+  return date.toLocaleDateString(locale, {
+    year: 'numeric',
+    month: size === 'short' ? 'short' : 'long',
     day: 'numeric',
   });
 }

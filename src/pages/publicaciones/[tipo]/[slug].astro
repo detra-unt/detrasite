@@ -4,7 +4,7 @@ import RichTextRenderer from "../../../components/RichTextRenderer.astro";
 import {
   getArticleBySlug,
   getAllArticleSlugs,
-  formatDate,
+  formatDateBySize,
   getAuthorInitials,
   getArticleTypeSlug,
   type ArticleTypeSlug,
@@ -33,7 +33,7 @@ if (!article) {
 }
 
 const authors = article.authorsCollection.items;
-const publishDate = formatDate(article.publishDate);
+const publishDate = formatDateBySize(article.publishDate,'long');
 const articleTypeLabel = article.articleType;
 ---
 
