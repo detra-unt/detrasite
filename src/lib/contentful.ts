@@ -397,42 +397,28 @@ export async function searchArticles(
   return data.articleCollection.items;
 }
 
-// Renderizar Rich Text a HTML
-export function renderRichText(document: Document): string {
-  return documentToHtmlString(document, {
-    renderNode: {
-      // Personalizar renderizado de nodos si es necesario
-    },
-  });
-}
+//VersionDefinitiva del formateador de fechas
+export type DateFormatSize = 'short' | 'long';
 
-/* // Helper para formatear fecha
-export function formatDate(dateString: string, locale = 'es-PE'): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString(locale, {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-}
+export function formatDateBySize(dateString: string, size : DateFormatSize = 'long', locale = 'es-PE') : string{
+  try {
+    const date = new Date(dateString);
 
-// Helper para formatear fecha corta
-export function formatShortDate(dateString: string, locale = 'es-PE'): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString(locale, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
-}
- */
-export function formatDateBySize(dateString: string, size: string, locale = 'es-PE') : string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString(locale, {
-    year: 'numeric',
-    month: size === 'short' ? 'short' : 'long',
-    day: 'numeric',
-  });
+    //Verificamos si la fecha es válida antes de formatear
+    if(isNaN(date.getTime())){
+      return 'Fecha no disponible';
+    }
+
+    return date.toLocaleDateString(locale, {
+      timeZone : 'America/Lima',
+      year : 'numeric',
+      month : size === 'short' ? 'short' : 'long',
+      day : 'numeric'
+    });
+  } catch (error) {
+    console.error('Error formateando fecha: ', dateString);
+    return 'Fecha no disponible';
+  }
 }
 
 // Helper para obtener iniciales del autor
