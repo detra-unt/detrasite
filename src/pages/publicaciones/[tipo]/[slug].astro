@@ -170,7 +170,11 @@ const articleTypeLabel = article.articleType;
       <img
         src={article.coverImage.url}
         alt={article.coverImage.title || article.title}
+        width={article.coverImage.width || 1200}
+        height={article.coverImage.height || 630}
         class="w-full h-full object-cover opacity-20"
+        loading="eager"
+        decoding="async"
       />
       <div
         class="absolute inset-0 bg-gradient-to-t from-[#5E0B15] via-[#5E0B15]/90 to-[#5E0B15]/70"
@@ -296,7 +300,11 @@ const articleTypeLabel = article.articleType;
           <img
             src={article.coverImage.url}
             alt={article.coverImage.title || article.title}
+            width={article.coverImage.width || 1200}
+            height={article.coverImage.height || 675}
             class="w-full aspect-video object-cover transition-transform duration-700 group-hover:scale-105"
+            loading="eager"
+            decoding="async"
           />
           <!-- Gradient overlay sutil -->
           <div
@@ -336,7 +344,11 @@ const articleTypeLabel = article.articleType;
                     <img
                       src={author.profilePicture.url}
                       alt={author.fullName}
+                      width="80"
+                      height="80"
                       class="w-16 h-16 md:w-20 md:h-20 rounded-2xl object-cover ring-4 ring-[#5E0B15]/10 shrink-0 group-hover:ring-[#5E0B15]/20 transition-all duration-300"
+                      loading="lazy"
+                      decoding="async"
                     />
                     <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-[#5E0B15] rounded-full flex items-center justify-center">
                       <span class="material-symbols-outlined text-white text-sm">

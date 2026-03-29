@@ -40,8 +40,11 @@ const titleRevealId = `${article.sys.id}-${variant}`;
       <img 
         src={article.coverImage.url} 
         alt={article.coverImage.title || article.title}
+        width={article.coverImage.width || 800}
+        height={article.coverImage.height || 450}
         class="absolute inset-0 w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:rotate-1"
         loading="lazy"
+        decoding="async"
       />
     </div>
     
@@ -100,7 +103,11 @@ const titleRevealId = `${article.sys.id}-${variant}`;
                 <img 
                   src={author.profilePicture.url}
                   alt={author.fullName}
+                  width="28"
+                  height="28"
                   class="w-7 h-7 rounded-full object-cover ring-2 ring-[#1c1c14]"
+                  loading="lazy"
+                  decoding="async"
                 />
               ) : (
                 <span class="w-7 h-7 rounded-full bg-[#5E0B15] text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-[#1c1c14]">
@@ -139,8 +146,11 @@ const titleRevealId = `${article.sys.id}-${variant}`;
         <img 
           src={article.coverImage.url}
           alt={article.coverImage.title || article.title}
+          width="144"
+          height="144"
           class="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
           loading="lazy"
+          decoding="async"
         />
       </div>
       
@@ -194,7 +204,11 @@ const titleRevealId = `${article.sys.id}-${variant}`;
               <img 
                 src={author.profilePicture.url}
                 alt={author.fullName}
+                width="24"
+                height="24"
                 class="w-6 h-6 rounded-full object-cover ring-2 ring-[#fcfaec]"
+                loading="lazy"
+                decoding="async"
               />
             ) : (
               <span class="w-6 h-6 rounded-full bg-[#5E0B15] text-white text-[9px] font-bold flex items-center justify-center ring-2 ring-[#fcfaec]">
@@ -231,8 +245,11 @@ const titleRevealId = `${article.sys.id}-${variant}`;
       <img 
         src={article.coverImage.url}
         alt={article.coverImage.title || article.title}
+        width={article.coverImage.width || 800}
+        height={article.coverImage.height || 500}
         class="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
         loading="lazy"
+        decoding="async"
       />
       
       <!-- Overlay sutil en hover -->
@@ -287,7 +304,11 @@ const titleRevealId = `${article.sys.id}-${variant}`;
                 <img 
                   src={author.profilePicture.url}
                   alt={author.fullName}
+                  width="40"
+                  height="40"
                   class="w-10 h-10 rounded-full object-cover ring-2 ring-white shadow-sm transition-transform duration-300 group-hover/avatar:scale-110"
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
             ) : (

@@ -45,7 +45,11 @@ const events = [
         <img 
           alt="Escenario de simposio profesional con audiencia"
           class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-          src={events[0].image} 
+          src={events[0].image}
+          width="800"
+          height="450"
+          loading="lazy"
+          decoding="async"
         />
         <div class="absolute inset-0 bg-gradient-to-t from-[#2e0007]/90 via-[#2e0007]/40 to-transparent"></div>
         <div class="absolute bottom-0 p-6 md:p-10 text-white">

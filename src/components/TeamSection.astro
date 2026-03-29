@@ -27,14 +27,16 @@ const foto           = juntaDirectiva?.fotoGeneral   ?? null;
         class="junta-img"
         src={foto.url}
         alt={foto.title ?? `Junta Directiva ${managmentYear}`}
+        width={foto.width || 1600}
+        height={foto.height || 700}
         loading="lazy"
         decoding="async"
       />
 
       <!-- Hover reveal layer -->
-      <div class="junta-veil" aria-hidden="true">
+      <div class="junta-veil">
         <div class="junta-veil__inner">
-          <span class="junta-veil__badge">
+          <span class="junta-veil__badge" aria-hidden="true">
             {managmentYear && `Junta Directiva ${managmentYear}`}
           </span>
           <button class="junta-veil__btn" id="junta-open-trigger" type="button" aria-label={`Ver foto completa de la Junta Directiva ${managmentYear}`}>

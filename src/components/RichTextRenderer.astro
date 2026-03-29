@@ -75,8 +75,10 @@ const options : Partial<Options> = {
       const { file, title, description } = node.data.target.fields;
       const url = file?.url || '';
       const alt = description || title || '';
+      const width = file?.details?.image?.width || 800;
+      const height = file?.details?.image?.height || 450;
       return `<figure class="my-8">
-        <img src="https:${url}" alt="${alt}" class="w-full rounded-xl shadow-lg" loading="lazy" />
+        <img src="https:${url}" alt="${alt}" width="${width}" height="${height}" class="w-full rounded-xl shadow-lg" loading="lazy" decoding="async" />
         ${title ? `<figcaption class="text-center text-sm text-on-surface-variant mt-3 italic">${title}</figcaption>` : ''}
       </figure>`;
     },
