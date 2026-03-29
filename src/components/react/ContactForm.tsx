@@ -289,10 +289,11 @@ export default function ContactForm() {
               type="button"
               id="asunto-trigger"
               className={`contact-field__input cselect-trigger${isDropdownOpen ? ' is-open' : ''}${asunto ? ' has-value' : ''}`}
-              aria-haspopup="listbox"
+              aria-haspopup="true"
               aria-expanded={isDropdownOpen}
               aria-labelledby="asunto-label"
               aria-describedby="error-asunto"
+              aria-controls="asunto-listbox"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
               <span className="cselect-trigger__text">
@@ -319,14 +320,14 @@ export default function ContactForm() {
               className={`cselect-list${isDropdownOpen ? ' is-open' : ''}`}
               role="listbox"
               aria-labelledby="asunto-label"
-              aria-hidden={!isDropdownOpen}
+              aria-hidden={isDropdownOpen ? 'false' : 'true'}
             >
               {SUBJECTS.map((subject, i) => (
                 <li
                   key={subject}
                   className={`cselect-option${asunto === subject ? ' is-selected' : ''}`}
                   role="option"
-                  aria-selected={asunto === subject}
+                  aria-selected={asunto === subject ? 'true' : 'false'}
                   data-value={subject}
                   id={`asunto-opt-${i}`}
                   tabIndex={-1}

@@ -10,6 +10,104 @@ const PREVIEW_TOKEN = import.meta.env.CONTENTFUL_PREVIEW_TOKEN;
 
 const GRAPHQL_ENDPOINT = `https://graphql.contentful.com/content/v1/spaces/${SPACE_ID}`; //Connection string con contentful en modo graphql
 
+// ============================================================================
+// SISTEMA DE ERRORES PERSONALIZADO
+// ============================================================================
+
+/** Códigos de error para identificar el tipo de fallo */
+export const ContentfulErrorCode = {
+  NETWORK_ERROR: 'NETWORK_ERROR',
+  TIMEOUT_ERROR: 'TIMEOUT_ERROR',
+  HTTP_ERROR: 'HTTP_ERROR',
+  PARSE_ERROR: 'PARSE_ERROR',
+  GRAPHQL_ERROR: 'GRAPHQL_ERROR',
+  RATE_LIMIT_ERROR: 'RATE_LIMIT_ERROR',
+  AUTH_ERROR: 'AUTH_ERROR',
+} as const;
+
+export type ContentfulErrorCodeType = typeof ContentfulErrorCode[keyof typeof ContentfulErrorCode];
+
+/** Error base para todas las operaciones de Contentful */
+export class ContentfulError extends Error {
+  public readonly code: ContentfulErrorCodeType;
+  public readonly statusCode?: number;
+  public readonly isRetryable: boolean;
+  public readonly originalError?: Error;
+
+  constructor(
+    message: string,
+    code: ContentfulErrorCodeType,
+    options?: {
+      statusCode?: number;
+      isRetryable?: boolean;
+      originalError?: Error;
+    }
+  ) {
+    super(message);
+    this.name = 'ContentfulError';
+    this.code = code;
+    this.statusCode = options?.statusCode;
+    this.isRetryable = options?.isRetryable ?? false;
+    this.originalError = options?.originalError;
+
+    // Mantiene el stack trace correcto en V8
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, ContentfulError);
+    }
+  }
+}
+
+/** Configuración para fetchGraphQL */
+interface FetchGraphQLOptions {
+  /** Número de reintentos para errores transitorios (default: 2) */
+  retries?: number;
+  /** Delay inicial entre reintentos en ms (default: 1000) */
+  retryDelay?: number;
+  /** Timeout de la petición en ms (default: 10000) */
+  timeout?: number;
+}
+
+const DEFAULT_OPTIONS: Required<FetchGraphQLOptions> = {
+  retries: 2,
+  retryDelay: 1000,
+  timeout: 10000,
+};
+
+/** Utilidad para esperar un tiempo determinado */
+const sleep = (ms: number): Promise<void> => 
+  new Promise(resolve => setTimeout(resolve, ms));
+
+/** Determina si un error HTTP es recuperable mediante reintentos */
+function isRetryableHttpStatus(status: number): boolean {
+  // 408: Request Timeout, 429: Too Many Requests, 5xx: Server errors
+  return status === 408 || status === 429 || (status >= 500 && status < 600);
+}
+
+/** Crea un error apropiado según el código de estado HTTP */
+function createHttpError(status: number, statusText: string): ContentfulError {
+  if (status === 401 || status === 403) {
+    return new ContentfulError(
+      `Error de autenticación con Contentful (${status}): Verifica CONTENTFUL_DELIVERY_TOKEN o CONTENTFUL_PREVIEW_TOKEN`,
+      ContentfulErrorCode.AUTH_ERROR,
+      { statusCode: status, isRetryable: false }
+    );
+  }
+
+  if (status === 429) {
+    return new ContentfulError(
+      'Límite de peticiones excedido en Contentful. Intenta de nuevo más tarde.',
+      ContentfulErrorCode.RATE_LIMIT_ERROR,
+      { statusCode: status, isRetryable: true }
+    );
+  }
+
+  return new ContentfulError(
+    `Error HTTP ${status}: ${statusText}`,
+    ContentfulErrorCode.HTTP_ERROR,
+    { statusCode: status, isRetryable: isRetryableHttpStatus(status) }
+  );
+}
+
 // Tipos de artículo y mapeo a rutas
 export const ARTICLE_TYPES = {
   'ARTÍCULO ESTUDIANTIL': 'estudiantes', //Mapeo del tipo de artículo de contentful a astro
@@ -79,28 +177,164 @@ export interface ArticlePreview {
   publishDate: string;
 }
 
-// Función helper para ejecutar queries GraphQL
-async function fetchGraphQL<T>( //De tipo genérico porque se desconoce el tipo de la consulta
-  query: string, //la consulta
-  preview = false //se refiere a si el contenido no publicado será visible, por defecto está en false
+// ============================================================================
+// FUNCIÓN PRINCIPAL: fetchGraphQL con manejo robusto de errores
+// ============================================================================
+
+/**
+ * Ejecuta queries GraphQL contra Contentful con manejo completo de errores de red.
+ * 
+ * Características:
+ * - Manejo de errores de red (sin conexión, DNS, etc.)
+ * - Timeout configurable
+ * - Reintentos automáticos para errores transitorios
+ * - Errores tipados y descriptivos
+ * 
+ * @param query - La consulta GraphQL a ejecutar
+ * @param preview - Si usar el token de preview (contenido no publicado)
+ * @param options - Configuración opcional (retries, timeout, etc.)
+ * @returns Los datos de la consulta
+ * @throws {ContentfulError} Error tipado con información detallada
+ */
+async function fetchGraphQL<T>(
+  query: string,
+  preview = false,
+  options: FetchGraphQLOptions = {}
 ): Promise<T> {
-  const response = await fetch(GRAPHQL_ENDPOINT, { //se hace un fetch a la connection string
-    method: 'POST', 
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${preview ? PREVIEW_TOKEN : ACCESS_TOKEN}`,
-    },
-    body: JSON.stringify({ query }), //el cuerpo de la consulta es nuestro query transformado a json
-  });
-
-  const json = await response.json(); //se espera por la respuesta en formato json
- 
-  if (json.errors) { //verifica si hubo errores
-    console.error('GraphQL Errors:', json.errors);
-    throw new Error('Error trayendo la data desde Contentful');
+  const { retries, retryDelay, timeout } = { ...DEFAULT_OPTIONS, ...options };
+  
+  let lastError: ContentfulError | null = null;
+  
+  // Intenta la petición con reintentos para errores transitorios
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const result = await executeGraphQLRequest<T>(query, preview, timeout);
+      return result;
+    } catch (error) {
+      // Convierte a ContentfulError si no lo es
+      lastError = error instanceof ContentfulError 
+        ? error 
+        : new ContentfulError(
+            'Error inesperado al conectar con Contentful',
+            ContentfulErrorCode.NETWORK_ERROR,
+            { isRetryable: true, originalError: error as Error }
+          );
+      
+      // Si no es recuperable o es el último intento, no reintenta
+      if (!lastError.isRetryable || attempt === retries) {
+        break;
+      }
+      
+      // Espera con backoff exponencial antes del próximo intento
+      const delay = retryDelay * Math.pow(2, attempt);
+      console.warn(
+        `[Contentful] Reintento ${attempt + 1}/${retries} después de ${delay}ms - ${lastError.code}`
+      );
+      await sleep(delay);
+    }
   }
+  
+  // Si llegamos aquí, todos los intentos fallaron
+  console.error('[Contentful] Error después de todos los reintentos:', lastError);
+  throw lastError;
+}
 
-  return json.data; //si no hubo errores devuelve los datos de la consulta
+/**
+ * Ejecuta una única petición GraphQL (sin reintentos).
+ * Separa la lógica de la petición de la lógica de reintentos.
+ */
+async function executeGraphQLRequest<T>(
+  query: string,
+  preview: boolean,
+  timeout: number
+): Promise<T> {
+  // Crear AbortController para timeout
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+  
+  let response: Response;
+  
+  try {
+    response = await fetch(GRAPHQL_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${preview ? PREVIEW_TOKEN : ACCESS_TOKEN}`,
+      },
+      body: JSON.stringify({ query }),
+      signal: controller.signal,
+    });
+  } catch (error) {
+    // Manejo de errores de red
+    if (error instanceof Error) {
+      // Timeout (AbortError)
+      if (error.name === 'AbortError') {
+        throw new ContentfulError(
+          `Timeout: La petición a Contentful excedió ${timeout}ms`,
+          ContentfulErrorCode.TIMEOUT_ERROR,
+          { isRetryable: true, originalError: error }
+        );
+      }
+      
+      // TypeError suele indicar problemas de red (DNS, conexión, etc.)
+      if (error.name === 'TypeError' || error.message.includes('fetch')) {
+        throw new ContentfulError(
+          `Error de red al conectar con Contentful: ${error.message}`,
+          ContentfulErrorCode.NETWORK_ERROR,
+          { isRetryable: true, originalError: error }
+        );
+      }
+    }
+    
+    // Error desconocido
+    throw new ContentfulError(
+      'Error desconocido al conectar con Contentful',
+      ContentfulErrorCode.NETWORK_ERROR,
+      { isRetryable: true, originalError: error as Error }
+    );
+  } finally {
+    clearTimeout(timeoutId);
+  }
+  
+  // Verificar código de estado HTTP
+  if (!response.ok) {
+    throw createHttpError(response.status, response.statusText);
+  }
+  
+  // Parsear respuesta JSON
+  let json: { data?: T; errors?: Array<{ message: string }> };
+  
+  try {
+    json = await response.json();
+  } catch (error) {
+    throw new ContentfulError(
+      'Error al parsear la respuesta de Contentful (JSON inválido)',
+      ContentfulErrorCode.PARSE_ERROR,
+      { isRetryable: false, originalError: error as Error }
+    );
+  }
+  
+  // Verificar errores de GraphQL
+  if (json.errors && json.errors.length > 0) {
+    const errorMessages = json.errors.map(e => e.message).join('; ');
+    console.error('[Contentful] GraphQL Errors:', json.errors);
+    throw new ContentfulError(
+      `Error en consulta GraphQL: ${errorMessages}`,
+      ContentfulErrorCode.GRAPHQL_ERROR,
+      { isRetryable: false }
+    );
+  }
+  
+  // Verificar que hay datos
+  if (!json.data) {
+    throw new ContentfulError(
+      'Respuesta de Contentful sin datos',
+      ContentfulErrorCode.PARSE_ERROR,
+      { isRetryable: false }
+    );
+  }
+  
+  return json.data;
 }
 
 // Helper para obtener la ruta del tipo de artículo
