@@ -171,7 +171,8 @@ const foto           = juntaDirectiva?.fotoGeneral   ?? null;
     });
   }
 
-  document.addEventListener('DOMContentLoaded', initJuntaModal);
+  // Use astro:page-load to work with Astro View Transitions (ClientRouter)
+  // DOMContentLoaded only fires on initial load, not on SPA navigations
   document.addEventListener('astro:page-load',  initJuntaModal);
 </script>
 

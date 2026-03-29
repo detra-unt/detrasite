@@ -10,12 +10,6 @@ import {
   getArticleTypeSlug,
 } from "../lib/contentful";
 
-/* // Obtener artículos destacados (más recientes de cada tipo)
-const featuredArticles = await getFeaturedArticles();
-
-// Obtener todos los artículos para la lista
-const { articles, total } = await getArticles({ limit: 20 }); */
-
 const [featuredArticles, { articles, total }] = await Promise.all([
   getFeaturedArticles(),
   getArticles({ limit: 20 }),
@@ -147,8 +141,10 @@ const [featuredArticles, { articles, total }] = await Promise.all([
 </Layout>
 
 <script>
-  // Lógica para cargar más artículos
-  document.addEventListener("DOMContentLoaded", () => {
+  // Load more articles logic
+  // Use astro:page-load to work with Astro View Transitions (ClientRouter)
+  // DOMContentLoaded only fires on initial load, not on SPA navigations
+  document.addEventListener('astro:page-load', () => {
     const loadMoreBtn = document.getElementById("load-more");
 
     loadMoreBtn?.addEventListener("click", async () => {

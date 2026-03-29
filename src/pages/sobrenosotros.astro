@@ -60,8 +60,7 @@ import TeamSection from '../components/TeamSection.astro';
     els.forEach((el) => observer.observe(el));
   }
 
-  // Run on initial load
-  document.addEventListener('DOMContentLoaded', initScrollReveal);
-  // Re-run after Astro View Transitions navigation
+  // Use astro:page-load to work with Astro View Transitions (ClientRouter)
+  // DOMContentLoaded only fires on initial load, not on SPA navigations
   document.addEventListener('astro:page-load', initScrollReveal);
 </script>
