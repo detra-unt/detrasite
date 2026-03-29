@@ -246,7 +246,8 @@ const { currentPage = "home" } = Astro.props;
 </style>
 
 <script>
-  // ── AbortController global para limpieza de listeners ──
+  // ── AbortController para limpieza de listeners de este componente ──
+  // NOTA: Esta variable es LOCAL a este módulo de script, NO es global en window
   let navAbortController: AbortController | null = null;
 
   function initMobileMenu() {

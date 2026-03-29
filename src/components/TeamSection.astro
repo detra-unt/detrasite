@@ -88,7 +88,8 @@ const foto           = juntaDirectiva?.fotoGeneral   ?? null;
 </template>
 
 <script>
-  // ── AbortController global para limpieza de listeners ──
+  // ── AbortController para limpieza de listeners de este componente ──
+  // NOTA: Esta variable es LOCAL a este módulo de script, NO es global en window
   let juntaAbortController: AbortController | null = null;
 
   function initJuntaModal() {

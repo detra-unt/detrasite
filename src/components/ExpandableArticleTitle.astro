@@ -133,8 +133,9 @@ const panelTitleId = `article-title-panel-title-${id}`;
 <script>
   const rootSelector = '[data-expandable-title]';
   
-  // ── AbortController global para limpieza de listeners ──
-  let globalAbortController: AbortController | null = null;
+  // ── AbortController para limpieza de listeners de este componente ──
+  // NOTA: Esta variable es LOCAL a este módulo de script, NO es global en window
+  let expandableTitleAbortController: AbortController | null = null;
   let resizeFrame = 0;
   let scrollFrame = 0;
 
@@ -344,15 +345,15 @@ const panelTitleId = `article-title-panel-title-${id}`;
 
   const setupGlobalListeners = () => {
     // Limpiar listeners antiguos si existen
-    if (globalAbortController) {
-      globalAbortController.abort();
+    if (expandableTitleAbortController) {
+      expandableTitleAbortController.abort();
       cancelAnimationFrame(resizeFrame);
       cancelAnimationFrame(scrollFrame);
     }
 
     // Crear nuevo AbortController
-    globalAbortController = new AbortController();
-    const { signal } = globalAbortController;
+    expandableTitleAbortController = new AbortController();
+    const { signal } = expandableTitleAbortController;
 
     // Click fuera para cerrar paneles
     document.addEventListener('click', (event) => {
@@ -419,9 +420,9 @@ const panelTitleId = `article-title-panel-title-${id}`;
   // ── Limpieza antes de swap ──
   document.addEventListener('astro:before-swap', () => {
     closeAllPanels();
-    if (globalAbortController) {
-      globalAbortController.abort();
-      globalAbortController = null;
+    if (expandableTitleAbortController) {
+      expandableTitleAbortController.abort();
+      expandableTitleAbortController = null;
     }
     cancelAnimationFrame(resizeFrame);
     cancelAnimationFrame(scrollFrame);
