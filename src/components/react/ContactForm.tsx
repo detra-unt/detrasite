@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import emailjs from '@emailjs/browser';
 
 // ─── EmailJS credentials ──────────────────
@@ -28,8 +28,7 @@ export default function ContactForm() {
   const [status, setStatus] = useState<Status>('idle');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  const formRef = useRef<HTMLFormElement>(null);
+  const [shake, setShake] = useState(false);
 
   // ── Effect 1: Initialize EmailJS ──────────
   useEffect(() => {
@@ -123,15 +122,9 @@ export default function ContactForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) {
-      // Shake animation
-      if (formRef.current) {
-        formRef.current.classList.add('shake');
-        formRef.current.addEventListener(
-          'animationend',
-          () => formRef.current?.classList.remove('shake'),
-          { once: true }
-        );
-      }
+      // Animación shake controlada por estado React
+      setShake(true);
+      setTimeout(() => setShake(false), 400);
       return;
     }
 
@@ -215,8 +208,7 @@ export default function ContactForm() {
         </div>
       ) : (
         <form
-          ref={formRef}
-          className="contact-form"
+          className={`contact-form${shake ? ' shake' : ''}`}
           onSubmit={handleSubmit}
           noValidate
           aria-label="Formulario de contacto"
