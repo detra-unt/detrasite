@@ -246,6 +246,9 @@ const { currentPage = "home" } = Astro.props;
 </style>
 
 <script>
+  // ── AbortController global para limpieza de listeners ──
+  let navAbortController: AbortController | null = null;
+
   function initMobileMenu() {
     const btn = document.getElementById("mobile-menu-btn");
     const menu = document.getElementById("mobile-menu");
@@ -253,6 +256,15 @@ const { currentPage = "home" } = Astro.props;
     if (!btn || !menu || !nav) return;
 
     const inner = menu.querySelector("div") as HTMLElement | null;
+
+    // Limpiar listeners antiguos si existen
+    if (navAbortController) {
+      navAbortController.abort();
+    }
+
+    // Crear nuevo AbortController
+    navAbortController = new AbortController();
+    const { signal } = navAbortController;
 
     // Scroll effect: add `.scrolled` class when page is scrolled
     const handleScroll = () => {
@@ -262,9 +274,11 @@ const { currentPage = "home" } = Astro.props;
         nav.classList.remove("scrolled");
       }
     };
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    
+    window.addEventListener("scroll", handleScroll, { passive: true, signal });
     handleScroll(); // run on init
 
+    // Toggle del menú móvil
     btn.addEventListener("click", () => {
       const isOpen = btn.classList.contains("is-open");
 
@@ -282,8 +296,9 @@ const { currentPage = "home" } = Astro.props;
         btn.setAttribute("aria-expanded", "true");
         menu.setAttribute("aria-hidden", "false");
       }
-    });
+    }, { signal });
 
+    // Cerrar menú al hacer click en links
     menu.querySelectorAll("a").forEach((link) => {
       link.addEventListener("click", () => {
         menu.style.maxHeight = "0px";
@@ -291,9 +306,10 @@ const { currentPage = "home" } = Astro.props;
         btn.classList.remove("is-open");
         btn.setAttribute("aria-expanded", "false");
         menu.setAttribute("aria-hidden", "true");
-      });
+      }, { signal });
     });
 
+    // Cerrar menú al hacer resize a desktop
     window.addEventListener("resize", () => {
       if (window.innerWidth >= 768 && btn.classList.contains("is-open")) {
         menu.style.maxHeight = "0px";
@@ -302,9 +318,17 @@ const { currentPage = "home" } = Astro.props;
         btn.setAttribute("aria-expanded", "false");
         menu.setAttribute("aria-hidden", "true");
       }
-    });
+    }, { signal });
   }
 
-  initMobileMenu();
-  document.addEventListener("astro:after-swap", initMobileMenu);
+  // ── Inicialización con astro:page-load ──
+  document.addEventListener('astro:page-load', initMobileMenu);
+
+  // ── Limpieza antes de swap ──
+  document.addEventListener('astro:before-swap', () => {
+    if (navAbortController) {
+      navAbortController.abort();
+      navAbortController = null;
+    }
+  });
 </script>

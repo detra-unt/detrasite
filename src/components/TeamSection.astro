@@ -88,6 +88,9 @@ const foto           = juntaDirectiva?.fotoGeneral   ?? null;
 </template>
 
 <script>
+  // ── AbortController global para limpieza de listeners ──
+  let juntaAbortController: AbortController | null = null;
+
   function initJuntaModal() {
     // ── Inject modal into <body> once (escape stacking context) ──
     if (!document.getElementById('junta-modal')) {
@@ -106,6 +109,15 @@ const foto           = juntaDirectiva?.fotoGeneral   ?? null;
     const card     = document.getElementById('junta-card');
 
     if (!modal || !backdrop || !closeBtn || !modalImg || !caption) return;
+
+    // Limpiar listeners antiguos si existen
+    if (juntaAbortController) {
+      juntaAbortController.abort();
+    }
+
+    // Crear nuevo AbortController
+    juntaAbortController = new AbortController();
+    const { signal } = juntaAbortController;
 
     function openModal() {
       if (!modal || !card || !modalImg || !caption || !closeBtn) return;
@@ -151,29 +163,42 @@ const foto           = juntaDirectiva?.fotoGeneral   ?? null;
     const freshBackdrop = document.getElementById('junta-modal-backdrop');
     const freshTrigger  = document.getElementById('junta-open-trigger');
 
-    freshTrigger?.addEventListener('click',  openModal);
-    freshBackdrop?.addEventListener('click', closeModal);
-    freshClose?.addEventListener('click',   closeModal);
-  }
+    freshTrigger?.addEventListener('click',  openModal, { signal });
+    freshBackdrop?.addEventListener('click', closeModal, { signal });
+    freshClose?.addEventListener('click',   closeModal, { signal });
 
-  // Keyboard Escape — attach once per page lifetime via a guard flag on window.
-  if (!(window as any).__juntaEscBound) {
-    (window as any).__juntaEscBound = true;
+    // Keyboard Escape — usar AbortController
     document.addEventListener('keydown', (e: KeyboardEvent) => {
-      const modal = document.getElementById('junta-modal');
-      if (e.key === 'Escape' && modal?.classList.contains('jm-open')) {
-        modal.classList.remove('jm-open');
-        modal.addEventListener('transitionend', () => {
-          modal.style.display = 'none';
+      const modalElement = document.getElementById('junta-modal');
+      if (e.key === 'Escape' && modalElement?.classList.contains('jm-open')) {
+        modalElement.classList.remove('jm-open');
+        modalElement.addEventListener('transitionend', () => {
+          modalElement.style.display = 'none';
           document.body.style.overflow = '';
         }, { once: true });
       }
-    });
+    }, { signal });
   }
 
-  // Use astro:page-load to work with Astro View Transitions (ClientRouter)
-  // DOMContentLoaded only fires on initial load, not on SPA navigations
-  document.addEventListener('astro:page-load',  initJuntaModal);
+  // ── Inicialización con astro:page-load ──
+  document.addEventListener('astro:page-load', initJuntaModal);
+
+  // ── Limpieza antes de swap ──
+  document.addEventListener('astro:before-swap', () => {
+    // Limpiar listeners
+    if (juntaAbortController) {
+      juntaAbortController.abort();
+      juntaAbortController = null;
+    }
+
+    // Cerrar modal si está abierto y limpiar el DOM
+    const modal = document.getElementById('junta-modal');
+    if (modal) {
+      modal.classList.remove('jm-open');
+      modal.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+  });
 </script>
 
 <style>
