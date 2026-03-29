@@ -136,10 +136,10 @@ const articleTypes = Object.entries(ARTICLE_TYPES).map(([label, slug]) => ({
     </div>
 
     <form id="articles-filter-form" class="filter-container glass-effect rounded-2xl p-6 md:p-8 shadow-2xl shadow-[#5E0B15]/5 border border-[#5E0B15]/10">
-      <div class="flex flex-col lg:flex-row gap-6 lg:gap-8 lg:items-end">
+      <div class="flex flex-col xl:flex-row gap-6 xl:gap-8 xl:items-end">
       
         <!-- Buscador por título o autor -->
-        <div class="flex-grow lg:max-w-md group">
+        <div class="group w-full xl:flex-[1.2] xl:min-w-0">
           <label for="search" class="block font-label text-xs font-bold uppercase tracking-[0.15em] text-[#5E0B15]/70 mb-3 flex items-center gap-2">
             <span class="w-1 h-4 bg-[#5E0B15] rounded-full"></span>
             Buscar artículo
@@ -159,8 +159,8 @@ const articleTypes = Object.entries(ARTICLE_TYPES).map(([label, slug]) => ({
         </div>
       
         <!-- Filtro por fechas -->
-        <div class="flex gap-4 flex-wrap sm:flex-nowrap">
-          <div class="flex-1 min-w-[140px]">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full xl:flex-[1] xl:min-w-0">
+          <div class="min-w-0">
             <label for="date-from" class="block font-label text-xs font-bold uppercase tracking-[0.15em] text-[#5E0B15]/70 mb-3 flex items-center gap-2">
               <span class="w-1 h-4 bg-[#5E0B15] rounded-full"></span>
               Desde
@@ -172,7 +172,7 @@ const articleTypes = Object.entries(ARTICLE_TYPES).map(([label, slug]) => ({
               class="filter-input w-full bg-white border-2 border-[#5E0B15]/20 rounded-xl py-3.5 px-4 font-body text-sm text-[#1c1c14] focus:outline-none focus:ring-2 focus:ring-[#5E0B15]/30 focus:border-[#5E0B15]/50 shadow-sm hover:border-[#5E0B15]/30 cursor-pointer"
             />
           </div>
-          <div class="flex-1 min-w-[140px]">
+          <div class="min-w-0">
             <label for="date-to" class="block font-label text-xs font-bold uppercase tracking-[0.15em] text-[#5E0B15]/70 mb-3 flex items-center gap-2">
               <span class="w-1 h-4 bg-[#5E0B15] rounded-full"></span>
               Hasta
@@ -187,7 +187,7 @@ const articleTypes = Object.entries(ARTICLE_TYPES).map(([label, slug]) => ({
         </div>
       
         <!-- Lista desplegable tipo de artículo -->
-        <div class="min-w-[200px]">
+        <div class="w-full sm:max-w-sm xl:flex-[0.9] xl:min-w-[220px]">
           <label for="article-type" class="block font-label text-xs font-bold uppercase tracking-[0.15em] text-[#5E0B15]/70 mb-3 flex items-center gap-2">
             <span class="w-1 h-4 bg-[#5E0B15] rounded-full"></span>
             Tipo de artículo
@@ -210,10 +210,10 @@ const articleTypes = Object.entries(ARTICLE_TYPES).map(([label, slug]) => ({
         </div>
       
         <!-- Botones de acción -->
-        <div class="flex gap-3 lg:gap-4">
+        <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto xl:flex-shrink-0">
           <button
             type="submit"
-            class="button-ripple flex items-center justify-center gap-2 bg-[#5E0B15] text-white px-7 py-3.5 rounded-xl font-label font-bold text-sm hover:bg-[#7a0e1c] transition-all duration-300 shadow-lg shadow-[#5E0B15]/20 hover:shadow-xl hover:shadow-[#5E0B15]/30 hover:-translate-y-0.5 group"
+            class="button-ripple flex w-full sm:w-auto items-center justify-center gap-2 bg-[#5E0B15] text-white px-7 py-3.5 rounded-xl font-label font-bold text-sm whitespace-nowrap hover:bg-[#7a0e1c] transition-all duration-300 shadow-lg shadow-[#5E0B15]/20 hover:shadow-xl hover:shadow-[#5E0B15]/30 hover:-translate-y-0.5 group"
           >
             <span class="material-symbols-outlined text-lg group-hover:scale-110 transition-transform duration-300">filter_alt</span>
             <span class="relative">Filtrar</span>
@@ -221,7 +221,7 @@ const articleTypes = Object.entries(ARTICLE_TYPES).map(([label, slug]) => ({
           <button
             type="reset"
             id="clear-filters"
-            class="flex items-center justify-center gap-2 bg-white border-2 border-[#5E0B15]/20 text-[#5E0B15] px-6 py-3.5 rounded-xl font-label font-semibold text-sm hover:bg-[#fcfaec] hover:border-[#5E0B15]/40 transition-all duration-300 shadow-sm hover:shadow-md group"
+            class="flex w-full sm:w-auto items-center justify-center gap-2 bg-white border-2 border-[#5E0B15]/20 text-[#5E0B15] px-6 py-3.5 rounded-xl font-label font-semibold text-sm whitespace-nowrap hover:bg-[#fcfaec] hover:border-[#5E0B15]/40 transition-all duration-300 shadow-sm hover:shadow-md group"
           >
             <span class="material-symbols-outlined text-lg group-hover:rotate-90 transition-transform duration-300">clear</span>
             Limpiar
