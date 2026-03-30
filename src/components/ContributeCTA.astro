@@ -3,15 +3,8 @@
 ---
 
 <section class="ccta-root">
-  <!-- Textura de fondo -->
-  <div class="ccta-noise" aria-hidden="true"></div>
-
-  <!-- Líneas sutiles de fondo -->
-  <div class="ccta-lines" aria-hidden="true">
-    <div class="ccta-line"></div>
-    <div class="ccta-line"></div>
-    <div class="ccta-line"></div>
-  </div>
+  <!-- Patrón decorativo de fondo -->
+  <div class="ccta-pattern" aria-hidden="true"></div>
 
   <div class="ccta-container">
     <!-- Marco perimetral decorativo tipo certificado/editorial -->
@@ -70,46 +63,26 @@
   ══════════════════════════════════════════ */
   .ccta-root {
     position: relative;
-    background: #1e0007; /* Rojo extremadamente oscuro, casi negro */
-    color: #fcfaec;
-    padding: 6rem 1.5rem;
+    background: linear-gradient(180deg, #fcfaec 0%, #f5f2e3 100%);
+    color: #2e0007;
+    padding: 3rem 1rem;
     overflow: hidden;
     display: flex;
     justify-content: center;
   }
   @media (min-width: 768px) {
     .ccta-root {
-      padding: 8rem 2rem;
+      padding: 4rem 1.5rem;
     }
   }
 
-  .ccta-noise {
+  .ccta-pattern {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    opacity: 0.035;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    background-size: 150px 150px;
-    z-index: 1;
-  }
-
-  .ccta-lines {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    justify-content: space-evenly;
-    pointer-events: none;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232e0007' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
     z-index: 0;
-  }
-  .ccta-line {
-    width: 1px;
-    height: 100%;
-    background: linear-gradient(
-      to bottom,
-      transparent,
-      rgba(200, 162, 110, 0.07) 50%,
-      transparent
-    );
   }
 
   /* ══════════════════════════════════════════
@@ -119,57 +92,67 @@
     position: relative;
     z-index: 2;
     width: 100%;
-    max-width: 56rem; /* 896px */
+    max-width: 52rem;
   }
 
   .ccta-frame {
     position: relative;
-    padding: 3rem 1.5rem;
-    border: 1px solid rgba(200, 162, 110, 0.15); /* Borde dorado mate */
+    padding: 2rem 1.25rem;
+    border: 1px solid rgba(46, 0, 7, 0.12);
     background: linear-gradient(
       145deg,
-      rgba(255, 255, 255, 0.02) 0%,
-      transparent 100%
+      rgba(255, 255, 255, 0.7) 0%,
+      rgba(255, 255, 255, 0.3) 100%
     );
-    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 1rem;
+    box-shadow: 
+      0 4px 24px rgba(46, 0, 7, 0.06),
+      0 1px 2px rgba(46, 0, 7, 0.04);
   }
   @media (min-width: 768px) {
     .ccta-frame {
-      padding: 4.5rem 4rem;
+      padding: 3rem 3.5rem;
+      border-radius: 1.25rem;
     }
   }
 
   /* Esquinas decorativas del marco */
   .ccta-corner {
     position: absolute;
-    width: 16px;
-    height: 16px;
-    border: 1px solid #c8a26e;
-    opacity: 0.6;
+    width: 14px;
+    height: 14px;
+    border: 1.5px solid #2e0007;
+    opacity: 0.25;
   }
   .ccta-corner--tl {
-    top: -4px;
-    left: -4px;
+    top: -3px;
+    left: -3px;
     border-right: none;
     border-bottom: none;
+    border-radius: 4px 0 0 0;
   }
   .ccta-corner--tr {
-    top: -4px;
-    right: -4px;
+    top: -3px;
+    right: -3px;
     border-left: none;
     border-bottom: none;
+    border-radius: 0 4px 0 0;
   }
   .ccta-corner--bl {
-    bottom: -4px;
-    left: -4px;
+    bottom: -3px;
+    left: -3px;
     border-right: none;
     border-top: none;
+    border-radius: 0 0 0 4px;
   }
   .ccta-corner--br {
-    bottom: -4px;
-    right: -4px;
+    bottom: -3px;
+    right: -3px;
     border-left: none;
     border-top: none;
+    border-radius: 0 0 4px 0;
   }
 
   /* ══════════════════════════════════════════
@@ -186,47 +169,53 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.6rem;
+    gap: 0.5rem;
     font-size: 0.65rem;
-    letter-spacing: 0.28em;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
     font-weight: 700;
-    color: #c8a26e;
-    margin-bottom: 1.75rem;
+    color: #7a3a42;
+    margin-bottom: 1.25rem;
   }
   .ccta-eyebrow__icon {
-    font-size: 1.1rem;
-    opacity: 0.9;
+    font-size: 1rem;
+    opacity: 0.85;
   }
   .ccta-eyebrow__line {
     display: inline-block;
-    width: 2rem;
+    width: 1.5rem;
     height: 1px;
-    background: #c8a26e;
-    opacity: 0.5;
+    background: currentColor;
+    opacity: 0.4;
   }
 
   .ccta-title {
     font-family: "Newsreader", Georgia, serif;
-    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-size: clamp(2rem, 4.5vw, 3.5rem);
     font-weight: 400;
-    line-height: 1;
+    line-height: 1.05;
     letter-spacing: -0.02em;
-    color: #fcfaec;
-    margin: 0 0 1.5rem;
+    color: #2e0007;
+    margin: 0 0 1.25rem;
   }
   .ccta-title em {
     font-style: italic;
     font-weight: 300;
-    color: #c8a26e;
+    color: #7a3a42;
   }
 
   .ccta-description {
-    font-size: 1.05rem;
-    line-height: 1.75;
-    color: rgba(252, 250, 236, 0.65);
-    max-width: 48ch;
-    margin: 0 0 3rem;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: #564243;
+    max-width: 46ch;
+    margin: 0 0 2rem;
+  }
+  @media (min-width: 768px) {
+    .ccta-description {
+      font-size: 1rem;
+      margin: 0 0 2.5rem;
+    }
   }
 
   /* ══════════════════════════════════════════
@@ -252,13 +241,13 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.75rem;
+    gap: 0.6rem;
     text-decoration: none;
-    font-size: 0.75rem;
-    letter-spacing: 0.16em;
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     font-weight: 700;
-    padding: 1rem 1.8rem;
+    padding: 0.875rem 1.5rem;
     border-radius: 0.5rem;
     overflow: hidden;
     transition: all 0.3s ease;
@@ -267,17 +256,22 @@
   @media (min-width: 480px) {
     .ccta-btn {
       width: auto;
+      padding: 0.875rem 1.75rem;
     }
   }
 
   .ccta-btn--primary {
-    background: #c8a26e;
-    color: #1e0007;
-    box-shadow: 0 4px 16px rgba(200, 162, 110, 0.15);
+    background: #2e0007;
+    color: #fcfaec;
+    box-shadow: 
+      0 2px 8px rgba(46, 0, 7, 0.15),
+      0 1px 2px rgba(46, 0, 7, 0.1);
   }
   .ccta-btn--primary:hover {
-    background: #d8b584;
-    box-shadow: 0 6px 24px rgba(200, 162, 110, 0.25);
+    background: #550015;
+    box-shadow: 
+      0 4px 16px rgba(46, 0, 7, 0.2),
+      0 2px 4px rgba(46, 0, 7, 0.12);
     transform: translateY(-2px);
   }
 
@@ -287,7 +281,7 @@
     background: linear-gradient(
       100deg,
       transparent 20%,
-      rgba(255, 255, 255, 0.4) 50%,
+      rgba(255, 255, 255, 0.25) 50%,
       transparent 80%
     );
     transform: translateX(-100%);
@@ -306,10 +300,10 @@
   .ccta-btn__icon {
     position: relative;
     z-index: 1;
-    font-size: 1.1rem;
+    font-size: 1rem;
     transition: transform 0.3s ease;
   }
   .ccta-btn:hover .ccta-btn__icon {
-    transform: translateX(4px);
+    transform: translateX(3px);
   }
 </style>
