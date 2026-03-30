@@ -627,8 +627,13 @@ export async function searchArticles(
     }
   `;
 
-  const data = await fetchGraphQL<ArticlesResponse>(queryByTitle);
-  return data.articleCollection.items;
+  // Cache key única por combinación de parámetros de búsqueda
+  const cacheKey = `search:${searchQuery}:${limit}`;
+
+  return cached(cacheKey, async () => {
+    const data = await fetchGraphQL<ArticlesResponse>(queryByTitle);
+    return data.articleCollection.items;
+  });
 }
 
 //VersionDefinitiva del formateador de fechas
