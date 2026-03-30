@@ -156,6 +156,172 @@ const articleTypeLabel = article.articleType;
     padding: 1.5rem 1.5rem 1.5rem 2rem;
     border-radius: 0 0.5rem 0.5rem 0;
   }
+
+  /* Article Content Prose Styling - Estilos centralizados para el contenido del artículo */
+  .article-prose {
+    max-width: none;
+    font-size: 1.125rem; /* prose-lg */
+    line-height: 1.75;
+    color: #1c1c14;
+  }
+  
+  /* Headings */
+  .article-prose :global(h1) {
+    font-family: var(--font-headline);
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #5E0B15;
+    margin-bottom: 1.5rem;
+    margin-top: 3rem;
+  }
+  
+  .article-prose :global(h1:first-child) {
+    margin-top: 0;
+  }
+  
+  @media (min-width: 768px) {
+    .article-prose :global(h1) {
+      font-size: 2.25rem;
+    }
+  }
+  
+  .article-prose :global(h2) {
+    font-family: var(--font-headline);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #5E0B15;
+    margin-bottom: 1.25rem;
+    margin-top: 2.5rem;
+    border-left: 4px solid #5E0B15;
+    padding-left: 1rem;
+  }
+  
+  @media (min-width: 768px) {
+    .article-prose :global(h2) {
+      font-size: 1.875rem;
+    }
+  }
+  
+  .article-prose :global(h3) {
+    font-family: var(--font-headline);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: rgba(94, 11, 21, 0.9);
+    margin-bottom: 1rem;
+    margin-top: 2rem;
+  }
+  
+  @media (min-width: 768px) {
+    .article-prose :global(h3) {
+      font-size: 1.5rem;
+    }
+  }
+  
+  /* Paragraphs */
+  .article-prose :global(p) {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.625;
+    margin-bottom: 1.5rem;
+    color: rgba(28, 28, 20, 0.85);
+  }
+  
+  @media (min-width: 768px) {
+    .article-prose :global(p) {
+      font-size: 1.125rem;
+    }
+  }
+  
+  /* Text formatting */
+  .article-prose :global(strong) {
+    color: #5E0B15;
+    font-weight: 700;
+  }
+  
+  .article-prose :global(em) {
+    color: rgba(28, 28, 20, 0.7);
+    font-style: italic;
+  }
+  
+  /* Lists */
+  .article-prose :global(ul) {
+    margin-bottom: 1.5rem;
+    margin-left: 1.5rem;
+  }
+  
+  .article-prose :global(ul > li) {
+    margin-top: 0.5rem;
+  }
+  
+  .article-prose :global(ol) {
+    margin-bottom: 1.5rem;
+    margin-left: 1.5rem;
+  }
+  
+  .article-prose :global(ol > li) {
+    margin-top: 0.5rem;
+  }
+  
+  .article-prose :global(li) {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.625;
+    color: rgba(28, 28, 20, 0.85);
+  }
+  
+  @media (min-width: 768px) {
+    .article-prose :global(li) {
+      font-size: 1.125rem;
+    }
+  }
+  
+  /* Links */
+  .article-prose :global(a) {
+    color: #5E0B15;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-color: rgba(94, 11, 21, 0.3);
+    transition: all 0.2s;
+  }
+  
+  .article-prose :global(a:hover) {
+    text-decoration-color: #5E0B15;
+  }
+  
+  /* Code */
+  .article-prose :global(code) {
+    background-color: #fcfaec;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    font-family: monospace;
+    color: #5E0B15;
+  }
+  
+  .article-prose :global(pre) {
+    background-color: #1c1c14;
+    color: white;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    overflow-x: auto;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Images */
+  .article-prose :global(img) {
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  /* Horizontal rule */
+  .article-prose :global(hr) {
+    border-color: rgba(94, 11, 21, 0.2);
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+  }
+  
 </style>
 
 <Layout
@@ -387,23 +553,7 @@ const articleTypeLabel = article.articleType;
       <div
         class="content-section bg-white rounded-2xl p-8 md:p-12 lg:p-16 shadow-xl shadow-[#5E0B15]/5 border border-[#5E0B15]/10 mb-12 md:mb-16"
       >
-        <div
-          class="prose prose-lg max-w-none text-[#1c1c14]
-                    [&_h1]:font-headline [&_h1]:text-3xl [&_h1]:md:text-4xl [&_h1]:font-bold [&_h1]:text-[#5E0B15] [&_h1]:mb-6 [&_h1]:mt-12 [&_h1]:first:mt-0
-                    [&_h2]:font-headline [&_h2]:text-2xl [&_h2]:md:text-3xl [&_h2]:font-bold [&_h2]:text-[#5E0B15] [&_h2]:mb-5 [&_h2]:mt-10 [&_h2]:border-l-4 [&_h2]:border-[#5E0B15] [&_h2]:pl-4
-                    [&_h3]:font-headline [&_h3]:text-xl [&_h3]:md:text-2xl [&_h3]:font-semibold [&_h3]:text-[#5E0B15]/90 [&_h3]:mb-4 [&_h3]:mt-8
-                    [&_p]:font-body [&_p]:text-base [&_p]:md:text-lg [&_p]:leading-relaxed [&_p]:mb-6 [&_p]:text-[#1c1c14]/85
-                    [&_strong]:text-[#5E0B15] [&_strong]:font-bold
-                    [&_em]:text-[#1c1c14]/70 [&_em]:italic
-                    [&_ul]:space-y-2 [&_ul]:mb-6 [&_ul]:ml-6
-                    [&_ol]:space-y-2 [&_ol]:mb-6 [&_ol]:ml-6
-                    [&_li]:font-body [&_li]:text-base [&_li]:md:text-lg [&_li]:leading-relaxed [&_li]:text-[#1c1c14]/85
-                    [&_a]:text-[#5E0B15] [&_a]:underline [&_a]:underline-offset-2 [&_a]:decoration-[#5E0B15]/30 [&_a]:hover:decoration-[#5E0B15] [&_a]:transition-all
-                    [&_code]:bg-[#fcfaec] [&_code]:px-2 [&_code]:py-1 [&_code]:rounded [&_code]:text-sm [&_code]:font-mono [&_code]:text-[#5E0B15]
-                    [&_pre]:bg-[#1c1c14] [&_pre]:text-white [&_pre]:p-6 [&_pre]:rounded-xl [&_pre]:overflow-x-auto [&_pre]:mb-6
-                    [&_img]:rounded-xl [&_img]:shadow-lg [&_img]:my-8
-                    [&_hr]:border-[#5E0B15]/20 [&_hr]:my-12"
-        >
+        <div class="article-prose">
           <RichTextRenderer content={article.content.json} />
         </div>
       </div>
