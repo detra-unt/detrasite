@@ -165,6 +165,14 @@ export interface JuntaDirectiva {
   fotoGeneral: ContentfulAsset;
 }
 
+// Momentos Destacados
+export interface MomentoDestacado {
+  sys: { id: string };
+  description: string;
+  imagen: ContentfulAsset;
+  fecha: string;
+}
+
 export interface ArticlePreview {
   sys: { id: string };
   title: string;
@@ -707,6 +715,83 @@ export async function getActiveJuntaDirectiva(): Promise<JuntaDirectiva | null> 
     } catch (e) {
       console.error('Error fetching junta directiva:', e);
       return null;
+    }
+  });
+}
+
+// ============================================================================
+// MOMENTOS DESTACADOS
+// ============================================================================
+
+interface MomentosDestacadosResponse {
+  momentosDestacadosCollection: {
+    total: number;
+    items: MomentoDestacado[];
+  };
+}
+
+/**
+ * Obtiene los momentos destacados ordenados por fecha descendente.
+ * @param limit - Número máximo de momentos a obtener (por defecto todos)
+ * @returns Array de momentos destacados
+ */
+export async function getMomentosDestacados(limit?: number): Promise<MomentoDestacado[]> {
+  const limitClause = limit ? `limit: ${limit}` : 'limit: 100';
+  
+  const query = `
+    query {
+      momentosDestacadosCollection(
+        ${limitClause}
+        order: fecha_DESC
+      ) {
+        total
+        items {
+          sys { id }
+          description
+          imagen {
+            url
+            title
+            description
+            width
+            height
+          }
+          fecha
+        }
+      }
+    }
+  `;
+
+  return cached(`momentos-destacados:${limit ?? 'all'}`, async () => {
+    try {
+      const data = await fetchGraphQL<MomentosDestacadosResponse>(query);
+      return data.momentosDestacadosCollection.items;
+    } catch (e) {
+      console.error('Error fetching momentos destacados:', e);
+      return [];
+    }
+  });
+}
+
+/**
+ * Obtiene el total de momentos destacados disponibles.
+ * @returns Número total de momentos
+ */
+export async function getMomentosDestacadosCount(): Promise<number> {
+  const query = `
+    query {
+      momentosDestacadosCollection(limit: 0) {
+        total
+      }
+    }
+  `;
+
+  return cached('momentos-destacados-count', async () => {
+    try {
+      const data = await fetchGraphQL<MomentosDestacadosResponse>(query);
+      return data.momentosDestacadosCollection.total;
+    } catch (e) {
+      console.error('Error fetching momentos destacados count:', e);
+      return 0;
     }
   });
 }
