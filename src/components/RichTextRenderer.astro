@@ -1,8 +1,8 @@
 ---
 // Componente para renderizar Rich Text de Contentful con estilos elegantes
-import { documentToHtmlString ,type Options} from '@contentful/rich-text-html-renderer';
+import { documentToHtmlString, type Options } from '@contentful/rich-text-html-renderer';
 import { BLOCKS, INLINES, MARKS } from '@contentful/rich-text-types';
-import type { Document, Block, Inline } from '@contentful/rich-text-types';
+import type { Document, Block, Inline, Text } from '@contentful/rich-text-types';
 
 interface Props {
   content: Document;
@@ -11,8 +11,11 @@ interface Props {
 
 const { content, class: className = '' } = Astro.props;
 
+// Definimos el tipo exacto para la función 'next' para no repetir código y mantenerlo limpio
+type NextFunction = (nodes: (Block | Inline | Text)[]) => string;
+
 // Opciones de renderizado personalizadas
-const options : Partial<Options> = {
+const options: Partial<Options> = {
   renderMark: {
     [MARKS.BOLD]: (text: string) => `<strong class="font-semibold">${text}</strong>`,
     [MARKS.ITALIC]: (text: string) => `<em class="italic">${text}</em>`,
@@ -23,67 +26,75 @@ const options : Partial<Options> = {
     [MARKS.STRIKETHROUGH]: (text: string) => `<s class="line-through">${text}</s>`,
   },
   renderNode: {
-    [BLOCKS.PARAGRAPH]: (node: any, next: (nodes: any) => string) => 
+    [BLOCKS.PARAGRAPH]: (node: Block | Inline, next: NextFunction) => 
       `<p class="mb-6 leading-relaxed text-on-surface/90 text-justify hyphene-auto">${next(node.content)}</p>`,
     
-    [BLOCKS.HEADING_1]: (node: any, next: (nodes: any) => string) => 
+    [BLOCKS.HEADING_1]: (node: Block | Inline, next: NextFunction) => 
       `<h1 class="font-headline text-4xl md:text-5xl font-bold text-primary mb-8 mt-12">${next(node.content)}</h1>`,
     
-    [BLOCKS.HEADING_2]: (node: any, next: (nodes: any) => string) => 
+    [BLOCKS.HEADING_2]: (node: Block | Inline, next: NextFunction) => 
       `<h2 class="font-headline text-3xl md:text-4xl font-bold text-primary mb-6 mt-10">${next(node.content)}</h2>`,
     
-    [BLOCKS.HEADING_3]: (node: any, next: (nodes: any) => string) => 
+    [BLOCKS.HEADING_3]: (node: Block | Inline, next: NextFunction) => 
       `<h3 class="font-headline text-2xl md:text-3xl font-semibold text-primary mb-5 mt-8">${next(node.content)}</h3>`,
     
-    [BLOCKS.HEADING_4]: (node: any, next: (nodes: any) => string) => 
+    [BLOCKS.HEADING_4]: (node: Block | Inline, next: NextFunction) => 
       `<h4 class="font-headline text-xl md:text-2xl font-semibold text-primary mb-4 mt-6">${next(node.content)}</h4>`,
     
-    [BLOCKS.HEADING_5]: (node: any, next: (nodes: any) => string) => 
+    [BLOCKS.HEADING_5]: (node: Block | Inline, next: NextFunction) => 
       `<h5 class="font-headline text-lg md:text-xl font-medium text-primary mb-3 mt-5">${next(node.content)}</h5>`,
     
-    [BLOCKS.HEADING_6]: (node: any, next: (nodes: any) => string) => 
+    [BLOCKS.HEADING_6]: (node: Block | Inline, next: NextFunction) => 
       `<h6 class="font-headline text-base md:text-lg font-medium text-primary mb-3 mt-4">${next(node.content)}</h6>`,
     
-    [BLOCKS.UL_LIST]: (node: any, next: (nodes: any) => string) => 
+    [BLOCKS.UL_LIST]: (node: Block | Inline, next: NextFunction) => 
       `<ul class="list-disc list-outside ml-6 mb-6 space-y-2">${next(node.content)}</ul>`,
     
-    [BLOCKS.OL_LIST]: (node: any, next: (nodes: any) => string) => 
+    [BLOCKS.OL_LIST]: (node: Block | Inline, next: NextFunction) => 
       `<ol class="list-decimal list-outside ml-6 mb-6 space-y-2">${next(node.content)}</ol>`,
     
-    [BLOCKS.LIST_ITEM]: (node: any, next: (nodes: any) => string) => 
+    [BLOCKS.LIST_ITEM]: (node: Block | Inline, next: NextFunction) => 
       `<li class="leading-relaxed text-on-surface/90 text-justify">${next(node.content)}</li>`,
     
-    [BLOCKS.QUOTE]: (node: any, next: (nodes: any) => string) => 
+    [BLOCKS.QUOTE]: (node: Block | Inline, next: NextFunction) => 
       `<blockquote class="border-l-4 border-primary pl-6 py-2 my-8 italic text-on-surface-variant bg-surface-container/30 rounded-r-lg pr-6">${next(node.content)}</blockquote>`,
     
     [BLOCKS.HR]: () => 
       `<hr class="my-10 border-0 h-px bg-outline-variant" />`,
     
-    [BLOCKS.TABLE]: (node: any, next: (nodes: any) => string) => 
+    [BLOCKS.TABLE]: (node: Block | Inline, next: NextFunction) => 
       `<div class="overflow-x-auto my-8"><table class="w-full border-collapse border border-outline-variant rounded-lg overflow-hidden">${next(node.content)}</table></div>`,
     
-    [BLOCKS.TABLE_ROW]: (node: any, next: (nodes: any) => string) => 
+    [BLOCKS.TABLE_ROW]: (node: Block | Inline, next: NextFunction) => 
       `<tr class="border-b border-outline-variant last:border-b-0">${next(node.content)}</tr>`,
     
-    [BLOCKS.TABLE_CELL]: (node: any, next: (nodes: any) => string) => 
+    [BLOCKS.TABLE_CELL]: (node: Block | Inline, next: NextFunction) => 
       `<td class="px-4 py-3 text-sm">${next(node.content)}</td>`,
     
-    [BLOCKS.TABLE_HEADER_CELL]: (node: any, next: (nodes: any) => string) => 
+    [BLOCKS.TABLE_HEADER_CELL]: (node: Block | Inline, next: NextFunction) => 
       `<th class="px-4 py-3 text-sm font-semibold bg-surface-container text-left">${next(node.content)}</th>`,
     
-    [BLOCKS.EMBEDDED_ASSET]: (node: any) => {
-      const { file, title, description } = node.data.target.fields;
+    [BLOCKS.EMBEDDED_ASSET]: (node: Block | Inline) => {
+      // Verificación de tipos segura para acceder a las propiedades anidadas de Contentful
+      const fields = node.data?.target?.fields;
+      if (!fields) return '';
+      
+      const file = fields.file;
+      const title = fields.title;
+      const description = fields.description;
+
       const url = file?.url || '';
       const alt = description || title || '';
       const width = file?.details?.image?.width || 800;
       const height = file?.details?.image?.height || 450;
+      
       return `<figure class="my-8">
         <img src="https:${url}" alt="${alt}" width="${width}" height="${height}" class="w-full rounded-xl shadow-lg" loading="lazy" decoding="async" />
         ${title ? `<figcaption class="text-center text-sm text-on-surface-variant mt-3 italic">${title}</figcaption>` : ''}
       </figure>`;
     },
     
-    [INLINES.HYPERLINK]: (node: any, next: (nodes: any) => string) => 
+    [INLINES.HYPERLINK]: (node: Block | Inline, next: NextFunction) => 
       `<a href="${node.data.uri}" target="_blank" rel="noopener noreferrer" class="text-primary-container hover:text-primary underline underline-offset-2 transition-colors">${next(node.content)}</a>`,
   },
 };
