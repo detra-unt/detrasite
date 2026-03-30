@@ -420,6 +420,14 @@ const panelTitleId = `article-title-panel-title-${id}`;
   // ── Limpieza antes de swap ──
   document.addEventListener('astro:before-swap', () => {
     closeAllPanels();
+    
+    // Eliminar explícitamente los paneles movidos al body antes del swap
+    // Esto previene paneles huérfanos ya que closeAllPanels() solo los oculta
+    // pero no los remueve del DOM cuando están en el body
+    document.querySelectorAll('[data-title-panel][data-moved-to-body="true"]').forEach((panel) => {
+      panel.remove();
+    });
+    
     if (expandableTitleAbortController) {
       expandableTitleAbortController.abort();
       expandableTitleAbortController = null;
