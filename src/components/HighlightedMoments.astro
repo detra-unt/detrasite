@@ -612,8 +612,21 @@ const totalMomentos = allMomentos.length;
 </style>
 
 <script>
-  // Gallery Modal Controller - Ejecuta despuÃ©s de que el DOM estÃ© listo
+  // Gallery Modal Controller - Con cleanup para View Transitions
+  // AbortController permite cancelar todos los listeners de una sola vez
+  let galleryAbortController: AbortController | null = null;
+
+  function cleanupGallery() {
+    if (galleryAbortController) {
+      galleryAbortController.abort();
+      galleryAbortController = null;
+    }
+  }
+
   function initGallery() {
+    // Limpiar listeners anteriores antes de crear nuevos
+    cleanupGallery();
+    
     const modal = document.getElementById('momentosGalleryModal');
     const openBtn = document.getElementById('openGalleryModal');
     const closeBtn = document.getElementById('closeModal');
@@ -631,9 +644,10 @@ const totalMomentos = allMomentos.length;
     const momentoCards = document.querySelectorAll('.momento-card');
 
     if (!modal || !mainImage) return;
-    if (modal.dataset.galleryReady === 'true') return;
 
-    modal.dataset.galleryReady = 'true';
+    // Crear nuevo AbortController para esta instancia
+    galleryAbortController = new AbortController();
+    const { signal } = galleryAbortController;
 
     let currentIndex = 0;
     const totalImages = thumbnails.length;
@@ -740,13 +754,13 @@ const totalMomentos = allMomentos.length;
       updateModalImage(prevIndex);
     }
 
-    // Event listeners
+    // Event listeners - todos usan signal para cleanup automático
     if (openBtn) {
-      openBtn.addEventListener('click', () => openModal(0));
+      openBtn.addEventListener('click', () => openModal(0), { signal });
     }
     
     if (closeBtn) {
-      closeBtn.addEventListener('click', closeModal);
+      closeBtn.addEventListener('click', closeModal, { signal });
     }
     
     // Toggle description expand/collapse
@@ -759,21 +773,21 @@ const totalMomentos = allMomentos.length;
         
         const toggleText = toggleDescBtn.querySelector('.toggle-text');
         if (toggleText) {
-          toggleText.textContent = isExpanded ? 'Ver mÃ¡s' : 'Ver menos';
+          toggleText.textContent = isExpanded ? 'Ver más' : 'Ver menos';
         }
-      });
+      }, { signal });
     }
     
     if (backdrop) {
-      backdrop.addEventListener('click', closeModal);
+      backdrop.addEventListener('click', closeModal, { signal });
     }
     
     if (prevBtn) {
-      prevBtn.addEventListener('click', goToPrev);
+      prevBtn.addEventListener('click', goToPrev, { signal });
     }
     
     if (nextBtn) {
-      nextBtn.addEventListener('click', goToNext);
+      nextBtn.addEventListener('click', goToNext, { signal });
     }
 
     // Open modal from collage cards
@@ -781,7 +795,7 @@ const totalMomentos = allMomentos.length;
       card.addEventListener('click', () => {
         const index = parseInt((card as HTMLElement).dataset.momentoIndex || '0');
         openModal(index);
-      });
+      }, { signal });
       
       // Keyboard support for cards
       card.addEventListener('keydown', (e) => {
@@ -790,7 +804,7 @@ const totalMomentos = allMomentos.length;
           const index = parseInt((card as HTMLElement).dataset.momentoIndex || '0');
           openModal(index);
         }
-      });
+      }, { signal });
     });
 
     // Thumbnail clicks
@@ -798,10 +812,10 @@ const totalMomentos = allMomentos.length;
       thumb.addEventListener('click', () => {
         const index = parseInt((thumb as HTMLElement).dataset.index || '0');
         updateModalImage(index);
-      });
+      }, { signal });
     });
 
-    // Keyboard navigation
+    // Keyboard navigation - CRÍTICO: usa signal para evitar memory leak
     document.addEventListener('keydown', (e) => {
       if (!modal || !modal.classList.contains('active')) return;
       switch (e.key) {
@@ -815,12 +829,15 @@ const totalMomentos = allMomentos.length;
           goToNext();
           break;
       }
-    });
+    }, { signal });
+
+    // Resize listener - CRÍTICO: usa signal para evitar memory leak
     window.addEventListener('resize', () => {
       if (modal.classList.contains('active')) {
         refreshDescriptionToggle();
       }
-    });
+    }, { signal });
+
     // Touch/swipe support for mobile
     let touchStartX = 0;
     let touchEndX = 0;
@@ -828,12 +845,12 @@ const totalMomentos = allMomentos.length;
     if (modal) {
       modal.addEventListener('touchstart', (e) => {
         touchStartX = (e as TouchEvent).changedTouches[0].screenX;
-      }, { passive: true });
+      }, { passive: true, signal });
 
       modal.addEventListener('touchend', (e) => {
         touchEndX = (e as TouchEvent).changedTouches[0].screenX;
         handleSwipe();
-      }, { passive: true });
+      }, { passive: true, signal });
     }
 
     function handleSwipe() {
@@ -859,6 +876,9 @@ const totalMomentos = allMomentos.length;
 
   // Re-initialize on Astro page transitions (View Transitions)
   document.addEventListener('astro:page-load', initGallery);
+  
+  // Cleanup antes de View Transition para evitar memory leaks
+  document.addEventListener('astro:before-swap', cleanupGallery);
 </script>
 
 
