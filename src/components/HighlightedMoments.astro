@@ -1,8 +1,8 @@
 ---
 /**
  * HighlightedMoments.astro
- * Componente de collage para mostrar momentos destacados del círculo.
- * Muestra hasta 6 imágenes en un layout asimétrico con modal para ver más.
+ * Componente de collage para mostrar momentos destacados del cÃ­rculo.
+ * Muestra hasta 6 imÃ¡genes en un layout asimÃ©trico con modal para ver mÃ¡s.
  */
 import { getMomentosDestacados, formatDateBySize } from '../lib/contentful';
 import type { MomentoDestacado } from '../lib/contentful';
@@ -16,7 +16,7 @@ const totalMomentos = allMomentos.length;
 
 {displayMomentos.length > 0 && (
   <section class="pb-4 pt-0 md:pb-12 md:pt-0 bg-[#fcfaec] relative overflow-hidden">
-    <!-- Patrón decorativo de fondo -->
+    <!-- PatrÃ³n decorativo de fondo -->
     <div class="absolute inset-0 opacity-[0.04]">
       <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -43,10 +43,10 @@ const totalMomentos = allMomentos.length;
         </p>
       </div>
 
-      <!-- Collage Grid - Más ancho y mejor distribuido -->
+      <!-- Collage Grid - MÃ¡s ancho y mejor distribuido -->
       <div class="grid grid-cols-2 md:grid-cols-12 gap-2 md:gap-3 lg:gap-4">
         {displayMomentos.map((momento, index) => {
-          // Definir clases de grid según posición
+          // Definir clases de grid segÃºn posiciÃ³n
           const gridClasses = [
             'col-span-2 md:col-span-5 row-span-1 md:row-span-2 aspect-[4/3] md:aspect-auto md:h-[420px]', // Grande izquierda
             'col-span-1 md:col-span-4 aspect-square md:aspect-auto md:h-[200px]', // Mediano arriba centro
@@ -114,7 +114,7 @@ const totalMomentos = allMomentos.length;
         })}
       </div>
 
-      <!-- Botón para ver más -->
+      <!-- BotÃ³n para ver mÃ¡s -->
       {hasMoreMomentos && (
         <div class="text-center mt-8 md:mt-10">
           <button 
@@ -136,98 +136,129 @@ const totalMomentos = allMomentos.length;
     <!-- Modal Gallery -->
     <div 
       id="momentosGalleryModal" 
-      class="fixed inset-0 z-50 hidden"
+      class="modal-gallery fixed inset-0 z-50 hidden"
       role="dialog"
       aria-modal="true"
       aria-labelledby="modalTitle"
     >
-      <!-- Backdrop -->
-      <div class="absolute inset-0 bg-black/95 backdrop-blur-md" id="modalBackdrop"></div>
+      <!-- Backdrop con textura sutil -->
+      <div class="absolute inset-0 bg-[#0a0003]/98 backdrop-blur-xl" id="modalBackdrop">
+        <div class="absolute inset-0 opacity-[0.03]" style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.85%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22/%3E%3C/svg%3E');"></div>
+      </div>
       
       <!-- Modal Content -->
-      <div class="relative h-full flex flex-col">
-        <!-- Header -->
-        <header class="flex items-center justify-between p-4 md:p-6 border-b border-white/10">
-          <div>
-            <h3 id="modalTitle" class="text-xl md:text-2xl font-headline font-bold text-white">
-              Momentos Destacados
-            </h3>
-            <p class="text-white/60 text-sm font-body mt-1">
-              <span id="currentImageIndex">1</span> de {totalMomentos}
-            </p>
+      <div class="momentos-modal-shell relative h-full w-full">
+        <!-- Header flotante -->
+        <header class="momentos-modal-header relative z-20 flex items-center justify-between p-4 md:p-6 lg:p-8">
+          <div class="flex items-center gap-4">
+            <div class="modal-header-pill flex items-center gap-3 px-4 py-2 bg-white/5 backdrop-blur-md rounded-full border border-white/10">
+              <span class="text-[#ffdadb] text-sm font-label font-semibold tracking-wide">
+                <span id="currentImageIndex">1</span>
+                <span class="text-white/40 mx-1">/</span>
+                <span class="text-white/60">{totalMomentos}</span>
+              </span>
+            </div>
           </div>
           <button 
             id="closeModal"
-            class="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-white/10 hover:bg-white/20 rounded-full transition-colors"
-            aria-label="Cerrar galería"
+            class="group flex items-center justify-center w-11 h-11 md:w-12 md:h-12 bg-white/5 hover:bg-white/15 backdrop-blur-md rounded-full border border-white/10 hover:border-white/20 transition-all duration-300"
+            aria-label="Cerrar galerÃ­a"
           >
-            <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            <svg class="w-5 h-5 text-white/70 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/>
             </svg>
           </button>
         </header>
 
         <!-- Main Image Area -->
-        <div class="flex-1 flex items-center justify-center p-4 md:p-8 relative overflow-hidden">
-          <!-- Navigation Buttons -->
+        <div class="momentos-modal-body relative min-h-0">
+          <!-- Navigation Buttons - Estilo refinado -->
           <button 
             id="prevImage"
-            class="absolute left-2 md:left-6 z-10 flex items-center justify-center w-10 h-10 md:w-14 md:h-14 bg-white/10 hover:bg-white/20 rounded-full transition-all hover:scale-110"
+            class="nav-btn absolute left-3 md:left-8 lg:left-12 z-10 flex items-center justify-center w-12 h-12 md:w-14 md:h-14 bg-white/5 hover:bg-white/15 backdrop-blur-md rounded-full border border-white/10 hover:border-[#ffdadb]/30 transition-all duration-300 group"
             aria-label="Imagen anterior"
           >
-            <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            <svg class="w-5 h-5 md:w-6 md:h-6 text-white/60 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19l-7-7 7-7"/>
             </svg>
           </button>
           
           <button 
             id="nextImage"
-            class="absolute right-2 md:right-6 z-10 flex items-center justify-center w-10 h-10 md:w-14 md:h-14 bg-white/10 hover:bg-white/20 rounded-full transition-all hover:scale-110"
+            class="nav-btn absolute right-3 md:right-8 lg:right-12 z-10 flex items-center justify-center w-12 h-12 md:w-14 md:h-14 bg-white/5 hover:bg-white/15 backdrop-blur-md rounded-full border border-white/10 hover:border-[#ffdadb]/30 transition-all duration-300 group"
             aria-label="Siguiente imagen"
           >
-            <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            <svg class="w-5 h-5 md:w-6 md:h-6 text-white/60 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"/>
             </svg>
           </button>
 
           <!-- Image Container -->
-          <div class="max-w-5xl w-full mx-auto">
-            <figure class="relative">
-              <img 
-                id="modalMainImage"
-                src=""
-                alt=""
-                class="w-full max-h-[55vh] md:max-h-[60vh] object-contain rounded-lg shadow-2xl transition-opacity duration-300"
-              />
-              <figcaption class="mt-4 md:mt-6 text-center">
-                <time id="modalImageDate" class="block text-[#ffdadb] text-sm font-label font-medium uppercase tracking-wider mb-2"></time>
-                <p id="modalImageDescription" class="text-white text-base md:text-lg lg:text-xl font-body max-w-2xl mx-auto"></p>
+          <div class="momentos-modal-stage">
+            <figure class="modal-figure relative flex flex-col items-center w-full">
+              <!-- Imagen principal con glow sutil -->
+              <div class="modal-image-shell relative">
+                <div class="absolute -inset-4 bg-[#ffdadb]/5 blur-3xl rounded-3xl opacity-0 transition-opacity duration-500" id="imageGlow"></div>
+                <img 
+                  id="modalMainImage"
+                  src=""
+                  alt=""
+                  class="relative mx-auto max-w-full object-contain rounded-xl shadow-2xl transition-all duration-500"
+                  style="box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,218,219,0.1);"
+                />
+              </div>
+              
+              <!-- Caption elegante -->
+              <figcaption class="modal-caption mt-6 md:mt-8 w-full px-4 text-center">
+                <!-- Fecha con estilo editorial -->
+                <time id="modalImageDate" class="inline-block text-[#ffdadb]/80 text-xs md:text-sm font-label font-medium uppercase tracking-[0.2em] mb-3 pb-3 border-b border-white/10"></time>
+                
+                <!-- DescripciÃ³n con expansiÃ³n para textos largos -->
+                <div class="modal-description-wrapper relative mt-3">
+                  <div class="modal-description-container overflow-hidden transition-all duration-300" id="descriptionScroller">
+                    <p id="modalImageDescription" class="text-white/90 text-base md:text-lg font-body leading-relaxed"></p>
+                  </div>
+                  <!-- BotÃ³n expandir/contraer -->
+                  <button 
+                    id="toggleDescription" 
+                    class="hidden mt-3 text-[#ffdadb] text-sm font-label font-medium hover:text-white transition-colors focus:outline-none group"
+                    aria-expanded="false"
+                  >
+                    <span class="toggle-text">Ver mÃ¡s</span>
+                    <svg class="inline-block w-4 h-4 ml-1 transform transition-transform group-hover:translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                  </button>
+                </div>
               </figcaption>
             </figure>
           </div>
         </div>
 
-        <!-- Thumbnails -->
-        <div class="border-t border-white/10 p-3 md:p-4 overflow-x-auto">
-          <div id="thumbnailsContainer" class="flex gap-2 md:gap-3 justify-center min-w-max px-4">
-            {allMomentos.map((momento, index) => (
-              <button
-                class="thumbnail-btn relative w-14 h-14 md:w-18 md:h-18 lg:w-20 lg:h-20 rounded-lg overflow-hidden opacity-40 hover:opacity-90 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#ffdadb] flex-shrink-0"
-                data-index={index}
-                data-url={momento.imagen.url}
-                data-description={momento.description}
-                data-date={momento.fecha}
-                aria-label={`Ver imagen ${index + 1}: ${momento.description}`}
-              >
-                <img
-                  src={`${momento.imagen.url}?w=160&h=160&fit=fill&fm=webp&q=75`}
-                  alt=""
-                  class="w-full h-full object-cover"
-                  loading="lazy"
-                />
-                <div class="absolute inset-0 border-2 border-transparent thumbnail-border rounded-lg transition-colors"></div>
-              </button>
-            ))}
+        <!-- Thumbnails - DiseÃ±o mÃ¡s limpio -->
+        <div class="thumbnails-strip relative border-t border-white/10 bg-black/40 backdrop-blur-sm">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+          <div class="thumbnails-scroll relative p-3 md:p-4 overflow-x-auto">
+            <div id="thumbnailsContainer" class="flex gap-2 md:gap-3 justify-center min-w-max px-4">
+              {allMomentos.map((momento, index) => (
+                <button
+                  class="thumbnail-btn relative w-14 h-14 md:w-16 md:h-16 lg:w-[72px] lg:h-[72px] rounded-lg overflow-hidden opacity-50 hover:opacity-100 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#ffdadb]/50 flex-shrink-0 group"
+                  data-index={index}
+                  data-url={momento.imagen.url}
+                  data-description={momento.description}
+                  data-date={momento.fecha}
+                  aria-label={`Ver imagen ${index + 1}: ${momento.description}`}
+                >
+                  <img
+                    src={`${momento.imagen.url}?w=160&h=160&fit=fill&fm=webp&q=75`}
+                    alt=""
+                    class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    loading="lazy"
+                  />
+                  <div class="absolute inset-0 border-2 border-transparent thumbnail-border rounded-lg transition-all duration-300"></div>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -260,47 +291,274 @@ const totalMomentos = allMomentos.length;
   }
 
   /* Modal visible state */
-  #momentosGalleryModal.active {
-    display: flex !important;
-    animation: fadeIn 0.25s ease-out;
+  #momentosGalleryModal {
+    overflow: hidden;
   }
 
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+  #momentosGalleryModal.active {
+    display: flex !important;
+    animation: modalFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes modalFadeIn {
+    from { 
+      opacity: 0;
+    }
+    to { 
+      opacity: 1;
+    }
+  }
+
+  /* Modal figure animation */
+  #momentosGalleryModal.active .modal-figure {
+    animation: modalSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+  }
+
+  .momentos-modal-shell {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    width: 100%;
+    height: 100dvh;
+    min-height: 100dvh;
+  }
+
+  .momentos-modal-header {
+    padding-top: max(1rem, env(safe-area-inset-top));
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+
+  .momentos-modal-body {
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 218, 219, 0.24) transparent;
+  }
+
+  .momentos-modal-body::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .momentos-modal-body::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .momentos-modal-body::-webkit-scrollbar-thumb {
+    background: rgba(255, 218, 219, 0.18);
+    border-radius: 999px;
+  }
+
+  .momentos-modal-stage {
+    min-height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: clamp(1.5rem, 2.8vh, 2.5rem) clamp(3.5rem, 7vw, 6rem) clamp(1.75rem, 3vh, 2.75rem);
+  }
+
+  .modal-figure {
+    width: min(100%, 72rem);
+    margin: 0 auto;
+  }
+
+  .modal-image-shell {
+    width: min(100%, 56rem);
+    margin: 0 auto;
+  }
+
+  .modal-caption {
+    max-width: 48rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding-bottom: 0.75rem;
+  }
+
+  #modalMainImage {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    max-height: min(50dvh, 44rem);
+  }
+
+  .momentos-modal-body .nav-btn {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  @keyframes modalSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* Header pill animation */
+  #momentosGalleryModal.active .modal-header-pill {
+    animation: pillSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+  }
+
+  @keyframes pillSlideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  /* Navigation buttons animation */
+  #momentosGalleryModal.active .nav-btn {
+    animation: navFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+  }
+
+  @keyframes navFadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Thumbnails strip animation */
+  #momentosGalleryModal.active .thumbnails-strip {
+    animation: stripSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+  }
+
+  .thumbnails-strip {
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+  }
+
+  .thumbnails-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 218, 219, 0.22) transparent;
+  }
+
+  .thumbnails-scroll::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .thumbnails-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .thumbnails-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255, 218, 219, 0.18);
+    border-radius: 999px;
+  }
+
+  @keyframes stripSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Image glow effect on load */
+  #momentosGalleryModal.active #imageGlow {
+    animation: glowPulse 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes glowPulse {
+    from { opacity: 0.3; }
+    to { opacity: 0.6; }
   }
 
   /* Active thumbnail */
   .thumbnail-btn.active {
     opacity: 1 !important;
+    transform: scale(1.05);
   }
 
   .thumbnail-btn.active .thumbnail-border {
     border-color: #ffdadb !important;
+    box-shadow: 0 0 20px rgba(255, 218, 219, 0.3);
   }
 
   /* Image transition in modal */
+  #modalMainImage {
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
   #modalMainImage.loading {
-    opacity: 0.3;
+    opacity: 0.2;
+    transform: scale(0.98);
+  }
+
+  /* Description container - collapsed by default */
+  .modal-description-container {
+    max-height: 4.5em; /* ~3 lÃ­neas */
+    position: relative;
+  }
+
+  .modal-description-container::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1.5em;
+    background: linear-gradient(to bottom, transparent, #0a0003);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .modal-description-wrapper.truncated .modal-description-container::after {
+    opacity: 1;
+  }
+
+  .modal-description-wrapper.expanded .modal-description-container {
+    max-height: 50vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 218, 219, 0.3) transparent;
+  }
+
+  .modal-description-wrapper.expanded .modal-description-container::after {
+    opacity: 0;
+  }
+
+  .modal-description-container::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  .modal-description-container::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .modal-description-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 218, 219, 0.3);
+    border-radius: 3px;
+  }
+
+  /* Toggle button rotation when expanded */
+  .modal-description-wrapper.expanded #toggleDescription svg {
+    transform: rotate(180deg);
   }
 
   /* Scrollbar styling for thumbnails */
+  #thumbnailsContainer {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
   #thumbnailsContainer::-webkit-scrollbar {
-    height: 6px;
-  }
-
-  #thumbnailsContainer::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
-  }
-
-  #thumbnailsContainer::-webkit-scrollbar-thumb {
-    background: rgba(255, 218, 219, 0.4);
-    border-radius: 3px;
-  }
-
-  #thumbnailsContainer::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 218, 219, 0.6);
+    display: none;
   }
 
   /* Line clamp utility */
@@ -311,15 +569,50 @@ const totalMomentos = allMomentos.length;
     overflow: hidden;
   }
 
-  /* Thumbnails responsive size */
+  @media (max-width: 767px) {
+    .momentos-modal-header {
+      padding-bottom: 0.75rem;
+    }
+
+    .momentos-modal-stage {
+      padding-left: 1rem;
+      padding-right: 1rem;
+      padding-top: 1.25rem;
+      padding-bottom: 1.5rem;
+    }
+
+    .momentos-modal-body .nav-btn {
+      width: 2.75rem;
+      height: 2.75rem;
+      top: clamp(8rem, 30vh, 12rem);
+      transform: translateY(-50%);
+      backdrop-filter: blur(14px);
+    }
+
+    #modalMainImage {
+      max-height: min(40dvh, 22rem);
+    }
+
+    .modal-caption {
+      max-width: 100%;
+      padding-left: 0.25rem;
+      padding-right: 0.25rem;
+    }
+
+    .modal-description-container {
+      max-height: 5.2em;
+    }
+  }
+
   @media (min-width: 768px) {
-    .md\:w-18 { width: 4.5rem; }
-    .md\:h-18 { height: 4.5rem; }
+    .momentos-modal-header {
+      padding-bottom: 0.25rem;
+    }
   }
 </style>
 
 <script>
-  // Gallery Modal Controller - Ejecuta después de que el DOM esté listo
+  // Gallery Modal Controller - Ejecuta despuÃ©s de que el DOM estÃ© listo
   function initGallery() {
     const modal = document.getElementById('momentosGalleryModal');
     const openBtn = document.getElementById('openGalleryModal');
@@ -331,13 +624,41 @@ const totalMomentos = allMomentos.length;
     const imageDate = document.getElementById('modalImageDate');
     const imageDescription = document.getElementById('modalImageDescription');
     const currentIndexEl = document.getElementById('currentImageIndex');
+    const descriptionContainer = document.querySelector('.modal-description-container') as HTMLElement | null;
+    const descriptionWrapper = document.querySelector('.modal-description-wrapper') as HTMLElement | null;
+    const toggleDescBtn = document.getElementById('toggleDescription') as HTMLButtonElement | null;
     const thumbnails = document.querySelectorAll('.thumbnail-btn');
     const momentoCards = document.querySelectorAll('.momento-card');
 
     if (!modal || !mainImage) return;
+    if (modal.dataset.galleryReady === 'true') return;
+
+    modal.dataset.galleryReady = 'true';
 
     let currentIndex = 0;
     const totalImages = thumbnails.length;
+
+    function refreshDescriptionToggle() {
+      if (!descriptionContainer || !descriptionWrapper || !toggleDescBtn) return;
+
+      descriptionWrapper.classList.remove('expanded', 'truncated');
+      toggleDescBtn.classList.add('hidden');
+      toggleDescBtn.setAttribute('aria-expanded', 'false');
+
+      const toggleText = toggleDescBtn.querySelector('.toggle-text');
+      if (toggleText) toggleText.textContent = 'Ver mas';
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const isTruncated = descriptionContainer.scrollHeight > descriptionContainer.clientHeight + 8;
+
+          if (isTruncated) {
+            descriptionWrapper.classList.add('truncated');
+            toggleDescBtn.classList.remove('hidden');
+          }
+        });
+      });
+    }
 
     // Update modal with current image
     function updateModalImage(index: number) {
@@ -372,8 +693,8 @@ const totalMomentos = allMomentos.length;
 
       if (imageDescription) {
         imageDescription.textContent = description;
+        refreshDescriptionToggle();
       }
-      
       if (currentIndexEl) {
         currentIndexEl.textContent = String(index + 1);
       }
@@ -395,6 +716,10 @@ const totalMomentos = allMomentos.length;
       document.body.style.overflow = 'hidden';
       modal.classList.add('active');
       updateModalImage(startIndex);
+      const modalBody = modal.querySelector('.momentos-modal-body');
+      if (modalBody instanceof HTMLElement) {
+        modalBody.scrollTo({ top: 0, behavior: 'auto' });
+      }
     }
 
     // Close modal
@@ -422,6 +747,21 @@ const totalMomentos = allMomentos.length;
     
     if (closeBtn) {
       closeBtn.addEventListener('click', closeModal);
+    }
+    
+    // Toggle description expand/collapse
+    if (toggleDescBtn && descriptionWrapper) {
+      toggleDescBtn.addEventListener('click', () => {
+        const isExpanded = descriptionWrapper.classList.contains('expanded');
+        descriptionWrapper.classList.toggle('expanded');
+        descriptionWrapper.classList.toggle('truncated', isExpanded);
+        toggleDescBtn.setAttribute('aria-expanded', String(!isExpanded));
+        
+        const toggleText = toggleDescBtn.querySelector('.toggle-text');
+        if (toggleText) {
+          toggleText.textContent = isExpanded ? 'Ver mÃ¡s' : 'Ver menos';
+        }
+      });
     }
     
     if (backdrop) {
@@ -464,7 +804,6 @@ const totalMomentos = allMomentos.length;
     // Keyboard navigation
     document.addEventListener('keydown', (e) => {
       if (!modal || !modal.classList.contains('active')) return;
-
       switch (e.key) {
         case 'Escape':
           closeModal();
@@ -477,7 +816,11 @@ const totalMomentos = allMomentos.length;
           break;
       }
     });
-
+    window.addEventListener('resize', () => {
+      if (modal.classList.contains('active')) {
+        refreshDescriptionToggle();
+      }
+    });
     // Touch/swipe support for mobile
     let touchStartX = 0;
     let touchEndX = 0;
@@ -517,3 +860,5 @@ const totalMomentos = allMomentos.length;
   // Re-initialize on Astro page transitions (View Transitions)
   document.addEventListener('astro:page-load', initGallery);
 </script>
+
+
