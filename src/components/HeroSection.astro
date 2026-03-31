@@ -87,24 +87,59 @@
   }
 
   /* ─── Photo panel ─────────────────────────────────────── */
+  /* The grid column must NOT overflow its allocated space */
+  .photo-col {
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+  }
   .photo-frame {
     position: relative;
     border: 1.5px solid rgba(94, 11, 21, 0.18);
     background: #1c1c14;
     overflow: hidden;
+    width: 100%;
+    height: clamp(200px, 35vh, 370px);
+    box-shadow: 0 10px 30px rgba(94, 11, 21, 0.05);
+    transition: box-shadow 0.8s cubic-bezier(.22,1,.36,1), border-color 0.8s ease;
+  }
+  .photo-frame:hover {
+    box-shadow: 0 20px 50px rgba(94, 11, 21, 0.2);
+    border-color: rgba(94, 11, 21, 0.4);
+  }
+  .photo-frame:focus-visible {
+    outline: 2px solid rgba(94, 11, 21, 0.75);
+    outline-offset: 6px;
   }
   .photo-frame img {
-    display: block;
+    /* Fill the frame completely via absolute positioning to avoid intrinsic size overflow */
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center 20%;
-    filter: grayscale(30%) contrast(1.05);
-    transition: transform 0.7s cubic-bezier(.22,1,.36,1), filter 0.7s ease;
+    object-position: center top;
+    filter: grayscale(100%) contrast(1.15) brightness(0.9);
+    transition: transform 0.8s cubic-bezier(.22,1,.36,1), filter 0.8s cubic-bezier(.22,1,.36,1);
   }
-  .photo-frame:hover img {
-    transform: scale(1.04);
-    filter: grayscale(0%) contrast(1.05);
+  .photo-frame:hover .hero-img,
+  .photo-frame:focus-visible .hero-img {
+    filter: grayscale(0%) contrast(1.05) brightness(1) !important;
+    transform: scale(1.03) !important;
+  }
+
+  /* Crimson tint overlay to blend image with text color scheme */
+  .photo-tint {
+    position: absolute; inset: 0;
+    background: #5E0B15;
+    mix-blend-mode: soft-light;
+    opacity: 0.8;
+    pointer-events: none;
+    z-index: 1;
+    transition: opacity 0.8s cubic-bezier(.22,1,.36,1);
+  }
+  .photo-frame:hover .photo-tint {
+    opacity: 0;
   }
 
   /* Crimson corner accents */
@@ -113,6 +148,7 @@
     position: absolute;
     z-index: 10;
     pointer-events: none;
+    transition: width 0.7s cubic-bezier(.22,1,.36,1), height 0.7s cubic-bezier(.22,1,.36,1);
   }
   .corner-tl {
     top: -1.5px; left: -1.5px;
@@ -128,29 +164,80 @@
     width: 2.5rem; height: 2.5rem;
     animation: fadeIn 0.5s ease-out 1.4s both;
   }
+  .photo-frame:hover .corner-tl,
+  .photo-frame:hover .corner-br {
+    width: 4rem; height: 4rem;
+  }
 
   /* Photo gradient overlay for readability */
   .photo-overlay {
     position: absolute; inset: 0;
     background: linear-gradient(
       to top,
-      rgba(28,28,20,0.6) 0%,
-      transparent 60%
+      rgba(28,28,20,0.7) 0%,
+      rgba(28,28,20,0.1) 40%,
+      transparent 100%
     );
     pointer-events: none;
     z-index: 2;
+    transition: opacity 0.8s ease;
+  }
+  .photo-frame:hover .photo-overlay {
+    opacity: 0.7; /* Slightly fade the gradient on hover so image pops more */
   }
 
   /* Caption inside photo */
   .photo-caption {
     position: absolute;
-    bottom: 1rem; left: 1rem; right: 1rem;
+    bottom: 1.2rem; left: 1.5rem; right: 1.5rem;
     z-index: 3;
     color: rgba(252,250,236,0.85);
-    font-size: 0.65rem;
-    letter-spacing: 0.12em;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
     text-transform: uppercase;
     font-family: var(--font-label);
+    transition: transform 0.7s cubic-bezier(.22,1,.36,1), color 0.7s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .photo-frame:hover .photo-caption {
+    transform: translateY(-2px);
+    color: #fcfaec;
+  }
+  .photo-caption::before {
+    content: '';
+    display: block;
+    width: 15px;
+    height: 1px;
+    background: #5E0B15;
+    transition: width 0.7s cubic-bezier(.22,1,.36,1), background 0.7s ease;
+  }
+  .photo-frame:hover .photo-caption::before {
+    width: 30px;
+    background: #fcfaec;
+  }
+
+  /* ─── Expand Icon ────────────────────────────────────── */
+  .expand-icon {
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+    margin-left: auto;
+  }
+  .photo-frame:hover .expand-icon {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* ─── Modal ──────────────────────────────────────────── */
+  #image-modal[open] {
+    animation: fadeIn 0.3s ease-out;
+  }
+  #image-modal::backdrop {
+    background-color: rgba(10, 10, 10, 0.85);
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.3s ease-out;
   }
 
   /* ─── § ornament ─────────────────────────────────────── */
@@ -367,29 +454,32 @@
 
       <!-- CTAs -->
       <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
-        <a href="/publicaciones" class="h-cta-primary">
-          <button class="btn-primary w-full sm:w-auto">
-            Ver publicaciones
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-            </svg>
-          </button>
+        <a href="/publicaciones" class="h-cta-primary btn-primary w-full sm:w-auto">
+          Ver publicaciones
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+          </svg>
         </a>
-        <a href="/sobrenosotros" class="h-cta-second">
-          <button class="btn-secondary w-full sm:w-auto">
-            Sobre nosotros
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M9 5l7 7-7 7"/>
-            </svg>
-          </button>
+        <a href="/sobrenosotros" class="h-cta-second btn-secondary w-full sm:w-auto">
+          Sobre nosotros
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 5l7 7-7 7"/>
+          </svg>
         </a>
       </div>
 
     </div>
 
     <!-- ── RIGHT: Photo panel ─────────────────────────── -->
-    <div class="md:col-span-5 lg:col-span-5 h-panel self-center md:self-stretch flex items-center">
-      <div class="photo-frame w-full" style="height: clamp(280px, 50vh, 540px);">
+    <div class="md:col-span-5 lg:col-span-5 h-panel photo-col self-center flex items-center" style="min-width:0;overflow:hidden;">
+      <div
+        id="hero-photo"
+        class="photo-frame cursor-pointer"
+        title="Ver imagen ampliada"
+        role="button"
+        tabindex="0"
+        aria-label="Ver imagen ampliada del Círculo de Estudios DETRA - UNT"
+      >
         <!-- Corner accents -->
         <div class="corner-tl"></div>
         <div class="corner-br"></div>
@@ -403,13 +493,22 @@
           fetchpriority="high"
           loading="eager"
           decoding="async"
+          class="hero-img"
         />
+
+        <!-- Crimson tint for duotone effect -->
+        <div class="photo-tint"></div>
 
         <!-- Gradient overlay -->
         <div class="photo-overlay"></div>
 
         <!-- Caption -->
-        <p class="photo-caption">Miembros del C.E. DETRA · UNT</p>
+        <div class="photo-caption">
+          <span>Miembros del C.E. DETRA · UNT</span>
+          <svg class="expand-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+          </svg>
+        </div>
       </div>
     </div>
 
@@ -432,3 +531,141 @@
   <div class="bottom-rule"></div>
 
 </section>
+
+<!-- Image Modal -->
+<style>
+  /* Full dialog styling: takes full viewport, centers content */
+  #image-modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  #image-modal[open] {
+    display: flex;
+  }
+  #image-modal::backdrop {
+    background: rgba(8, 5, 5, 0.92);
+    backdrop-filter: blur(6px);
+  }
+  .modal-inner {
+    position: relative;
+    max-width: min(95vw, 1100px);
+    max-height: 92vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  .modal-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    margin-bottom: 0.6rem;
+    padding: 0.45rem 1rem;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 2px;
+    color: rgba(255,255,255,0.85);
+    font-family: var(--font-label, monospace);
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    flex-shrink: 0;
+  }
+  .modal-close-btn:hover {
+    background: rgba(94,11,21,0.7);
+    border-color: #5E0B15;
+    color: #fff;
+  }
+  .modal-img {
+    width: 100%;
+    height: auto;
+    max-height: 82vh;
+    object-fit: contain;
+    display: block;
+    border: 1px solid rgba(94,11,21,0.35);
+    box-shadow: 0 0 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(94,11,21,0.1);
+  }
+  /* Prevent body scroll when modal open */
+  :global(body.modal-open) {
+    overflow: hidden;
+  }
+</style>
+
+<dialog id="image-modal">
+  <div class="modal-inner">
+    <button id="modal-close" type="button" class="modal-close-btn" aria-label="Cerrar modal">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+      Cerrar
+    </button>
+    <img
+      src="/principalv2.jpeg"
+      alt="Miembros del C.E. DETRA · UNT"
+      class="modal-img"
+    />
+  </div>
+</dialog>
+
+<script>
+  const photoFrame = document.getElementById('hero-photo');
+  const modal = document.getElementById('image-modal') as HTMLDialogElement;
+  const modalClose = document.getElementById('modal-close');
+
+  function openModal() {
+    if (!modal.open) {
+      modal.showModal();
+    }
+    document.body.classList.add('modal-open');
+  }
+
+  function closeModal() {
+    if (modal.open) {
+      modal.close();
+    }
+    document.body.classList.remove('modal-open');
+  }
+
+  if (photoFrame && modal && modalClose) {
+    photoFrame.addEventListener('click', openModal);
+    photoFrame.addEventListener('keydown', (event: KeyboardEvent) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        openModal();
+      }
+    });
+    modalClose.addEventListener('click', closeModal);
+
+    // Close on backdrop click (clicking outside modal-inner)
+    modal.addEventListener('click', (e: MouseEvent) => {
+      const inner = modal.querySelector('.modal-inner') as HTMLElement;
+      if (inner) {
+        const rect = inner.getBoundingClientRect();
+        const outsideX = e.clientX < rect.left || e.clientX > rect.right;
+        const outsideY = e.clientY < rect.top  || e.clientY > rect.bottom;
+        if (outsideX || outsideY) closeModal();
+      }
+    });
+
+    // Also close with Escape (native dialog behavior, make sure to cleanup)
+    modal.addEventListener('close', () => {
+      document.body.classList.remove('modal-open');
+    });
+  }
+</script>
