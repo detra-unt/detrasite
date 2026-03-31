@@ -124,7 +124,7 @@ const { currentPage = "home" } = Astro.props;
     id="mobile-menu"
     class="md:hidden overflow-hidden transition-all duration-350 ease-in-out"
     style="max-height: 0; opacity: 0;"
-    aria-hidden="true"
+    inert
   >
     <div
       class="bg-[#fcfaec] border-t border-[#dcc0c1]/40 px-8 py-6 flex flex-col gap-6"
@@ -294,14 +294,14 @@ const { currentPage = "home" } = Astro.props;
         menu.style.opacity = "0";
         btn.classList.remove("is-open");
         btn.setAttribute("aria-expanded", "false");
-        menu.setAttribute("aria-hidden", "true");
+        menu.inert = true;
       } else {
         const contentHeight = inner ? inner.scrollHeight : 300;
         menu.style.maxHeight = `${contentHeight}px`;
         menu.style.opacity = "1";
         btn.classList.add("is-open");
         btn.setAttribute("aria-expanded", "true");
-        menu.setAttribute("aria-hidden", "false");
+        menu.inert = false;
       }
     }, { signal });
 
@@ -312,7 +312,7 @@ const { currentPage = "home" } = Astro.props;
         menu.style.opacity = "0";
         btn.classList.remove("is-open");
         btn.setAttribute("aria-expanded", "false");
-        menu.setAttribute("aria-hidden", "true");
+        menu.inert = true;
       }, { signal });
     });
 
@@ -323,7 +323,7 @@ const { currentPage = "home" } = Astro.props;
         menu.style.opacity = "0";
         btn.classList.remove("is-open");
         btn.setAttribute("aria-expanded", "false");
-        menu.setAttribute("aria-hidden", "true");
+        menu.inert = true;
       }
     }, { signal });
   }
