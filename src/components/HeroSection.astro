@@ -624,33 +624,51 @@
 </dialog>
 
 <script>
-  const photoFrame = document.getElementById('hero-photo');
-  const modal = document.getElementById('image-modal') as HTMLDialogElement;
-  const modalClose = document.getElementById('modal-close');
+  // ── AbortController para limpieza de listeners de este componente ──
+  let heroModalAbortController: AbortController | null = null;
 
-  function openModal() {
-    if (!modal.open) {
-      modal.showModal();
+  function initHeroModal() {
+    // Limpiar event listeners viejos si existen
+    if (heroModalAbortController) {
+      heroModalAbortController.abort();
     }
-    document.body.classList.add('modal-open');
-  }
 
-  function closeModal() {
-    if (modal.open) {
-      modal.close();
+    const photoFrame = document.getElementById('hero-photo');
+    const modal = document.getElementById('image-modal') as HTMLDialogElement | null;
+    const modalClose = document.getElementById('modal-close');
+
+    // Si no estamos en una página con el hero, salir silenciosamente
+    if (!photoFrame || !modal || !modalClose) return;
+
+    // Crear nuevo controller para esta instancia
+    heroModalAbortController = new AbortController();
+    const { signal } = heroModalAbortController;
+
+    function openModal() {
+      if (modal && !modal.open) {
+        modal.showModal();
+        document.body.classList.add('modal-open');
+      }
     }
-    document.body.classList.remove('modal-open');
-  }
 
-  if (photoFrame && modal && modalClose) {
-    photoFrame.addEventListener('click', openModal);
+    function closeModal() {
+      if (modal && modal.open) {
+        modal.close();
+      }
+      document.body.classList.remove('modal-open');
+    }
+
+    // Event listeners con signal para poder limpiarlos
+    photoFrame.addEventListener('click', openModal, { signal });
+    
     photoFrame.addEventListener('keydown', (event: KeyboardEvent) => {
       if (event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
         openModal();
       }
-    });
-    modalClose.addEventListener('click', closeModal);
+    }, { signal });
+    
+    modalClose.addEventListener('click', closeModal, { signal });
 
     // Close on backdrop click (clicking outside modal-inner)
     modal.addEventListener('click', (e: MouseEvent) => {
@@ -658,14 +676,33 @@
       if (inner) {
         const rect = inner.getBoundingClientRect();
         const outsideX = e.clientX < rect.left || e.clientX > rect.right;
-        const outsideY = e.clientY < rect.top  || e.clientY > rect.bottom;
+        const outsideY = e.clientY < rect.top || e.clientY > rect.bottom;
         if (outsideX || outsideY) closeModal();
       }
-    });
+    }, { signal });
 
-    // Also close with Escape (native dialog behavior, make sure to cleanup)
+    // Native dialog close event (Escape key)
     modal.addEventListener('close', () => {
       document.body.classList.remove('modal-open');
-    });
+    }, { signal });
   }
+
+  // Inicializar en carga de página (funciona con View Transitions)
+  document.addEventListener('astro:page-load', initHeroModal);
+
+  // Limpieza antes de swap (View Transitions)
+  document.addEventListener('astro:before-swap', () => {
+    // Asegurar que el modal esté cerrado y el body limpio antes de navegar
+    const modal = document.getElementById('image-modal') as HTMLDialogElement | null;
+    if (modal?.open) {
+      modal.close();
+    }
+    document.body.classList.remove('modal-open');
+
+    // Abortar listeners
+    if (heroModalAbortController) {
+      heroModalAbortController.abort();
+      heroModalAbortController = null;
+    }
+  });
 </script>
