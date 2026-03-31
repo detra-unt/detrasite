@@ -1,0 +1,11 @@
+# robots.txt para DETRA-UNT — https://detraunt.com
+# Generado: 2026-03-31
+
+User-agent: *
+Allow: /
+
+# Evitar indexación de rutas técnicas o de error
+Disallow: /404
+
+# Sitemap (generado por @astrojs/sitemap)
+Sitemap: https://detraunt.com/sitemap-index.xml

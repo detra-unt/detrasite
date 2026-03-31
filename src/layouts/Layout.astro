@@ -1,6 +1,7 @@
 ---
-import Navbar from '../components/Navbar.astro';
-import Footer from '../components/Footer.astro';
+import Navbar  from '../components/Navbar.astro';
+import Footer  from '../components/Footer.astro';
+import SEO     from '../components/SEO.astro';
 import '../styles/global.css';
 import { ClientRouter } from 'astro:transitions';
 
@@ -8,9 +9,32 @@ interface Props {
   title: string;
   description?: string;
   currentPage?: 'home' | 'publications' | 'about';
+  /** URL canónica absoluta (opcional — se infiere de Astro.url si no se pasa) */
+  canonical?: string;
+  /** Imagen Open Graph (URL absoluta o ruta /public) */
+  ogImage?: string;
+  /** Tipo de página OG */
+  ogType?: 'website' | 'article';
+  /** Palabras clave adicionales para la página */
+  keywords?: string;
+  /** Excluir de motores de búsqueda */
+  noindex?: boolean;
+  articlePublishedTime?: string;
+  articleModifiedTime?: string;
 }
 
-const { title, description = 'DETRA-UNT - Excelencia Academica y Investigacion Legal', currentPage = 'home' } = Astro.props;
+const {
+  title,
+  description = 'DETRA-UNT — Investigación jurídica crítica de la Universidad Nacional de Trujillo. Artículos académicos, revista de derecho y análisis legal.',
+  currentPage = 'home',
+  canonical,
+  ogImage,
+  ogType,
+  keywords,
+  noindex,
+  articlePublishedTime,
+  articleModifiedTime,
+} = Astro.props;
 ---
 
 <!DOCTYPE html>
@@ -18,16 +42,20 @@ const { title, description = 'DETRA-UNT - Excelencia Academica y Investigacion L
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+
+    <!-- Favicons -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
-    <meta name="description" content={description} />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- Astro generator (meta) -->
     <meta name="generator" content={Astro.generator} />
-    
-    <!-- Preconnect para reducir latencia de fuentes -->
+
+    <!-- Preconnect para Google Fonts (reduce latencia) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-    <!-- Carga asíncrona: media="print" evita bloqueo, onload lo convierte a "all" -->
+    <!-- Fuentes: carga asíncrona con fallback noscript -->
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Public+Sans:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
@@ -40,23 +68,38 @@ const { title, description = 'DETRA-UNT - Excelencia Academica y Investigacion L
       media="print"
       onload="this.media='all'"
     />
-    <!-- Fallback para navegadores sin JavaScript -->
     <noscript>
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Public+Sans:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" />
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
     </noscript>
-    
+
+    <!-- Título de página -->
     <title>{title}</title>
+
+    <!-- ══════════ SEO completo ══════════ -->
+    <SEO
+      title={title}
+      description={description}
+      canonical={canonical}
+      ogImage={ogImage}
+      ogType={ogType}
+      keywords={keywords}
+      noindex={noindex}
+      articlePublishedTime={articlePublishedTime}
+      articleModifiedTime={articleModifiedTime}
+    />
+
+    <!-- View Transitions (SPA) -->
     <ClientRouter />
   </head>
-  
+
   <body class="bg-background text-on-surface selection:bg-primary-fixed selection:text-on-primary-fixed min-h-screen flex flex-col">
     <Navbar currentPage={currentPage} />
-    
+
     <main class="flex-grow">
       <slot />
     </main>
-    
+
     <Footer />
   </body>
 </html>
