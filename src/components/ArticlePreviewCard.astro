@@ -1,7 +1,7 @@
 ---
 // Componente de preview de artículo - muestra imagen, autores, fecha, tipo y título
 import type { ArticlePreview } from '../lib/contentful';
-import { getArticleUrl, getArticleTypeSlug, formatDateBySize,getAuthorInitials } from '../lib/contentful';
+import { getArticleUrl, getArticleTypeSlug, formatDateBySize, getAuthorInitials, getOptimizedImageUrl, getResponsiveSrcset } from '../lib/contentful';
 import ExpandableArticleTitle from './ExpandableArticleTitle.astro';
 
 interface Props {
@@ -17,6 +17,12 @@ const typeSlug = getArticleTypeSlug(article.articleType);
 const formattedDate = formatDateBySize(article.publishDate,'short');
 const authors = article.authorsCollection.items;
 const titleRevealId = `${article.sys.id}-${variant}`;
+
+// Imágenes optimizadas según variante
+const coverImageUrl = article.coverImage.url;
+const featuredSrcset = getResponsiveSrcset(coverImageUrl, [600, 900, 1200, 1600]);
+const defaultSrcset = getResponsiveSrcset(coverImageUrl, [400, 600, 800, 1000]);
+const compactSrcset = getResponsiveSrcset(coverImageUrl, [144, 288, 432]);
 ---
 
 {variant === 'featured' ? (
@@ -38,10 +44,12 @@ const titleRevealId = `${article.sys.id}-${variant}`;
     <!-- Imagen de fondo con efecto parallax sutil -->
     <div class="absolute inset-0 overflow-hidden">
       <img 
-        src={article.coverImage.url} 
+        src={getOptimizedImageUrl(coverImageUrl, { width: 900, height: 506 })} 
+        srcset={featuredSrcset}
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 75vw, 900px"
         alt={article.coverImage.title || article.title}
-        width={article.coverImage.width || 800}
-        height={article.coverImage.height || 450}
+        width={900}
+        height={506}
         class="absolute inset-0 w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:rotate-1"
         loading="lazy"
         decoding="async"
@@ -101,7 +109,7 @@ const titleRevealId = `${article.sys.id}-${variant}`;
             {authors.slice(0, 3).map((author) => (
               author.profilePicture ? (
                 <img 
-                  src={author.profilePicture.url}
+                  src={getOptimizedImageUrl(author.profilePicture.url, { width: 56, height: 56, fit: 'thumb', focus: 'faces' })}
                   alt={author.fullName}
                   width="28"
                   height="28"
@@ -144,7 +152,9 @@ const titleRevealId = `${article.sys.id}-${variant}`;
     <div class="shrink-0 relative">
       <div class="w-28 h-28 md:w-36 md:h-36 overflow-hidden rounded-sm">
         <img 
-          src={article.coverImage.url}
+          src={getOptimizedImageUrl(coverImageUrl, { width: 144, height: 144 })}
+          srcset={compactSrcset}
+          sizes="(max-width: 768px) 112px, 144px"
           alt={article.coverImage.title || article.title}
           width="144"
           height="144"
@@ -202,7 +212,7 @@ const titleRevealId = `${article.sys.id}-${variant}`;
           {authors.slice(0, 2).map((author) => (
             author.profilePicture ? (
               <img 
-                src={author.profilePicture.url}
+                src={getOptimizedImageUrl(author.profilePicture.url, { width: 48, height: 48, fit: 'thumb', focus: 'faces' })}
                 alt={author.fullName}
                 width="24"
                 height="24"
@@ -243,10 +253,12 @@ const titleRevealId = `${article.sys.id}-${variant}`;
     <!-- Imagen de portada con efectos -->
     <div class="relative aspect-[16/10] overflow-hidden bg-[#1c1c14]">
       <img 
-        src={article.coverImage.url}
+        src={getOptimizedImageUrl(coverImageUrl, { width: 800, height: 500 })}
+        srcset={defaultSrcset}
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
         alt={article.coverImage.title || article.title}
-        width={article.coverImage.width || 800}
-        height={article.coverImage.height || 500}
+        width={800}
+        height={500}
         class="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
         loading="lazy"
         decoding="async"
@@ -302,7 +314,7 @@ const titleRevealId = `${article.sys.id}-${variant}`;
             author.profilePicture ? (
               <div class="relative group/avatar">
                 <img 
-                  src={author.profilePicture.url}
+                  src={getOptimizedImageUrl(author.profilePicture.url, { width: 80, height: 80, fit: 'thumb', focus: 'faces' })}
                   alt={author.fullName}
                   width="40"
                   height="40"

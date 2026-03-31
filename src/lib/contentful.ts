@@ -668,6 +668,85 @@ export function formatDateBySize(dateString: string, size : DateFormatSize = 'lo
   }
 }
 
+// ============================================================================
+// OPTIMIZACIÓN DE IMÁGENES - Contentful Image API
+// ============================================================================
+
+interface ImageOptimizationOptions {
+  /** Ancho deseado en píxeles */
+  width?: number;
+  /** Alto deseado en píxeles */
+  height?: number;
+  /** Formato de salida (webp es el más eficiente con soporte universal) */
+  format?: 'webp' | 'avif' | 'jpg' | 'png';
+  /** Calidad de compresión (1-100) */
+  quality?: number;
+  /** Modo de ajuste de la imagen */
+  fit?: 'fill' | 'crop' | 'scale' | 'pad' | 'thumb';
+  /** Punto focal para crop (ej: 'faces', 'center', 'top', 'bottom', 'left', 'right') */
+  focus?: 'faces' | 'center' | 'top' | 'bottom' | 'left' | 'right' | 'top_left' | 'top_right' | 'bottom_left' | 'bottom_right';
+}
+
+/**
+ * Genera una URL optimizada para imágenes de Contentful usando la Image API.
+ * Convierte automáticamente a WebP y aplica compresión inteligente.
+ * 
+ * @example
+ * // Imagen para card de artículo
+ * getOptimizedImageUrl(article.coverImage.url, { width: 800, height: 500 })
+ * 
+ * // Thumbnail pequeño
+ * getOptimizedImageUrl(url, { width: 200, height: 200, fit: 'thumb', focus: 'faces' })
+ */
+export function getOptimizedImageUrl(
+  url: string,
+  options: ImageOptimizationOptions = {}
+): string {
+  // Si la URL está vacía o no es de Contentful, retornarla sin cambios
+  if (!url || !url.includes('ctfassets.net')) {
+    return url;
+  }
+
+  const {
+    width,
+    height,
+    format = 'webp',
+    quality = 85,
+    fit = 'fill',
+    focus,
+  } = options;
+
+  const params = new URLSearchParams();
+  
+  if (width) params.set('w', String(width));
+  if (height) params.set('h', String(height));
+  params.set('fm', format);
+  params.set('q', String(quality));
+  if (fit) params.set('fit', fit);
+  if (focus) params.set('f', focus);
+
+  // Eliminar parámetros existentes y agregar los nuevos
+  const baseUrl = url.split('?')[0];
+  return `${baseUrl}?${params.toString()}`;
+}
+
+/**
+ * Genera un srcset responsivo para imágenes de Contentful.
+ * Útil para implementar imágenes adaptativas con múltiples resoluciones.
+ * 
+ * @example
+ * <img srcset={getResponsiveSrcset(url, [400, 800, 1200])} sizes="..." />
+ */
+export function getResponsiveSrcset(
+  url: string,
+  widths: number[],
+  options: Omit<ImageOptimizationOptions, 'width'> = {}
+): string {
+  return widths
+    .map(w => `${getOptimizedImageUrl(url, { ...options, width: w })} ${w}w`)
+    .join(', ');
+}
+
 // Helper para obtener iniciales del autor
 export function getAuthorInitials(fullName: string): string {
   return fullName

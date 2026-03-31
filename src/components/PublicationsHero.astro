@@ -1,4 +1,7 @@
 ---
+import { Image } from 'astro:assets';
+import revistaImg from '../assets/images/revistav2.png';
+
 interface Props {
   total: number;
 }
@@ -77,12 +80,13 @@ const { total } = Astro.props;
         <!-- Portada con efecto de sombra profunda -->
         <div class="ph-cover">
           <div class="ph-cover__shadow"></div>
-          <img
-            src="/revistav2.png"
+          <Image
+            src={revistaImg}
             alt="Portada de la Revista DETRA-UNT N° 01"
+            width={160}
+            height={220}
+            format="webp"
             class="ph-cover__img"
-            width="160"
-            height="220"
             loading="eager"
             decoding="async"
           />

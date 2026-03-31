@@ -1,4 +1,7 @@
 ---
+import { Image } from 'astro:assets';
+import logoDetraVf from '../assets/images/logoDetravf.png';
+
 interface Props {
   currentPage?: "home" | "publications" | "about";
 }
@@ -25,10 +28,14 @@ const { currentPage = "home" } = Astro.props;
       class="flex items-center group"
       aria-label="Ir al inicio de Detra"
     >
-      <img
-        src="/logoDetravf.png"
+      <Image
+        src={logoDetraVf}
         alt="Detra logo"
+        width={150}
+        height={48}
+        format="webp"
         class="h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-[1.03]"
+        loading="eager"
       />
     </a>
 

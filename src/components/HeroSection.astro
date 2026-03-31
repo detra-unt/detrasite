@@ -1,5 +1,6 @@
 ---
-
+import { Image } from 'astro:assets';
+import heroImage from '../assets/images/principalv2.jpeg';
 ---
 
 <style>
@@ -485,11 +486,13 @@
         <div class="corner-br"></div>
 
         <!-- Photo -->
-        <img
-          src="/principalv2.jpeg"
+        <Image
+          src={heroImage}
           alt="Miembros del Círculo de Estudios DETRA - UNT"
-          width="800"
-          height="600"
+          width={800}
+          height={600}
+          format="webp"
+          quality={85}
           fetchpriority="high"
           loading="eager"
           decoding="async"
@@ -615,9 +618,14 @@
       </svg>
       Cerrar
     </button>
-    <img
-      src="/principalv2.jpeg"
+    <Image
+      src={heroImage}
       alt="Miembros del C.E. DETRA · UNT"
+      width={1600}
+      height={1200}
+      format="webp"
+      quality={90}
+      loading="lazy"
       class="modal-img"
     />
   </div>

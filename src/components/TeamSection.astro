@@ -1,9 +1,12 @@
 ---
-import { getActiveJuntaDirectiva } from '../lib/contentful';
+import { getActiveJuntaDirectiva, getOptimizedImageUrl, getResponsiveSrcset } from '../lib/contentful';
 
 const juntaDirectiva = await getActiveJuntaDirectiva();
 const managmentYear  = juntaDirectiva?.managmentYear ?? null;
 const foto           = juntaDirectiva?.fotoGeneral   ?? null;
+
+// Preparar srcset para la imagen de la junta
+const fotoSrcset = foto ? getResponsiveSrcset(foto.url, [600, 900, 1200, 1600]) : '';
 ---
 
 <section class="junta-section">
@@ -25,10 +28,12 @@ const foto           = juntaDirectiva?.fotoGeneral   ?? null;
     <div class="junta-card" id="junta-card" data-src={foto.url} data-alt={foto.title ?? `Junta Directiva ${managmentYear}`} data-year={managmentYear ?? ''}>
       <img
         class="junta-img"
-        src={foto.url}
+        src={getOptimizedImageUrl(foto.url, { width: 1200, height: 525 })}
+        srcset={fotoSrcset}
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1200px"
         alt={foto.title ?? `Junta Directiva ${managmentYear}`}
-        width={foto.width || 1600}
-        height={foto.height || 700}
+        width={1200}
+        height={525}
         loading="lazy"
         decoding="async"
       />

@@ -6,6 +6,8 @@ import {
   getAllArticleSlugs,
   formatDateBySize,
   getAuthorInitials,
+  getOptimizedImageUrl,
+  getResponsiveSrcset,
   type ArticleTypeSlug,
 } from "../../../lib/contentful";
 
@@ -34,6 +36,11 @@ if (!article) {
 const authors = article.authorsCollection.items;
 const publishDate = formatDateBySize(article.publishDate,'long');
 const articleTypeLabel = article.articleType;
+
+// Imágenes optimizadas
+const coverUrl = article.coverImage.url;
+const heroSrcset = getResponsiveSrcset(coverUrl, [600, 900, 1200, 1600]);
+const coverSrcset = getResponsiveSrcset(coverUrl, [600, 800, 1000, 1200]);
 ---
 
 <style>
@@ -334,13 +341,16 @@ const articleTypeLabel = article.articleType;
     <!-- Imagen de fondo con overlay -->
     <div class="absolute inset-0">
       <img
-        src={article.coverImage.url}
+        src={getOptimizedImageUrl(coverUrl, { width: 1200, height: 630, quality: 60 })}
+        srcset={heroSrcset}
+        sizes="100vw"
         alt={article.coverImage.title || article.title}
-        width={article.coverImage.width || 1200}
-        height={article.coverImage.height || 630}
+        width={1200}
+        height={630}
         class="w-full h-full object-cover opacity-20"
         loading="eager"
         decoding="async"
+        fetchpriority="high"
       />
       <div
         class="absolute inset-0 bg-gradient-to-t from-[#5E0B15] via-[#5E0B15]/90 to-[#5E0B15]/70"
@@ -464,10 +474,12 @@ const articleTypeLabel = article.articleType;
           class="relative overflow-hidden rounded-2xl shadow-2xl shadow-[#5E0B15]/20 ring-1 ring-[#5E0B15]/10"
         >
           <img
-            src={article.coverImage.url}
+            src={getOptimizedImageUrl(coverUrl, { width: 1000, height: 563 })}
+            srcset={coverSrcset}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1000px"
             alt={article.coverImage.title || article.title}
-            width={article.coverImage.width || 1200}
-            height={article.coverImage.height || 675}
+            width={1000}
+            height={563}
             class="w-full aspect-video object-cover transition-transform duration-700 group-hover:scale-105"
             loading="eager"
             decoding="async"
@@ -508,7 +520,7 @@ const articleTypeLabel = article.articleType;
                 {author.profilePicture ? (
                   <div class="relative">
                     <img
-                      src={author.profilePicture.url}
+                      src={getOptimizedImageUrl(author.profilePicture.url, { width: 160, height: 160, fit: 'thumb', focus: 'faces' })}
                       alt={author.fullName}
                       width="80"
                       height="80"

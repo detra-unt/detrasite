@@ -1,5 +1,9 @@
 ---
 // src/components/Footer.astro
+import { Image } from 'astro:assets';
+import logoDetra from '../assets/images/logoDetra.png';
+import revistaImg from '../assets/images/revistav2.png';
+import logoUnt from '../assets/images/logount.png';
 ---
 
 <footer class="bg-[#121210] text-[#ede9d8] relative overflow-hidden">
@@ -21,11 +25,12 @@
     >
       <!-- Left: Logo + Name -->
       <div class="flex items-center gap-3 flex-shrink-0">
-        <img
-          src="/logoDetra.png"
+        <Image
+          src={logoDetra}
           alt="DETRA UNT"
-          width="44"
-          height="44"
+          width={44}
+          height={44}
+          format="webp"
           class="h-11 w-auto hover:scale-105 transition-transform duration-500"
           style="filter: brightness(0) invert(1); opacity: 0.82;"
           loading="lazy"
@@ -97,11 +102,12 @@
           class="group/mag flex items-center gap-2.5 border border-[#5E0B15]/45 bg-[#5E0B15]/10 hover:bg-[#5E0B15]/20 hover:border-[#5E0B15]/70 px-3 py-2 transition-all duration-300 flex-shrink-0"
           aria-label="Adquirir Revista DETRA N°01"
         >
-          <img
-            src="/revistav2.png"
+          <Image
+            src={revistaImg}
             alt="Revista DETRA N°01"
-            width="40"
-            height="56"
+            width={40}
+            height={56}
+            format="webp"
             class="h-10 w-auto rounded-sm shadow-md group-hover/mag:scale-105 transition-transform duration-300"
             loading="lazy"
             decoding="async"
@@ -189,11 +195,12 @@
           loading="lazy"
           decoding="async"
         /> -->
-        <img
-          src="/logount.png"
+        <Image
+          src={logoUnt}
           alt="Universidad Nacional de Trujillo"
-          width="28"
-          height="28"
+          width={28}
+          height={28}
+          format="webp"
           class="h-7 w-auto opacity-20 hover:opacity-40 transition-opacity duration-300"
           style="filter: brightness(0) invert(1);"
           loading="lazy"
