@@ -12,13 +12,20 @@ import {
 
 const ARTICLES_PER_PAGE = 6;
 
+// SSG: Cargar TODOS los artículos en build time (sin fetch en runtime)
 const [featuredArticles, { articles, total }] = await Promise.all([
   getFeaturedArticles(),
-  getArticles({ limit: ARTICLES_PER_PAGE }),
+  getArticles({ limit: 1000 }), // Cargar todos - el límite de Contentful es 1000
 ]);
 
-const hasMoreArticles = total > articles.length;
 const totalPages = Math.ceil(total / ARTICLES_PER_PAGE);
+const hasMoreArticles = total > ARTICLES_PER_PAGE;
+
+// Asignar cada artículo a su "página" visual
+const articlesWithPage = articles.map((article, index) => ({
+  ...article,
+  page: Math.floor(index / ARTICLES_PER_PAGE) + 1,
+}));
 ---
 
 <Layout
@@ -73,20 +80,25 @@ const totalPages = Math.ceil(total / ARTICLES_PER_PAGE);
       </div>
 
       {
-        articles.length > 0 ? (
+        articlesWithPage.length > 0 ? (
           <div
             id="articles-list"
             class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
           >
-            {articles.map((article) => (
+            {articlesWithPage.map((article) => (
               <div
                 data-article
+                data-page={article.page}
                 data-title={article.title}
                 data-authors={article.authorsCollection.items
                   .map((a) => a.fullName)
                   .join(", ")}
                 data-type={getArticleTypeSlug(article.articleType)}
                 data-date={article.publishDate}
+                class:list={[
+                  "article-item",
+                  { "hidden-page": article.page > 1 }
+                ]}
               >
                 <ArticlePreviewCard article={article} variant="default" />
               </div>
@@ -124,7 +136,7 @@ const totalPages = Math.ceil(total / ARTICLES_PER_PAGE);
         </p>
       </div>
 
-      <!-- Paginación mejorada -->
+      <!-- Paginación visual (SSG - sin fetch) -->
       {
         hasMoreArticles && (
           <div id="pagination-container" class="mt-12 md:mt-16">
@@ -132,7 +144,7 @@ const totalPages = Math.ceil(total / ARTICLES_PER_PAGE);
             <div class="flex items-center justify-center gap-4 mb-6">
               <div class="h-px flex-1 max-w-24 bg-gradient-to-r from-transparent to-[#5E0B15]/20" />
               <p id="pagination-progress" class="font-label text-sm text-[#1c1c14]/60">
-                Mostrando <span id="loaded-count" class="font-bold text-[#5E0B15]">{articles.length}</span> de <span id="total-count" class="font-bold">{total}</span> artículos
+                Mostrando <span id="loaded-count" class="font-bold text-[#5E0B15]">{Math.min(ARTICLES_PER_PAGE, total)}</span> de <span id="total-count" class="font-bold">{total}</span> artículos
               </p>
               <div class="h-px flex-1 max-w-24 bg-gradient-to-l from-transparent to-[#5E0B15]/20" />
             </div>
@@ -143,7 +155,7 @@ const totalPages = Math.ceil(total / ARTICLES_PER_PAGE);
                 <div 
                   id="progress-bar"
                   class="h-full bg-gradient-to-r from-[#5E0B15] to-[#5E0B15]/70 rounded-full transition-all duration-500 ease-out"
-                  style={`width: ${(articles.length / total) * 100}%`}
+                  style={`width: ${(Math.min(ARTICLES_PER_PAGE, total) / total) * 100}%`}
                 />
               </div>
             </div>
@@ -153,9 +165,10 @@ const totalPages = Math.ceil(total / ARTICLES_PER_PAGE);
               <button
                 id="load-more"
                 class="group relative font-label text-sm font-bold text-[#5E0B15] py-4 px-10 border-2 border-[#5E0B15]/20 rounded-full hover:border-[#5E0B15] hover:bg-[#5E0B15] hover:text-white transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-[#5E0B15]/20 hover:-translate-y-0.5 overflow-hidden"
-                data-offset={articles.length}
-                data-total={total}
+                data-current-page="1"
+                data-total-pages={totalPages}
                 data-per-page={ARTICLES_PER_PAGE}
+                data-total={total}
               >
                 {/* Efecto ripple en hover */}
                 <span class="absolute inset-0 bg-[#5E0B15] scale-0 group-hover:scale-100 transition-transform duration-500 origin-center rounded-full" />
@@ -167,17 +180,10 @@ const totalPages = Math.ceil(total / ARTICLES_PER_PAGE);
                     expand_more
                   </span>
                 </span>
-
-                {/* Spinner de carga (oculto por defecto) */}
-                <span id="load-more-spinner" class="hidden absolute inset-0 flex items-center justify-center">
-                  <span class="relative flex">
-                    <span class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  </span>
-                </span>
               </button>
             </div>
 
-            <!-- Indicador de páginas (opcional, discreto) -->
+            <!-- Indicador de páginas -->
             <div class="flex justify-center mt-6 gap-2">
               {Array.from({ length: totalPages }).map((_, i) => (
                 <span 
@@ -199,7 +205,12 @@ const totalPages = Math.ceil(total / ARTICLES_PER_PAGE);
 </Layout>
 
 <style>
-  /* Animación para artículos cargados dinámicamente */
+  /* Artículos ocultos por paginación (cargados pero no visibles) */
+  .hidden-page {
+    display: none;
+  }
+  
+  /* Animación para artículos revelados */
   @keyframes fadeInUp {
     from {
       opacity: 0;
@@ -225,50 +236,43 @@ const totalPages = Math.ceil(total / ARTICLES_PER_PAGE);
 </style>
 
 <script>
-  // Controlador para paginación
-  let paginationAbortController: AbortController | null = null;
-
+  // ============================================================================
+  // PAGINACIÓN VISUAL SSG - Sin fetch, solo muestra/oculta contenido pre-cargado
+  // ============================================================================
+  
   document.addEventListener('astro:page-load', () => {
-    // Limpiar controladores anteriores
-    if (paginationAbortController) {
-      paginationAbortController.abort();
-    }
-
     const loadMoreBtn = document.getElementById("load-more") as HTMLButtonElement | null;
     if (!loadMoreBtn) return;
 
-    paginationAbortController = new AbortController();
-    const { signal } = paginationAbortController;
-
-    const articlesList = document.getElementById("articles-list");
-    const loadMoreText = document.getElementById("load-more-text");
-    const loadMoreSpinner = document.getElementById("load-more-spinner");
     const loadedCountEl = document.getElementById("loaded-count");
     const progressBar = document.getElementById("progress-bar");
-    const paginationContainer = document.getElementById("pagination-container");
     const paginationDots = document.querySelectorAll(".pagination-dot");
 
-    let isLoading = false;
+    // Obtener configuración desde data attributes
+    let currentPage = parseInt(loadMoreBtn.dataset.currentPage || "1", 10);
+    const totalPages = parseInt(loadMoreBtn.dataset.totalPages || "1", 10);
+    const perPage = parseInt(loadMoreBtn.dataset.perPage || "6", 10);
+    const totalArticles = parseInt(loadMoreBtn.dataset.total || "0", 10);
 
-    const updatePaginationUI = (loaded: number, total: number, hasMore: boolean) => {
+    /**
+     * Actualiza la UI de paginación (contador, barra de progreso, dots)
+     */
+    const updatePaginationUI = () => {
+      const visibleCount = currentPage * perPage;
+      const actualVisible = Math.min(visibleCount, totalArticles);
+
       // Actualizar contador
       if (loadedCountEl) {
-        loadedCountEl.textContent = String(loaded);
+        loadedCountEl.textContent = String(actualVisible);
       }
 
       // Actualizar barra de progreso
       if (progressBar) {
-        const percentage = (loaded / total) * 100;
+        const percentage = (actualVisible / totalArticles) * 100;
         progressBar.style.width = `${percentage}%`;
       }
 
-      // Actualizar offset del botón
-      loadMoreBtn.dataset.offset = String(loaded);
-
       // Actualizar dots de paginación
-      const perPage = parseInt(loadMoreBtn.dataset.perPage || "6", 10);
-      const currentPage = Math.ceil(loaded / perPage);
-      
       paginationDots.forEach((dot, i) => {
         const dotEl = dot as HTMLElement;
         if (i + 1 <= currentPage) {
@@ -285,9 +289,10 @@ const totalPages = Math.ceil(total / ARTICLES_PER_PAGE);
         }
       });
 
-      // Ocultar botón si no hay más artículos
-      if (!hasMore && paginationContainer) {
+      // Ocultar botón si ya mostramos todos
+      if (currentPage >= totalPages) {
         loadMoreBtn.style.display = "none";
+        
         // Mostrar mensaje de fin
         const endMessage = document.createElement("p");
         endMessage.className = "text-center font-label text-sm text-[#1c1c14]/50 mt-4";
@@ -301,93 +306,31 @@ const totalPages = Math.ceil(total / ARTICLES_PER_PAGE);
       }
     };
 
-    const setLoadingState = (loading: boolean) => {
-      isLoading = loading;
-      loadMoreBtn.disabled = loading;
+    /**
+     * Revela los artículos de la siguiente página con animación
+     */
+    const showNextPage = () => {
+      currentPage++;
+      loadMoreBtn.dataset.currentPage = String(currentPage);
 
-      if (loading) {
-        loadMoreText?.classList.add("opacity-0");
-        loadMoreSpinner?.classList.remove("hidden");
-        loadMoreBtn.classList.add("pointer-events-none");
-      } else {
-        loadMoreText?.classList.remove("opacity-0");
-        loadMoreSpinner?.classList.add("hidden");
-        loadMoreBtn.classList.remove("pointer-events-none");
-      }
+      // Encontrar artículos de esta página y mostrarlos
+      const articlesToShow = document.querySelectorAll(
+        `[data-article][data-page="${currentPage}"]`
+      );
+
+      articlesToShow.forEach((article, index) => {
+        const el = article as HTMLElement;
+        // Quitar clase hidden-page
+        el.classList.remove("hidden-page");
+        // Agregar animación con stagger
+        el.style.animationDelay = `${index * 75}ms`;
+        el.classList.add("animate-fade-in-up");
+      });
+
+      updatePaginationUI();
     };
 
-    // Tracking de página actual
-    let currentPage = 1;
-
-    loadMoreBtn.addEventListener("click", async () => {
-      if (isLoading) return;
-
-      const perPage = parseInt(loadMoreBtn.dataset.perPage || "6", 10);
-      currentPage++;
-
-      setLoadingState(true);
-
-      try {
-        const response = await fetch(`/api/articles/${currentPage}.json`);
-        
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        if (data.html && articlesList) {
-          // Insertar nuevo HTML con animación
-          const tempContainer = document.createElement("div");
-          tempContainer.innerHTML = data.html;
-          
-          // Agregar clases de animación antes de insertar
-          const newArticles = tempContainer.children;
-          Array.from(newArticles).forEach((article, index) => {
-            (article as HTMLElement).style.animationDelay = `${index * 75}ms`;
-          });
-
-          // Insertar artículos
-          while (tempContainer.firstChild) {
-            articlesList.appendChild(tempContainer.firstChild);
-          }
-
-          // Actualizar UI de paginación
-          updatePaginationUI(data.loaded, data.total, data.hasMore);
-
-          // Re-aplicar filtros si hay alguno activo
-          const urlParams = new URLSearchParams(window.location.search);
-          if (urlParams.toString()) {
-            // Disparar evento para que ArticlesFilters re-aplique los filtros
-            const form = document.getElementById('articles-filter-form') as HTMLFormElement;
-            if (form) {
-              form.dispatchEvent(new Event('submit'));
-            }
-          }
-        }
-      } catch (error) {
-        console.error("Error cargando artículos:", error);
-        // Mostrar error temporal
-        if (loadMoreText) {
-          const originalText = loadMoreText.textContent;
-          loadMoreText.textContent = "Error al cargar. Reintentar";
-          loadMoreText.classList.add("text-red-600");
-          setTimeout(() => {
-            loadMoreText.textContent = originalText;
-            loadMoreText.classList.remove("text-red-600");
-          }, 3000);
-        }
-      } finally {
-        setLoadingState(false);
-      }
-    }, { signal });
-  });
-
-  // Limpieza antes de navegación
-  document.addEventListener('astro:before-swap', () => {
-    if (paginationAbortController) {
-      paginationAbortController.abort();
-      paginationAbortController = null;
-    }
+    // Event listener del botón
+    loadMoreBtn.addEventListener("click", showNextPage);
   });
 </script>

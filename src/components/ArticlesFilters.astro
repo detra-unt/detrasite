@@ -285,17 +285,16 @@ const articleTypes = Object.entries(ARTICLE_TYPES).map(([label, slug]) => ({
     const clearBtn = document.getElementById('clear-filters');
     const activeFiltersDiv = document.getElementById('active-filters');
     const filterTagsDiv = document.getElementById('filter-tags');
-    const articlesList = document.getElementById('articles-list');
     
-    // Función para obtener artículos con filtros
-    const fetchArticles = async (params: URLSearchParams) => {
-      // Los artículos ya están en el DOM, filtramos del lado del cliente
+    // Función para filtrar artículos (todos están en el DOM desde build time)
+    const filterArticles = (params: URLSearchParams) => {
       const articles = document.querySelectorAll('[data-article]');
       const searchQuery = params.get('search')?.toLowerCase() || '';
       const articleType = params.get('articleType') || '';
       const dateFrom = params.get('dateFrom') || '';
       const dateTo = params.get('dateTo') || '';
       
+      const hasFilters = searchQuery || articleType || dateFrom || dateTo;
       let visibleCount = 0;
       
       articles.forEach((article) => {
@@ -304,43 +303,77 @@ const articleTypes = Object.entries(ARTICLE_TYPES).map(([label, slug]) => ({
         const authors = el.dataset.authors?.toLowerCase() || '';
         const type = el.dataset.type || '';
         const date = el.dataset.date || '';
+        const page = parseInt(el.dataset.page || '1', 10);
         
-        let show = true;
+        let matchesFilter = true;
         
         // Filtrar por búsqueda
         if (searchQuery && !title.includes(searchQuery) && !authors.includes(searchQuery)) {
-          show = false;
+          matchesFilter = false;
         }
         
         // Filtrar por tipo
         if (articleType && type !== articleType) {
-          show = false;
+          matchesFilter = false;
         }
         
         // Filtrar por fecha desde
         if (dateFrom && date < dateFrom) {
-          show = false;
+          matchesFilter = false;
         }
         
         // Filtrar por fecha hasta
         if (dateTo && date > dateTo) {
-          show = false;
+          matchesFilter = false;
         }
         
-        el.style.display = show ? '' : 'none';
-        if (show) visibleCount++;
+        // Lógica de visibilidad:
+        // - Con filtros activos: mostrar todos los que coinciden (ignorar paginación)
+        // - Sin filtros: respetar paginación (solo mostrar página actual y anteriores)
+        if (hasFilters) {
+          // Con filtros: mostrar si coincide
+          el.style.display = matchesFilter ? '' : 'none';
+          el.classList.remove('hidden-page');
+          if (matchesFilter) visibleCount++;
+        } else {
+          // Sin filtros: restaurar paginación
+          const loadMoreBtn = document.getElementById('load-more') as HTMLButtonElement;
+          const currentPage = loadMoreBtn ? parseInt(loadMoreBtn.dataset.currentPage || '1', 10) : 1;
+          
+          if (page <= currentPage) {
+            el.style.display = '';
+            el.classList.remove('hidden-page');
+            visibleCount++;
+          } else {
+            el.style.display = '';
+            el.classList.add('hidden-page');
+          }
+        }
       });
       
-      // Mostrar mensaje si no hay resultados
+      // Mostrar/ocultar mensaje de no resultados
       const noResultsEl = document.getElementById('no-results');
-      if (noResultsEl) {
-        noResultsEl.style.display = visibleCount === 0 ? 'block' : 'none';
+      const articlesListEl = document.getElementById('articles-list');
+      if (noResultsEl && articlesListEl) {
+        if (visibleCount === 0 && hasFilters) {
+          noResultsEl.classList.remove('hidden');
+          articlesListEl.classList.add('hidden');
+        } else {
+          noResultsEl.classList.add('hidden');
+          articlesListEl.classList.remove('hidden');
+        }
       }
       
       // Actualizar contador
       const countEl = document.getElementById('articles-count');
       if (countEl) {
         countEl.textContent = `${visibleCount} artículo${visibleCount !== 1 ? 's' : ''} encontrado${visibleCount !== 1 ? 's' : ''}`;
+      }
+      
+      // Ocultar/mostrar paginación según filtros
+      const paginationContainer = document.getElementById('pagination-container');
+      if (paginationContainer) {
+        paginationContainer.style.display = hasFilters ? 'none' : '';
       }
     };
     
@@ -405,7 +438,7 @@ const articleTypes = Object.entries(ARTICLE_TYPES).map(([label, slug]) => ({
         if (value) params.append(key, value.toString());
       });
       
-      fetchArticles(params);
+      filterArticles(params);
       updateFilterTags(params);
       
       // Actualizar URL sin recargar
@@ -418,7 +451,7 @@ const articleTypes = Object.entries(ARTICLE_TYPES).map(([label, slug]) => ({
       clearBtn.addEventListener('click', () => {
         setTimeout(() => {
           const params = new URLSearchParams();
-          fetchArticles(params);
+          filterArticles(params);
           updateFilterTags(params);
           window.history.replaceState({}, '', window.location.pathname);
         }, 0);
@@ -437,7 +470,7 @@ const articleTypes = Object.entries(ARTICLE_TYPES).map(([label, slug]) => ({
           const input = currentForm.elements.namedItem(key) as HTMLInputElement | HTMLSelectElement;
           if (input) input.value = value;
         });
-        fetchArticles(urlParams);
+        filterArticles(urlParams);
         updateFilterTags(urlParams);
       }
     };

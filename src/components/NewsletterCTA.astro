@@ -1,6 +1,11 @@
 ---
 // src/components/NewsletterCTA.astro - Formulario de contacto con EmailJS
 import ContactForm from './react/ContactForm';
+
+// Detectar si el usuario llega con un motivo específico (link directo al formulario)
+// En ese caso, el formulario debe estar visible inmediatamente, usamos un rootMargin mayor
+const hasMotivo = Astro.url.searchParams.has('motivo');
+const rootMargin = hasMotivo ? "2000px" : "200px";
 ---
 
 <section id="contacto" class="contact-section">
@@ -49,7 +54,9 @@ import ContactForm from './react/ContactForm';
       </div>
 
       <!-- ── Right: Form (React) ── -->
-      <ContactForm client:load />
+      <!-- client:visible hidrata solo cuando el formulario entra en viewport -->
+      <!-- rootMargin inicia la hidratación 200px antes (o 2000px si hay ?motivo=) -->
+      <ContactForm client:visible={{ rootMargin }} />
     </div>
   </div>
 </section>
