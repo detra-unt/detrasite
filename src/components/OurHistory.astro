@@ -33,10 +33,10 @@ const milestones = [
         <Image
           src={historiaImg}
           alt="Biblioteca académica vintage con libros encuadernados en cuero"
-          width={800}
-          height={600}
+          widths={[400, 600, 800, 1200]}
+          sizes="(max-width: 1024px) 100vw, 50vw"
           format="webp"
-          quality={80}
+          quality={90}
           class="w-full h-full object-cover grayscale opacity-80 mix-blend-multiply"
           loading="lazy"
           decoding="async"
