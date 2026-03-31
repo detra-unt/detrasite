@@ -7,6 +7,8 @@ import react from '@astrojs/react';
 
 import sitemap from '@astrojs/sitemap';
 
+import cloudflare from '@astrojs/cloudflare';
+
 // https://astro.build/config
 export default defineConfig({
   vite: {
@@ -19,5 +21,6 @@ export default defineConfig({
     defaultStrategy: 'hover',
   },
 
-  integrations: [react(), sitemap()]
+  integrations: [react(), sitemap()],
+  adapter: cloudflare()
 });
