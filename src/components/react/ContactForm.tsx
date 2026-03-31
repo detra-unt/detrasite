@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import emailjs from '@emailjs/browser';
+import styles from './ContactForm.module.css';
 
 // ─── EmailJS credentials ──────────────────
 const EMAILJS_PUBLIC_KEY = import.meta.env.PUBLIC_EMAILJS_PUBLIC_KEY
@@ -154,15 +155,17 @@ export default function ContactForm() {
     setIsDropdownOpen(false);
   };
 
-  // ── Field class helper ────────────────────
-  const fieldClass = (field: string, value: string) => {
-    if (errors[field]) return 'contact-field is-invalid';
-    if (value) return 'contact-field is-valid';
-    return 'contact-field';
+  // ── Field class helper (CSS Modules) ──────
+  const fieldClass = (field: string, value: string, extraClass?: string) => {
+    const classes = [styles.field];
+    if (extraClass) classes.push(extraClass);
+    if (errors[field]) classes.push(styles.fieldInvalid);
+    else if (value) classes.push(styles.fieldValid);
+    return classes.join(' ');
   };
 
   // ── Clear error on input ──────────────────
-  const clearErrorOnInput = (field: string, value: string) => {
+  const clearErrorOnInput = (field: string, _value: string) => {
     if (errors[field]) {
       setErrors(prev => {
         const next = { ...prev };
@@ -174,10 +177,10 @@ export default function ContactForm() {
 
   // ── Render ────────────────────────────────
   return (
-    <div className="contact-card">
+    <div className={styles.card}>
       {/* Error banner */}
       {status === 'error' && (
-        <div className="contact-error" role="alert">
+        <div className={styles.error} role="alert">
           <span className="material-symbols-outlined text-base shrink-0">error</span>
           <p className="text-sm font-body">
             Hubo un error al enviar. Por favor inténtalo de nuevo.
@@ -187,20 +190,20 @@ export default function ContactForm() {
 
       {/* Success state */}
       {status === 'success' ? (
-        <div className="contact-success" aria-live="polite">
+        <div className={styles.success} aria-live="polite">
           <span
-            className="contact-success__icon material-symbols-outlined"
+            className={`${styles.successIcon} material-symbols-outlined`}
             style={{ fontVariationSettings: "'FILL' 1" }}
           >
             check_circle
           </span>
-          <h3 className="contact-success__title">¡Mensaje enviado!</h3>
-          <p className="contact-success__body">
+          <h3 className={styles.successTitle}>¡Mensaje enviado!</h3>
+          <p className={styles.successBody}>
             Nos pondremos en contacto contigo a la brevedad.
           </p>
           <button
             onClick={handleReset}
-            className="contact-success__reset"
+            className={styles.successReset}
             type="button"
           >
             Enviar otro mensaje
@@ -208,16 +211,16 @@ export default function ContactForm() {
         </div>
       ) : (
         <form
-          className={`contact-form${shake ? ' shake' : ''}`}
+          className={`${styles.form}${shake ? ` ${styles.formShake}` : ''}`}
           onSubmit={handleSubmit}
           noValidate
           aria-label="Formulario de contacto"
         >
           {/* Name + Email row */}
-          <div className="contact-form__row">
+          <div className={styles.formRow}>
             {/* Name */}
             <div className={fieldClass('nombre', nombre)} id="field-nombre">
-              <label htmlFor="nombre" className="contact-field__label">
+              <label htmlFor="nombre" className={styles.fieldLabel}>
                 Nombre completo
               </label>
               <input
@@ -226,7 +229,7 @@ export default function ContactForm() {
                 type="text"
                 placeholder="Tu nombre"
                 autoComplete="name"
-                className="contact-field__input"
+                className={styles.fieldInput}
                 aria-describedby="error-nombre"
                 minLength={2}
                 required
@@ -236,15 +239,15 @@ export default function ContactForm() {
                   clearErrorOnInput('nombre', e.target.value);
                 }}
               />
-              <span className="contact-field__bar" aria-hidden="true"></span>
-              <span id="error-nombre" className="contact-field__error" role="alert">
+              <span className={styles.fieldBar} aria-hidden="true"></span>
+              <span id="error-nombre" className={styles.fieldError} role="alert">
                 {errors.nombre || ''}
               </span>
             </div>
 
             {/* Email */}
             <div className={fieldClass('email', email)} id="field-email">
-              <label htmlFor="email" className="contact-field__label">
+              <label htmlFor="email" className={styles.fieldLabel}>
                 Correo electrónico
               </label>
               <input
@@ -253,7 +256,7 @@ export default function ContactForm() {
                 type="email"
                 placeholder="ejemplo@correo.com"
                 autoComplete="email"
-                className="contact-field__input"
+                className={styles.fieldInput}
                 aria-describedby="error-email"
                 required
                 value={email}
@@ -262,16 +265,19 @@ export default function ContactForm() {
                   clearErrorOnInput('email', e.target.value);
                 }}
               />
-              <span className="contact-field__bar" aria-hidden="true"></span>
-              <span id="error-email" className="contact-field__error" role="alert">
+              <span className={styles.fieldBar} aria-hidden="true"></span>
+              <span id="error-email" className={styles.fieldError} role="alert">
                 {errors.email || ''}
               </span>
             </div>
           </div>
 
           {/* Custom Subject Dropdown */}
-          <div className={fieldClass('asunto', asunto)} id="field-asunto">
-            <label id="asunto-label" className="contact-field__label">
+          <div 
+            className={fieldClass('asunto', asunto, styles.fieldAsunto)} 
+            id="field-asunto"
+          >
+            <label id="asunto-label" className={styles.fieldLabel}>
               Asunto
             </label>
             {/* Hidden input for form data */}
@@ -280,7 +286,7 @@ export default function ContactForm() {
             <button
               type="button"
               id="asunto-trigger"
-              className={`contact-field__input cselect-trigger${isDropdownOpen ? ' is-open' : ''}${asunto ? ' has-value' : ''}`}
+              className={`${styles.fieldInput} ${styles.selectTrigger}${isDropdownOpen ? ` ${styles.selectTriggerOpen}` : ''}${asunto ? ` ${styles.selectTriggerHasValue}` : ''}`}
               aria-haspopup="true"
               aria-expanded={isDropdownOpen}
               aria-labelledby="asunto-label"
@@ -288,11 +294,11 @@ export default function ContactForm() {
               aria-controls="asunto-listbox"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
-              <span className="cselect-trigger__text">
+              <span className={styles.selectTriggerText}>
                 {asunto || 'Selecciona un asunto'}
               </span>
               <svg
-                className="cselect-trigger__chevron"
+                className={styles.selectTriggerChevron}
                 width="12"
                 height="12"
                 viewBox="0 0 24 24"
@@ -309,7 +315,7 @@ export default function ContactForm() {
             {/* Dropdown panel */}
             <ul
               id="asunto-listbox"
-              className={`cselect-list${isDropdownOpen ? ' is-open' : ''}`}
+              className={`${styles.selectList}${isDropdownOpen ? ` ${styles.selectListOpen}` : ''}`}
               role="listbox"
               aria-labelledby="asunto-label"
               aria-hidden={isDropdownOpen ? 'false' : 'true'}
@@ -317,7 +323,7 @@ export default function ContactForm() {
               {SUBJECTS.map((subject, i) => (
                 <li
                   key={subject}
-                  className={`cselect-option${asunto === subject ? ' is-selected' : ''}`}
+                  className={`${styles.selectOption}${asunto === subject ? ` ${styles.selectOptionSelected}` : ''}`}
                   role="option"
                   aria-selected={asunto === subject ? 'true' : 'false'}
                   data-value={subject}
@@ -351,7 +357,7 @@ export default function ContactForm() {
                   }}
                 >
                   <span
-                    className="cselect-option__check material-symbols-outlined"
+                    className={`${styles.selectOptionCheck} material-symbols-outlined`}
                     aria-hidden="true"
                   >
                     check
@@ -360,15 +366,15 @@ export default function ContactForm() {
                 </li>
               ))}
             </ul>
-            <span className="contact-field__bar" aria-hidden="true"></span>
-            <span id="error-asunto" className="contact-field__error" role="alert">
+            <span className={styles.fieldBar} aria-hidden="true"></span>
+            <span id="error-asunto" className={styles.fieldError} role="alert">
               {errors.asunto || ''}
             </span>
           </div>
 
           {/* Message */}
           <div className={fieldClass('mensaje', mensaje)} id="field-mensaje">
-            <label htmlFor="mensaje" className="contact-field__label">
+            <label htmlFor="mensaje" className={styles.fieldLabel}>
               Mensaje
             </label>
             <textarea
@@ -376,7 +382,7 @@ export default function ContactForm() {
               name="message"
               placeholder="Escribe tu mensaje aquí…"
               rows={4}
-              className="contact-field__input contact-field__textarea"
+              className={`${styles.fieldInput} ${styles.fieldTextarea}`}
               aria-describedby="error-mensaje"
               minLength={10}
               required
@@ -386,8 +392,8 @@ export default function ContactForm() {
                 clearErrorOnInput('mensaje', e.target.value);
               }}
             ></textarea>
-            <span className="contact-field__bar" aria-hidden="true"></span>
-            <span id="error-mensaje" className="contact-field__error" role="alert">
+            <span className={styles.fieldBar} aria-hidden="true"></span>
+            <span id="error-mensaje" className={styles.fieldError} role="alert">
               {errors.mensaje || ''}
             </span>
           </div>
@@ -395,13 +401,13 @@ export default function ContactForm() {
           {/* Submit */}
           <button
             type="submit"
-            className="contact-submit"
+            className={styles.submit}
             disabled={status === 'loading'}
           >
             <span>{status === 'loading' ? 'Enviando…' : 'Enviar mensaje'}</span>
             {status !== 'loading' && (
               <span
-                className="contact-submit__icon material-symbols-outlined"
+                className={`${styles.submitIcon} material-symbols-outlined`}
                 aria-hidden="true"
               >
                 send
@@ -409,7 +415,7 @@ export default function ContactForm() {
             )}
             {status === 'loading' && (
               <svg
-                className="contact-submit__spinner"
+                className={styles.submitSpinner}
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"

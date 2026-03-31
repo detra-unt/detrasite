@@ -1,0 +1,440 @@
+/**
+ * ContactForm.module.css
+ * Estilos encapsulados para el formulario de contacto.
+ * Esto permite tree-shaking: solo se incluyen en páginas que usan el componente.
+ */
+
+/* ═══════════════════════════════════════
+   CARD CONTAINER
+═══════════════════════════════════════ */
+.card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 1.25rem;
+  padding: 2.25rem;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+    0 32px 64px rgba(0, 0, 0, 0.22);
+}
+
+@media (min-width: 768px) {
+  .card {
+    padding: 2.75rem;
+  }
+}
+
+/* ═══════════════════════════════════════
+   SUCCESS STATE
+═══════════════════════════════════════ */
+.success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.9rem;
+  padding: 2rem 1rem;
+}
+
+.successIcon {
+  font-size: 3.5rem;
+  color: #ffdadb;
+}
+
+.successTitle {
+  font-family: Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.successBody {
+  font-size: 0.9rem;
+  color: #ffb2b7;
+  line-height: 1.6;
+}
+
+.successReset {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 218, 219, 0.7);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.successReset:hover {
+  color: #fff;
+}
+
+/* ═══════════════════════════════════════
+   ERROR BANNER
+═══════════════════════════════════════ */
+.error {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(180, 20, 30, 0.35);
+  border: 1px solid rgba(255, 100, 100, 0.25);
+  border-radius: 0.625rem;
+  padding: 0.75rem 1rem;
+  color: #ffb2b7;
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+}
+
+/* ═══════════════════════════════════════
+   FORM
+═══════════════════════════════════════ */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.formRow {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 520px) {
+  .formRow {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Shake animation for invalid submit */
+@keyframes cfShake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-6px);
+  }
+  40% {
+    transform: translateX(6px);
+  }
+  60% {
+    transform: translateX(-4px);
+  }
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+.formShake {
+  animation: cfShake 0.4s ease;
+}
+
+/* ═══════════════════════════════════════
+   FIELDS
+═══════════════════════════════════════ */
+.field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.fieldLabel {
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: rgba(255, 178, 183, 0.75);
+  transition: color 0.2s;
+}
+
+.field:focus-within .fieldLabel,
+.fieldValid .fieldLabel {
+  color: #ffdadb;
+}
+
+.fieldInvalid .fieldLabel {
+  color: #ffa0a8;
+}
+
+.fieldInput {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-size: 0.95rem;
+  padding: 0.55rem 0;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.25s;
+  font-family: inherit;
+}
+
+.fieldInput::placeholder {
+  color: rgba(255, 255, 255, 0.28);
+}
+
+.fieldInput:focus {
+  border-color: rgba(255, 218, 219, 0.5);
+}
+
+.fieldInvalid .fieldInput {
+  border-color: rgba(255, 100, 110, 0.55);
+}
+
+.fieldValid .fieldInput {
+  border-color: rgba(255, 218, 219, 0.35);
+}
+
+/* Animated focus bar */
+.fieldBar {
+  position: absolute;
+  bottom: 1.35rem;
+  left: 0;
+  width: 0;
+  height: 1.5px;
+  background: #ffdadb;
+  transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.field:focus-within .fieldBar {
+  width: 100%;
+}
+
+.fieldInvalid .fieldBar {
+  background: #ff7882;
+  width: 100%;
+}
+
+/* Per-field error message */
+.fieldError {
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  color: #ff9aa2;
+  min-height: 0.9rem;
+  transition: opacity 0.2s;
+  opacity: 0;
+}
+
+.fieldInvalid .fieldError {
+  opacity: 1;
+}
+
+/* Textarea */
+.fieldTextarea {
+  resize: none;
+  line-height: 1.6;
+}
+
+/* Subject field bar position adjustment */
+.fieldAsunto .fieldBar {
+  bottom: 1.75rem;
+}
+
+/* ═══════════════════════════════════════
+   CUSTOM SELECT DROPDOWN
+═══════════════════════════════════════ */
+.selectTrigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  text-align: left;
+  gap: 0.5rem;
+  padding-right: 0.25rem;
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+}
+
+.selectTriggerText {
+  flex: 1;
+  color: rgba(255, 255, 255, 0.28);
+  transition: color 0.2s;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.selectTriggerHasValue .selectTriggerText {
+  color: #fff;
+}
+
+.selectTriggerChevron {
+  flex-shrink: 0;
+  color: rgba(255, 218, 219, 0.5);
+  transition:
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    color 0.2s;
+}
+
+.selectTriggerOpen .selectTriggerChevron {
+  transform: rotate(180deg);
+  color: #ffdadb;
+}
+
+/* Dropdown list panel */
+.selectList {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: -1px;
+  right: -1px;
+  z-index: 50;
+  list-style: none;
+  margin: 0;
+  padding: 0.35rem;
+  background: #1e0007;
+  border: 1px solid rgba(255, 218, 219, 0.18);
+  border-radius: 0.625rem;
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.55),
+    0 4px 12px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transform: translateY(-6px) scaleY(0.94);
+  transform-origin: top center;
+  pointer-events: none;
+  transition:
+    opacity 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.selectListOpen {
+  opacity: 1;
+  transform: translateY(0) scaleY(1);
+  pointer-events: auto;
+}
+
+/* Option items */
+.selectOption {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.9rem;
+  color: rgba(255, 218, 219, 0.78);
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+  outline: none;
+}
+
+.selectOption:hover,
+.selectOption:focus {
+  background: rgba(255, 218, 219, 0.1);
+  color: #fff;
+}
+
+.selectOptionSelected {
+  color: #ffdadb;
+  background: rgba(255, 218, 219, 0.08);
+}
+
+.selectOptionCheck {
+  font-size: 0.9rem;
+  color: #ffdadb;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.selectOptionSelected .selectOptionCheck {
+  opacity: 1;
+}
+
+/* Divider between options */
+.selectOption + .selectOption {
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+/* ═══════════════════════════════════════
+   SUBMIT BUTTON
+═══════════════════════════════════════ */
+.submit {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.9rem 2rem;
+  margin-top: 0.5rem;
+  border: 1px solid rgba(255, 218, 219, 0.55);
+  border-radius: 0.5rem;
+  background: transparent;
+  color: #ffdadb;
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 700;
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    color 0.35s ease,
+    border-color 0.35s ease;
+}
+
+.submit::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #ffdadb;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 0;
+}
+
+.submit:hover::before,
+.submit:focus-visible::before {
+  transform: scaleX(1);
+}
+
+.submit:hover,
+.submit:focus-visible {
+  color: #40000e;
+  border-color: #ffdadb;
+}
+
+.submit > * {
+  position: relative;
+  z-index: 1;
+}
+
+.submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.submitIcon {
+  font-size: 1.1rem;
+  transition: transform 0.3s ease;
+}
+
+.submit:hover .submitIcon {
+  transform: translateX(3px) rotate(-10deg);
+}
+
+.submitSpinner {
+  width: 1.1rem;
+  height: 1.1rem;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
