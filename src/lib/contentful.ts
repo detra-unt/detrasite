@@ -77,6 +77,27 @@ const DEFAULT_OPTIONS: Required<FetchGraphQLOptions> = {
 const sleep = (ms: number): Promise<void> => 
   new Promise(resolve => setTimeout(resolve, ms));
 
+/**
+ * Sanitiza un string para uso seguro en queries GraphQL.
+ * Escapa caracteres que podrían romper la sintaxis o permitir inyección.
+ */
+function sanitizeGraphQLString(input: string): string {
+  if (!input) return '';
+  
+  return input
+    // Escapa backslashes primero (antes de agregar más)
+    .replace(/\\/g, '\\\\')
+    // Escapa comillas dobles (crítico para strings GraphQL)
+    .replace(/"/g, '\\"')
+    // Escapa saltos de línea
+    .replace(/\n/g, '\\n')
+    .replace(/\r/g, '\\r')
+    // Escapa tabulaciones
+    .replace(/\t/g, '\\t')
+    // Limita longitud para prevenir DoS
+    .slice(0, 200);
+}
+
 /** Determina si un error HTTP es recuperable mediante reintentos */
 function isRetryableHttpStatus(status: number): boolean {
   // 408: Request Timeout, 429: Too Many Requests, 5xx: Server errors
@@ -419,27 +440,32 @@ export async function getArticles(options: GetArticlesOptions = {}): Promise<{
     preview = false,
   } = options;
 
-  // Construir filtros
+  // Construir filtros con sanitización para prevenir inyección GraphQL
   const filters: string[] = [];
 
   if (articleType) {
-    filters.push(`articleType: "${articleType}"`);
+    const safeArticleType = sanitizeGraphQLString(articleType);
+    filters.push(`articleType: "${safeArticleType}"`);
   }
 
   if (searchQuery) {
+    // Sanitizar input del usuario para prevenir inyección GraphQL
+    const safeSearchQuery = sanitizeGraphQLString(searchQuery);
     // Búsqueda por título o nombre de autor
     filters.push(`OR: [
-      { title_contains: "${searchQuery}" },
+      { title_contains: "${safeSearchQuery}" },
       { authorsCollection_exists: true }
     ]`);
   }
 
   if (startDate) {
-    filters.push(`publishDate_gte: "${startDate}"`);
+    const safeStartDate = sanitizeGraphQLString(startDate);
+    filters.push(`publishDate_gte: "${safeStartDate}"`);
   }
 
   if (endDate) {
-    filters.push(`publishDate_lte: "${endDate}"`);
+    const safeEndDate = sanitizeGraphQLString(endDate);
+    filters.push(`publishDate_lte: "${safeEndDate}"`);
   }
 
   const whereClause = filters.length > 0 ? `where: { ${filters.join(', ')} }` : '';
@@ -620,13 +646,16 @@ export async function searchArticles(
   searchQuery: string,
   limit = 10
 ): Promise<ArticlePreview[]> {
+  // Sanitizar input del usuario para prevenir inyección GraphQL
+  const safeSearchQuery = sanitizeGraphQLString(searchQuery);
+  
   // Primero buscamos por título
   const queryByTitle = `
     query {
       articleCollection(
         limit: ${limit}
         order: publishDate_DESC
-        where: { title_contains: "${searchQuery}" }
+        where: { title_contains: "${safeSearchQuery}" }
       ) {
         items {
           ${ARTICLE_PREVIEW_FRAGMENT}
@@ -635,8 +664,8 @@ export async function searchArticles(
     }
   `;
 
-  // Cache key única por combinación de parámetros de búsqueda
-  const cacheKey = `search:${searchQuery}:${limit}`;
+  // Cache key usa el query sanitizado para consistencia
+  const cacheKey = `search:${safeSearchQuery}:${limit}`;
 
   return cached(cacheKey, async () => {
     const data = await fetchGraphQL<ArticlesResponse>(queryByTitle);
