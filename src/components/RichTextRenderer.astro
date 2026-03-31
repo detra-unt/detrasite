@@ -99,12 +99,48 @@ const options: Partial<Options> = {
   },
 };
 
-const htmlContent = documentToHtmlString(content, options);
+const rawHtmlContent = documentToHtmlString(content, options);
+
+// Sanitizar el HTML para manejar &nbsp; problemáticos que rompen el responsive
+function sanitizeNbsp(html: string): string {
+  return html
+    // Reemplazar múltiples &nbsp; seguidos por un solo espacio normal
+    .replace(/(&nbsp;){2,}/g, ' ')
+    // Reemplazar &nbsp; entre palabras largas por espacio normal con word-joiner
+    // Esto permite que el navegador rompa la línea si es necesario
+    .replace(/(\S{15,})&nbsp;(\S{15,})/g, '$1 $2')
+    // Reemplazar &nbsp; al inicio o final de párrafos por espacio normal
+    .replace(/>(&nbsp;)+/g, '> ')
+    .replace(/(&nbsp;)+</g, ' <');
+}
+
+const htmlContent = sanitizeNbsp(rawHtmlContent);
 ---
 
 <div class:list={['rich-text-content font-body text-base md:text-lg', className]} set:html={htmlContent} />
 
 <style>
+  .rich-text-content {
+    /* Prevenir overflow por texto largo o &nbsp; */
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    /* Habilitar guiones automáticos como fallback */
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+  }
+
+  .rich-text-content :global(p),
+  .rich-text-content :global(li),
+  .rich-text-content :global(blockquote),
+  .rich-text-content :global(td),
+  .rich-text-content :global(th) {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+  }
+
   .rich-text-content :global(p:last-child) {
     margin-bottom: 0;
   }
