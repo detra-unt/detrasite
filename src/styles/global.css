@@ -1,5 +1,29 @@
 @import "tailwindcss";
 
+/* ══════════════════════════════════════════════════════════════════════════
+   FUENTES LOCALES - Fontsource Variable Fonts
+   Beneficios: Sin conexiones externas, mejor caché, sin bloqueo de render
+   Las fuentes variable contienen todos los pesos en un solo archivo woff2.
+   unicode-range permite descargar solo los subsets necesarios (latin, etc.)
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Newsreader - Variable font (headline) 
+   Soporta: weight 200-800, italic, optical sizing 6-72 */
+@import "@fontsource-variable/newsreader/wght.css";
+@import "@fontsource-variable/newsreader/wght-italic.css";
+
+/* Public Sans - Variable font (body)
+   Soporta: weight 100-900 */
+@import "@fontsource-variable/public-sans";
+
+/* Inter - Variable font (labels/UI)
+   Soporta: weight 100-900 */
+@import "@fontsource-variable/inter";
+
+/* Material Symbols Outlined - Variable icon font
+   Soporta: weight 100-700, fill 0-1, grade, optical size */
+@import "@fontsource-variable/material-symbols-outlined";
+
 @theme {
   /* Colors - Material Design 3 Palette */
   --color-primary-fixed: #ffdadb;
@@ -50,10 +74,10 @@
   --color-tertiary-fixed: #ffdea5;
   --color-tertiary: #1a1000;
 
-  /* Font Families */
-  --font-headline: "Newsreader", serif;
-  --font-body: "Public Sans", sans-serif;
-  --font-label: "Inter", sans-serif;
+  /* Font Families - Using local variable fonts */
+  --font-headline: "Newsreader Variable", Georgia, serif;
+  --font-body: "Public Sans Variable", system-ui, sans-serif;
+  --font-label: "Inter Variable", system-ui, sans-serif;
 
   /* Border Radius */
   --radius: 0.125rem;
@@ -65,8 +89,9 @@
   --shadow-3xl: 0 35px 60px -15px rgba(0, 0, 0, 0.3);
 }
 
-/* Material Symbols */
+/* Material Symbols - Local variable font */
 .material-symbols-outlined {
+  font-family: "Material Symbols Outlined Variable", sans-serif;
   font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 
