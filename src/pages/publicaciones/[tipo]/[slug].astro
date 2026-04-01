@@ -335,6 +335,9 @@ const coverSrcset = getResponsiveSrcset(coverUrl, [600, 800, 1000, 1200]);
   title={`${article.title} | DETRA-UNT`}
   description={`Artículo de investigación: ${article.title}`}
   currentPage="publications"
+  ogImage={coverUrl}
+  ogType="article"
+  articlePublishedTime={article.publishDate}
 >
   <!-- Hero del Artículo -->
   <header class="relative bg-[#5E0B15] text-white">
