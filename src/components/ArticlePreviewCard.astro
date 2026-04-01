@@ -20,9 +20,12 @@ const titleRevealId = `${article.sys.id}-${variant}`;
 
 // Imágenes optimizadas según variante
 const coverImageUrl = article.coverImage.url;
-const featuredSrcset = getResponsiveSrcset(coverImageUrl, [600, 900, 1200, 1600]);
-const defaultSrcset = getResponsiveSrcset(coverImageUrl, [400, 600, 800, 1000]);
-const compactSrcset = getResponsiveSrcset(coverImageUrl, [144, 288, 432]);
+// Featured: ocupa todo el ancho en móvil pero nunca más de 1200px en desktop
+const featuredSrcset = getResponsiveSrcset(coverImageUrl, [400, 600, 900, 1200]);
+// Default: en móvil ocupa ~100%, en tablet ~50%, en desktop ~33% del contenedor
+const defaultSrcset = getResponsiveSrcset(coverImageUrl, [320, 480, 640, 800]);
+// Compact: thumbnail pequeño, 112px en móvil, 144px en desktop
+const compactSrcset = getResponsiveSrcset(coverImageUrl, [112, 144, 224, 288]);
 ---
 
 {variant === 'featured' ? (
@@ -44,9 +47,9 @@ const compactSrcset = getResponsiveSrcset(coverImageUrl, [144, 288, 432]);
     <!-- Imagen de fondo con efecto parallax sutil -->
     <div class="absolute inset-0 overflow-hidden">
       <img 
-        src={getOptimizedImageUrl(coverImageUrl, { width: 900, height: 506 })} 
+        src={getOptimizedImageUrl(coverImageUrl, { width: 600, height: 338 })} 
         srcset={featuredSrcset}
-        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 75vw, 900px"
+        sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 1024px) calc(100vw - 64px), 900px"
         alt={article.coverImage.title || article.title}
         width={900}
         height={506}
@@ -253,9 +256,9 @@ const compactSrcset = getResponsiveSrcset(coverImageUrl, [144, 288, 432]);
     <!-- Imagen de portada con efectos -->
     <div class="relative aspect-[16/10] overflow-hidden bg-[#1c1c14]">
       <img 
-        src={getOptimizedImageUrl(coverImageUrl, { width: 800, height: 500 })}
+        src={getOptimizedImageUrl(coverImageUrl, { width: 480, height: 300 })}
         srcset={defaultSrcset}
-        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
+        sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 1024px) calc(50vw - 24px), 380px"
         alt={article.coverImage.title || article.title}
         width={800}
         height={500}

@@ -1,10 +1,10 @@
 ---
 /**
  * HighlightedMoments.astro
- * Componente de collage para mostrar momentos destacados del cÃ­rculo.
- * Muestra hasta 6 imÃ¡genes en un layout asimÃ©trico con modal para ver mÃ¡s.
+ * Componente de collage para mostrar momentos destacados del círculo.
+ * Muestra hasta 6 imágenes en un layout asimétrico con modal para ver más.
  */
-import { getMomentosDestacados, formatDateBySize } from '../lib/contentful';
+import { getMomentosDestacados, formatDateBySize, getResponsiveSrcset } from '../lib/contentful';
 import type { MomentoDestacado } from '../lib/contentful';
 
 // Obtener todos los momentos para el modal y solo mostrar 6 en el collage principal
@@ -12,6 +12,27 @@ const allMomentos = await getMomentosDestacados();
 const displayMomentos = allMomentos.slice(0, 6);
 const hasMoreMomentos = allMomentos.length > 6;
 const totalMomentos = allMomentos.length;
+
+/**
+ * Configuración de srcset y sizes por posición en el grid
+ * Basado en el layout real CSS:
+ * - Móvil: 2 columnas con gap-2 (8px), padding-x 1rem (16px cada lado)
+ *   Ancho disponible: 100vw - 32px - 8px = ~calc(50vw - 20px)
+ * - Tablet/Desktop (md+): 12 columnas con gap-3/4, max-width 1400px
+ */
+const imageConfigs = [
+  // Posición 0: Grande izquierda (col-span-5 en md, col-span-2 en móvil)
+  // Móvil: ~100vw - 32px, Desktop: ~(5/12 * 1400px) = ~583px 
+  { srcset: [400, 600, 800, 1000, 1200], sizes: '(max-width: 767px) calc(100vw - 32px), (max-width: 1400px) 40vw, 560px' },
+  // Posiciones 1-4: Cuadradas medianas (col-span-1 móvil, col-span-3/4 en md)
+  // Móvil: ~calc(50vw - 20px), Desktop: ~(3/12 * 1400px) = ~350px o (4/12) = ~467px
+  { srcset: [200, 320, 450, 600], sizes: '(max-width: 767px) calc(50vw - 20px), (max-width: 1400px) 30vw, 400px' },
+  { srcset: [200, 320, 450, 600], sizes: '(max-width: 767px) calc(50vw - 20px), (max-width: 1400px) 22vw, 300px' },
+  { srcset: [200, 320, 450, 600], sizes: '(max-width: 767px) calc(50vw - 20px), (max-width: 1400px) 30vw, 400px' },
+  { srcset: [200, 320, 450, 600], sizes: '(max-width: 767px) calc(50vw - 20px), (max-width: 1400px) 22vw, 300px' },
+  // Posición 5: Ancho abajo (col-span-2 móvil, col-span-5 en md, aspect 16/9)
+  { srcset: [400, 600, 800, 1000], sizes: '(max-width: 767px) calc(100vw - 32px), (max-width: 1400px) 40vw, 560px' },
+];
 ---
 
 {displayMomentos.length > 0 && (
@@ -66,9 +87,11 @@ const totalMomentos = allMomentos.length;
               tabindex="0"
               aria-label={`Ver momento: ${momento.description}`}
             >
-              <!-- Imagen -->
+              <!-- Imagen con srcset responsivo -->
               <img
-                src={`${momento.imagen.url}?w=${isPrimary ? 1000 : 600}&h=${isPrimary ? 800 : 500}&fit=fill&fm=webp&q=85`}
+                src={`${momento.imagen.url}?w=${isPrimary ? 800 : 450}&fm=webp&q=85&fit=fill`}
+                srcset={getResponsiveSrcset(momento.imagen.url, imageConfigs[index]?.srcset || [400, 600])}
+                sizes={imageConfigs[index]?.sizes || '(max-width: 767px) calc(50vw - 20px), 350px'}
                 alt={momento.imagen.title || momento.description}
                 class="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-105"
                 loading={index < 2 ? 'eager' : 'lazy'}
