@@ -119,11 +119,10 @@ const { currentPage = "home" } = Astro.props;
     </button>
   </div>
 
-  <!-- Menú mobile -->
+  <!-- Menú mobile - GPU accelerated con transform/opacity -->
   <div
     id="mobile-menu"
-    class="md:hidden overflow-hidden transition-all duration-350 ease-in-out"
-    style="max-height: 0; opacity: 0;"
+    class="md:hidden absolute top-full left-0 w-full opacity-0 pointer-events-none -translate-y-2 transition-all duration-300 ease-out shadow-lg"
     inert
   >
     <div
@@ -249,23 +248,38 @@ const { currentPage = "home" } = Astro.props;
       0 1px 0 rgba(220, 192, 193, 0.5),
       0 4px 16px rgba(46, 0, 7, 0.06);
   }
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     Mobile Menu - GPU Accelerated Animation
+     Usa transform y opacity (propiedades que no causan reflow)
+     will-change aplicado solo durante la transición para evitar overhead
+     ══════════════════════════════════════════════════════════════════════════ */
+  #mobile-menu {
+    /* Promueve el elemento a su propia capa GPU */
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    /* Estado cerrado por defecto (definido también en las clases Tailwind) */
+    transform: translateY(-8px);
+  }
+
+  #mobile-menu.is-active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
 </style>
 
 <script>
   // ── AbortController para limpieza de listeners de este componente ──
-  // NOTA: Esta variable es LOCAL a este módulo de script, NO es global en window
   let navAbortController: AbortController | null = null;
 
   function initMobileMenu() {
-    const btn = document.getElementById("mobile-menu-btn");
-    const menu = document.getElementById("mobile-menu");
-    const nav = document.getElementById("main-nav");
-    if (!btn || !menu || !nav) return;
-
-    const inner = menu.querySelector("div") as HTMLElement | null;
+    const btn = document.getElementById("mobile-menu-btn") as HTMLButtonElement | null;
+    const menu = document.getElementById("mobile-menu") as HTMLDivElement | null;
+    const nav = document.getElementById("main-nav") as HTMLElement | null;
     
-    // Cachear la altura del contenido del menú para evitar lecturas repetidas
-    let cachedInnerHeight = inner ? inner.scrollHeight : 300;
+    // Guard: salir si no existen los elementos necesarios
+    if (!btn || !menu || !nav) return;
 
     // Limpiar listeners antiguos si existen
     if (navAbortController) {
@@ -276,88 +290,74 @@ const { currentPage = "home" } = Astro.props;
     navAbortController = new AbortController();
     const { signal } = navAbortController;
 
-    // ── Optimización de scroll: evitar layout thrashing ──
-    // Usamos una variable para rastrear el estado y evitar escrituras innecesarias
+    // ══════════════════════════════════════════════════════════════════════════
+    // Scroll handler optimizado con rAF y estado cacheado
+    // ══════════════════════════════════════════════════════════════════════════
     let isScrolled = nav.classList.contains("scrolled");
     let rafPending = false;
 
     const handleScroll = () => {
-      // Evitar múltiples rAF pendientes
       if (rafPending) return;
       rafPending = true;
 
       requestAnimationFrame(() => {
         rafPending = false;
-        // Leer primero (fuera de la mutación)
         const shouldBeScrolled = window.scrollY > 12;
         
-        // Solo escribir si hay cambio de estado
         if (shouldBeScrolled !== isScrolled) {
           isScrolled = shouldBeScrolled;
-          if (isScrolled) {
-            nav.classList.add("scrolled");
-          } else {
-            nav.classList.remove("scrolled");
-          }
+          nav.classList.toggle("scrolled", isScrolled);
         }
       });
     };
     
     window.addEventListener("scroll", handleScroll, { passive: true, signal });
     
-    // Ejecutar verificación inicial en rAF
+    // Verificación inicial
     requestAnimationFrame(() => {
       const shouldBeScrolled = window.scrollY > 12;
       if (shouldBeScrolled !== isScrolled) {
         isScrolled = shouldBeScrolled;
-        if (isScrolled) {
-          nav.classList.add("scrolled");
-        } else {
-          nav.classList.remove("scrolled");
-        }
+        nav.classList.toggle("scrolled", isScrolled);
       }
     });
 
-    // ── Toggle del menú móvil (lecturas antes de escrituras) ──
-    btn.addEventListener("click", () => {
-      // LECTURA: obtener estado actual
-      const isOpen = btn.classList.contains("is-open");
-      
-      // LECTURA: obtener altura si vamos a abrir (antes de cualquier escritura)
-      // Re-cachear la altura por si el contenido cambió
-      if (!isOpen && inner) {
-        cachedInnerHeight = inner.scrollHeight;
+    // ══════════════════════════════════════════════════════════════════════════
+    // Mobile Menu Toggle - GPU accelerated (solo clases, sin cálculos)
+    // ══════════════════════════════════════════════════════════════════════════
+    
+    /** Abre el menú móvil */
+    function openMenu() {
+      btn!.classList.add("is-open");
+      btn!.setAttribute("aria-expanded", "true");
+      menu!.classList.add("is-active");
+      menu!.inert = false;
+    }
+
+    /** Cierra el menú móvil */
+    function closeMenu() {
+      btn!.classList.remove("is-open");
+      btn!.setAttribute("aria-expanded", "false");
+      menu!.classList.remove("is-active");
+      menu!.inert = true;
+    }
+
+    /** Toggle del menú */
+    function toggleMenu() {
+      const isOpen = btn!.classList.contains("is-open");
+      if (isOpen) {
+        closeMenu();
+      } else {
+        openMenu();
       }
+    }
 
-      // ESCRITURAS: todas agrupadas en rAF
-      requestAnimationFrame(() => {
-        if (isOpen) {
-          menu.style.maxHeight = "0px";
-          menu.style.opacity = "0";
-          btn.classList.remove("is-open");
-          btn.setAttribute("aria-expanded", "false");
-          menu.inert = true;
-        } else {
-          menu.style.maxHeight = `${cachedInnerHeight}px`;
-          menu.style.opacity = "1";
-          btn.classList.add("is-open");
-          btn.setAttribute("aria-expanded", "true");
-          menu.inert = false;
-        }
-      });
-    }, { signal });
+    // Click en el botón hamburguesa
+    btn!.addEventListener("click", toggleMenu, { signal });
 
-    // Cerrar menú al hacer click en links
-    menu.querySelectorAll("a").forEach((link) => {
-      link.addEventListener("click", () => {
-        requestAnimationFrame(() => {
-          menu.style.maxHeight = "0px";
-          menu.style.opacity = "0";
-          btn.classList.remove("is-open");
-          btn.setAttribute("aria-expanded", "false");
-          menu.inert = true;
-        });
-      }, { signal });
+    // Cerrar menú al hacer click en links (navegación)
+    menu!.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", closeMenu, { signal });
     });
 
     // Cerrar menú al hacer resize a desktop
@@ -368,19 +368,21 @@ const { currentPage = "home" } = Astro.props;
 
       requestAnimationFrame(() => {
         resizeRafPending = false;
-        // LECTURA primero
         const isWideScreen = window.innerWidth >= 768;
-        const isMenuOpen = btn.classList.contains("is-open");
+        const isMenuOpen = btn!.classList.contains("is-open");
         
-        // ESCRITURAS solo si es necesario
         if (isWideScreen && isMenuOpen) {
-          menu.style.maxHeight = "0px";
-          menu.style.opacity = "0";
-          btn.classList.remove("is-open");
-          btn.setAttribute("aria-expanded", "false");
-          menu.inert = true;
+          closeMenu();
         }
       });
+    }, { signal });
+
+    // Cerrar menú con Escape
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && btn!.classList.contains("is-open")) {
+        closeMenu();
+        btn!.focus(); // Devolver foco al botón
+      }
     }, { signal });
   }
 
