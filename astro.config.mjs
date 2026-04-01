@@ -8,7 +8,7 @@ import sitemap from '@astrojs/sitemap';
 // https://astro.build/config
 export default defineConfig({
 
-  site: 'https://detraunt.com',
+  site: 'https://detraunt.vercel.app',
 
   vite: {
     plugins: [tailwindcss()]
@@ -30,7 +30,7 @@ export default defineConfig({
       priority: 0.7,
       serialize(item) {
         // Página principal con mayor prioridad
-        if (item.url === 'https://detraunt.com/') {
+        if (item.url === 'https://detraunt.vercel.app/') {
           item.priority = 1.0;
           // @ts-ignore
           item.changefreq = 'weekly';
