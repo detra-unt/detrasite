@@ -262,6 +262,9 @@ const { currentPage = "home" } = Astro.props;
     if (!btn || !menu || !nav) return;
 
     const inner = menu.querySelector("div") as HTMLElement | null;
+    
+    // Cachear la altura del contenido del menú para evitar lecturas repetidas
+    let cachedInnerHeight = inner ? inner.scrollHeight : 300;
 
     // Limpiar listeners antiguos si existen
     if (navAbortController) {
@@ -272,58 +275,111 @@ const { currentPage = "home" } = Astro.props;
     navAbortController = new AbortController();
     const { signal } = navAbortController;
 
-    // Scroll effect: add `.scrolled` class when page is scrolled
+    // ── Optimización de scroll: evitar layout thrashing ──
+    // Usamos una variable para rastrear el estado y evitar escrituras innecesarias
+    let isScrolled = nav.classList.contains("scrolled");
+    let rafPending = false;
+
     const handleScroll = () => {
-      if (window.scrollY > 12) {
-        nav.classList.add("scrolled");
-      } else {
-        nav.classList.remove("scrolled");
-      }
+      // Evitar múltiples rAF pendientes
+      if (rafPending) return;
+      rafPending = true;
+
+      requestAnimationFrame(() => {
+        rafPending = false;
+        // Leer primero (fuera de la mutación)
+        const shouldBeScrolled = window.scrollY > 12;
+        
+        // Solo escribir si hay cambio de estado
+        if (shouldBeScrolled !== isScrolled) {
+          isScrolled = shouldBeScrolled;
+          if (isScrolled) {
+            nav.classList.add("scrolled");
+          } else {
+            nav.classList.remove("scrolled");
+          }
+        }
+      });
     };
     
     window.addEventListener("scroll", handleScroll, { passive: true, signal });
-    handleScroll(); // run on init
-
-    // Toggle del menú móvil
-    btn.addEventListener("click", () => {
-      const isOpen = btn.classList.contains("is-open");
-
-      if (isOpen) {
-        menu.style.maxHeight = "0px";
-        menu.style.opacity = "0";
-        btn.classList.remove("is-open");
-        btn.setAttribute("aria-expanded", "false");
-        menu.inert = true;
-      } else {
-        const contentHeight = inner ? inner.scrollHeight : 300;
-        menu.style.maxHeight = `${contentHeight}px`;
-        menu.style.opacity = "1";
-        btn.classList.add("is-open");
-        btn.setAttribute("aria-expanded", "true");
-        menu.inert = false;
+    
+    // Ejecutar verificación inicial en rAF
+    requestAnimationFrame(() => {
+      const shouldBeScrolled = window.scrollY > 12;
+      if (shouldBeScrolled !== isScrolled) {
+        isScrolled = shouldBeScrolled;
+        if (isScrolled) {
+          nav.classList.add("scrolled");
+        } else {
+          nav.classList.remove("scrolled");
+        }
       }
+    });
+
+    // ── Toggle del menú móvil (lecturas antes de escrituras) ──
+    btn.addEventListener("click", () => {
+      // LECTURA: obtener estado actual
+      const isOpen = btn.classList.contains("is-open");
+      
+      // LECTURA: obtener altura si vamos a abrir (antes de cualquier escritura)
+      // Re-cachear la altura por si el contenido cambió
+      if (!isOpen && inner) {
+        cachedInnerHeight = inner.scrollHeight;
+      }
+
+      // ESCRITURAS: todas agrupadas en rAF
+      requestAnimationFrame(() => {
+        if (isOpen) {
+          menu.style.maxHeight = "0px";
+          menu.style.opacity = "0";
+          btn.classList.remove("is-open");
+          btn.setAttribute("aria-expanded", "false");
+          menu.inert = true;
+        } else {
+          menu.style.maxHeight = `${cachedInnerHeight}px`;
+          menu.style.opacity = "1";
+          btn.classList.add("is-open");
+          btn.setAttribute("aria-expanded", "true");
+          menu.inert = false;
+        }
+      });
     }, { signal });
 
     // Cerrar menú al hacer click en links
     menu.querySelectorAll("a").forEach((link) => {
       link.addEventListener("click", () => {
-        menu.style.maxHeight = "0px";
-        menu.style.opacity = "0";
-        btn.classList.remove("is-open");
-        btn.setAttribute("aria-expanded", "false");
-        menu.inert = true;
+        requestAnimationFrame(() => {
+          menu.style.maxHeight = "0px";
+          menu.style.opacity = "0";
+          btn.classList.remove("is-open");
+          btn.setAttribute("aria-expanded", "false");
+          menu.inert = true;
+        });
       }, { signal });
     });
 
     // Cerrar menú al hacer resize a desktop
+    let resizeRafPending = false;
     window.addEventListener("resize", () => {
-      if (window.innerWidth >= 768 && btn.classList.contains("is-open")) {
-        menu.style.maxHeight = "0px";
-        menu.style.opacity = "0";
-        btn.classList.remove("is-open");
-        btn.setAttribute("aria-expanded", "false");
-        menu.inert = true;
-      }
+      if (resizeRafPending) return;
+      resizeRafPending = true;
+
+      requestAnimationFrame(() => {
+        resizeRafPending = false;
+        // LECTURA primero
+        const isWideScreen = window.innerWidth >= 768;
+        const isMenuOpen = btn.classList.contains("is-open");
+        
+        // ESCRITURAS solo si es necesario
+        if (isWideScreen && isMenuOpen) {
+          menu.style.maxHeight = "0px";
+          menu.style.opacity = "0";
+          btn.classList.remove("is-open");
+          btn.setAttribute("aria-expanded", "false");
+          menu.inert = true;
+        }
+      });
     }, { signal });
   }
 

@@ -675,9 +675,15 @@ const imageConfigs = [
     let currentIndex = 0;
     const totalImages = thumbnails.length;
 
+    /**
+     * refreshDescriptionToggle - Optimizado para evitar Layout Thrashing
+     * Patrón: LECTURAS primero → luego ESCRITURAS en rAF
+     */
     function refreshDescriptionToggle() {
       if (!descriptionContainer || !descriptionWrapper || !toggleDescBtn) return;
 
+      // ── FASE 1: Reset inmediato (escrituras que no dependen de lecturas) ──
+      // Estas escrituras son necesarias para "resetear" antes de medir
       descriptionWrapper.classList.remove('expanded', 'truncated');
       toggleDescBtn.classList.add('hidden');
       toggleDescBtn.setAttribute('aria-expanded', 'false');
@@ -685,10 +691,15 @@ const imageConfigs = [
       const toggleText = toggleDescBtn.querySelector('.toggle-text');
       if (toggleText) toggleText.textContent = 'Ver mas';
 
+      // ── FASE 2: Esperar al siguiente frame para que el layout se estabilice ──
       requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          const isTruncated = descriptionContainer.scrollHeight > descriptionContainer.clientHeight + 8;
+        // ── FASE 3: LECTURAS - Obtener todas las dimensiones necesarias ──
+        const scrollH = descriptionContainer.scrollHeight;
+        const clientH = descriptionContainer.clientHeight;
+        const isTruncated = scrollH > clientH + 8;
 
+        // ── FASE 4: ESCRITURAS - Aplicar cambios en el siguiente frame ──
+        requestAnimationFrame(() => {
           if (isTruncated) {
             descriptionWrapper.classList.add('truncated');
             toggleDescBtn.classList.remove('hidden');
@@ -786,18 +797,23 @@ const imageConfigs = [
       closeBtn.addEventListener('click', closeModal, { signal });
     }
     
-    // Toggle description expand/collapse
+    // Toggle description expand/collapse - Optimizado
     if (toggleDescBtn && descriptionWrapper) {
       toggleDescBtn.addEventListener('click', () => {
+        // LECTURA: obtener estado actual antes de escribir
         const isExpanded = descriptionWrapper.classList.contains('expanded');
-        descriptionWrapper.classList.toggle('expanded');
-        descriptionWrapper.classList.toggle('truncated', isExpanded);
-        toggleDescBtn.setAttribute('aria-expanded', String(!isExpanded));
         
-        const toggleText = toggleDescBtn.querySelector('.toggle-text');
-        if (toggleText) {
-          toggleText.textContent = isExpanded ? 'Ver más' : 'Ver menos';
-        }
+        // ESCRITURAS: agrupar en rAF
+        requestAnimationFrame(() => {
+          descriptionWrapper.classList.toggle('expanded');
+          descriptionWrapper.classList.toggle('truncated', isExpanded);
+          toggleDescBtn.setAttribute('aria-expanded', String(!isExpanded));
+          
+          const toggleText = toggleDescBtn.querySelector('.toggle-text');
+          if (toggleText) {
+            toggleText.textContent = isExpanded ? 'Ver más' : 'Ver menos';
+          }
+        });
       }, { signal });
     }
     
@@ -854,11 +870,22 @@ const imageConfigs = [
       }
     }, { signal });
 
-    // Resize listener - CRÍTICO: usa signal para evitar memory leak
+    // Resize listener - Optimizado con debounce via rAF
+    let resizeRafPending = false;
     window.addEventListener('resize', () => {
-      if (modal.classList.contains('active')) {
-        refreshDescriptionToggle();
-      }
+      // Evitar múltiples rAF pendientes durante resize rápido
+      if (resizeRafPending) return;
+      resizeRafPending = true;
+
+      requestAnimationFrame(() => {
+        resizeRafPending = false;
+        // LECTURA: verificar si el modal está activo
+        const isModalActive = modal.classList.contains('active');
+        
+        if (isModalActive) {
+          refreshDescriptionToggle();
+        }
+      });
     }, { signal });
 
     // Touch/swipe support for mobile
