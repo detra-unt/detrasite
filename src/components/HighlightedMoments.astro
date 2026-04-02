@@ -115,7 +115,7 @@ const imageConfigs = [
                   >
                     {formatDateBySize(momento.fecha, 'short')}
                   </time>
-                  <p class={`text-white font-body leading-snug line-clamp-2 ${isPrimary ? 'text-sm md:text-base lg:text-lg' : 'text-xs md:text-sm'}`}>
+                  <p class={`text-white font-label uppercase leading-snug line-clamp-2 ${isPrimary ? 'text-sm md:text-base lg:text-lg' : 'text-xs md:text-sm'}`}>
                     {momento.description}
                   </p>
                 </div>
@@ -239,7 +239,7 @@ const imageConfigs = [
                 <!-- DescripciÃ³n con expansiÃ³n para textos largos -->
                 <div class="modal-description-wrapper relative mt-3">
                   <div class="modal-description-container overflow-hidden transition-all duration-300" id="descriptionScroller">
-                    <p id="modalImageDescription" class="text-white/90 text-base md:text-lg font-body leading-relaxed"></p>
+                    <p id="modalImageDescription" class="text-white/90 text-base md:text-lg font-label uppercase leading-relaxed"></p>
                   </div>
                   <!-- BotÃ³n expandir/contraer -->
                   <button 
