@@ -1,934 +1,492 @@
 ---
 /**
  * HighlightedMoments.astro
- * Componente de collage para mostrar momentos destacados del círculo.
- * Muestra hasta 6 imágenes en un layout asimétrico con modal para ver más.
+ * Galería de momentos destacados del círculo de estudios.
+ *
+ * Arquitectura de datos: la lógica compleja se resuelve en el frontmatter
+ * para evitar el bug de esbuild con operadores de comparación (<, <=)
+ * dentro del template JSX de Astro.
  */
-import { getMomentosDestacados, formatDateBySize, getResponsiveSrcset } from '../lib/contentful';
-import type { MomentoDestacado } from '../lib/contentful';
+import { getMomentosDestacados, formatDateBySize } from '../lib/contentful';
 
-// Obtener todos los momentos para el modal y solo mostrar 6 en el collage principal
 const allMomentos = await getMomentosDestacados();
-const displayMomentos = allMomentos.slice(0, 6);
-const hasMoreMomentos = allMomentos.length > 6;
-const totalMomentos = allMomentos.length;
+
+// Ordenar de más reciente a más antiguo
+const sortedMomentos = [...allMomentos].sort(
+  (a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
+);
+
+const MAX_DISPLAY = 4;
+const displayMomentos = sortedMomentos.slice(0, MAX_DISPLAY);
+const hasMoreMomentos = sortedMomentos.length > MAX_DISPLAY;
+const totalMomentos = sortedMomentos.length;
 
 /**
- * Configuración de srcset y sizes por posición en el grid
- * Basado en el layout real CSS:
- * - Móvil: 2 columnas con gap-2 (8px), padding-x 1rem (16px cada lado)
- *   Ancho disponible: 100vw - 32px - 8px = ~calc(50vw - 20px)
- * - Tablet/Desktop (md+): 12 columnas con gap-3/4, max-width 1400px
+ * Configuración del layout Bento por posición.
+ * Separada al frontmatter para evitar que el compilador de Astro/esbuild
+ * interprete los operadores de comparación como etiquetas HTML.
  */
-const imageConfigs = [
-  // Posición 0: Grande izquierda (col-span-5 en md, col-span-2 en móvil)
-  // Móvil: ~100vw - 32px, Desktop: ~(5/12 * 1400px) = ~583px 
-  { srcset: [400, 600, 800, 1000, 1200], sizes: '(max-width: 767px) calc(100vw - 32px), (max-width: 1400px) 40vw, 560px' },
-  // Posiciones 1-4: Cuadradas medianas (col-span-1 móvil, col-span-3/4 en md)
-  // Móvil: ~calc(50vw - 20px), Desktop: ~(3/12 * 1400px) = ~350px o (4/12) = ~467px
-  { srcset: [200, 320, 450, 600], sizes: '(max-width: 767px) calc(50vw - 20px), (max-width: 1400px) 30vw, 400px' },
-  { srcset: [200, 320, 450, 600], sizes: '(max-width: 767px) calc(50vw - 20px), (max-width: 1400px) 22vw, 300px' },
-  { srcset: [200, 320, 450, 600], sizes: '(max-width: 767px) calc(50vw - 20px), (max-width: 1400px) 30vw, 400px' },
-  { srcset: [200, 320, 450, 600], sizes: '(max-width: 767px) calc(50vw - 20px), (max-width: 1400px) 22vw, 300px' },
-  // Posición 5: Ancho abajo (col-span-2 móvil, col-span-5 en md, aspect 16/9)
-  { srcset: [400, 600, 800, 1000], sizes: '(max-width: 767px) calc(100vw - 32px), (max-width: 1400px) 40vw, 560px' },
-];
+type BentoConfig = { basis: string; height: string };
+
+function getBentoConfig(index: number): BentoConfig {
+  const configs: Record<number, BentoConfig> = {
+    0: { basis: 'flex-[1_1_60%]', height: 'h-[320px] lg:h-[380px]' },
+    1: { basis: 'flex-[1_1_35%]', height: 'h-[320px] lg:h-[380px]' },
+    2: { basis: 'flex-[1_1_35%]', height: 'h-[320px] lg:h-[380px]' },
+    3: { basis: 'flex-[1_1_60%]', height: 'h-[320px] lg:h-[380px]' },
+  };
+  return configs[index] ?? { basis: 'flex-[1_1_100%]', height: 'h-[320px]' };
+}
+
+const bentoConfigs = displayMomentos.map((_, i) => getBentoConfig(i));
+
+// Formatear fechas en el servidor para el atributo datetime y el texto visible
+const formattedDates = displayMomentos.map(m => formatDateBySize(m.fecha, 'short'));
+const allFormattedDates = sortedMomentos.map(m =>
+  new Date(m.fecha).toLocaleDateString('es-PE', {
+    year: 'numeric', month: 'long', day: 'numeric'
+  })
+);
 ---
 
 {displayMomentos.length > 0 && (
-  <section class="pb-4 pt-0 md:pb-12 md:pt-0 bg-[#fcfaec] relative overflow-hidden">
-    <!-- PatrÃ³n decorativo de fondo -->
-    <div class="absolute inset-0 opacity-[0.04]">
-      <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <pattern id="grid-pattern" patternUnits="userSpaceOnUse" width="60" height="60">
-            <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#2e0007" stroke-width="0.5"/>
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#grid-pattern)"/>
-      </svg>
-    </div>
+  <section
+    class="py-12 md:py-20 bg-[#fcfaec] relative overflow-hidden"
+    aria-labelledby="highlighted-moments-title"
+  >
+    <div class="max-w-[1340px] mx-auto px-4 md:px-6 lg:px-8 relative z-10">
 
-    <div class="max-w-[1400px] mx-auto px-4 md:px-6 lg:px-8 relative z-10">
-      <!-- Header -->
-      <div class="text-center mb-8 md:mb-12">
-        <span class="inline-block px-4 py-1.5 bg-[#2e0007] text-[#ffdadb] text-xs font-label font-bold uppercase tracking-[0.2em] rounded-full mb-4">
-          Galería
-        </span>
-        <h2 class="text-3xl md:text-4xl lg:text-5xl font-headline font-bold text-[#2e0007] mb-4">
-          Momentos Destacados
-        </h2>
-        <div class="h-1 w-24 bg-[#2e0007] mx-auto"></div>
-        <p class="text-[#564243] font-body mt-4 max-w-xl mx-auto text-sm md:text-base">
-          Revive los momentos más significativos de nuestro círculo de estudios
-        </p>
+      <!-- Header de sección -->
+      <div class="mb-8 md:mb-10">
+        <div class="max-w-xl">
+          <p class="text-xs font-label font-semibold uppercase tracking-[0.25em] text-[#2e0007]/50 mb-3">
+            Nuestro Archivo
+          </p>
+          <h2
+            id="highlighted-moments-title"
+            class="text-2xl md:text-4xl font-headline font-bold text-[#2e0007] leading-tight"
+          >
+            Momentos Destacados
+          </h2>
+          <p class="text-[#564243] font-body mt-3 text-sm md:text-base leading-relaxed">
+            Una ventana a los hitos y eventos que nos definen como círculo.
+          </p>
+        </div>
       </div>
 
-      <!-- Collage Grid - MÃ¡s ancho y mejor distribuido -->
-      <div class="grid grid-cols-2 md:grid-cols-12 gap-2 md:gap-3 lg:gap-4">
+      <!-- DESKTOP: Layout Bento Flex -->
+      <div class="hidden md:flex flex-wrap gap-3 lg:gap-4">
         {displayMomentos.map((momento, index) => {
-          // Definir clases de grid segÃºn posiciÃ³n
-          const gridClasses = [
-            'col-span-2 md:col-span-5 row-span-1 md:row-span-2 aspect-[4/3] md:aspect-auto md:h-[420px]', // Grande izquierda
-            'col-span-1 md:col-span-4 aspect-square md:aspect-auto md:h-[200px]', // Mediano arriba centro
-            'col-span-1 md:col-span-3 aspect-square md:aspect-auto md:h-[200px]', // Mediano arriba derecha
-            'col-span-1 md:col-span-4 aspect-square md:aspect-auto md:h-[200px]', // Abajo centro-izq
-            'col-span-1 md:col-span-3 aspect-square md:aspect-auto md:h-[200px]', // Abajo centro-der
-            'col-span-2 md:col-span-5 aspect-[16/9] md:aspect-auto md:h-[200px]', // Ancho abajo
-          ];
-          
-          const isPrimary = index === 0;
-          
+          const { basis: basisClass, height: heightClass } = bentoConfigs[index];
+          const dateText = formattedDates[index];
           return (
-            <article 
-              class={`group relative rounded-xl md:rounded-2xl overflow-hidden cursor-pointer momento-card bg-[#eae9db] ${gridClasses[index] || 'col-span-1 aspect-square'}`}
-              data-momento-index={index}
+            <article
+              class={`momento-card open-gallery-btn moments-gallery-trigger group relative overflow-hidden rounded-2xl bg-stone-200 cursor-pointer ${basisClass} ${heightClass}`}
+              data-index={index}
               role="button"
               tabindex="0"
-              aria-label={`Ver momento: ${momento.description}`}
+              aria-label={`Ver momento del ${dateText}: ${momento.description}`}
             >
-              <!-- Imagen con srcset responsivo -->
               <img
-                src={`${momento.imagen.url}?w=${isPrimary ? 800 : 450}&fm=webp&q=85&fit=fill`}
-                srcset={getResponsiveSrcset(momento.imagen.url, imageConfigs[index]?.srcset || [400, 600])}
-                sizes={imageConfigs[index]?.sizes || '(max-width: 767px) calc(50vw - 20px), 350px'}
+                src={`${momento.imagen.url}?w=900&fm=webp&q=82&fit=fill`}
                 alt={momento.imagen.title || momento.description}
-                class="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-105"
+                class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
                 loading={index < 2 ? 'eager' : 'lazy'}
                 decoding="async"
               />
-              
-              <!-- Overlay gradiente -->
-              <div class={`absolute inset-0 bg-gradient-to-t from-[#2e0007]/90 via-[#2e0007]/20 to-transparent opacity-70 group-hover:opacity-85 transition-opacity duration-500`}></div>
-              
-              <!-- Contenido -->
-              <div class="absolute inset-0 flex flex-col justify-end p-3 md:p-4 lg:p-5">
-                <div class="transform translate-y-1 group-hover:translate-y-0 transition-transform duration-500">
-                  {isPrimary && (
-                    <span class="hidden md:inline-block px-2 py-0.5 bg-[#ffdadb] text-[#2e0007] text-[10px] font-label font-bold uppercase tracking-wider rounded mb-2">
-                      Destacado
-                    </span>
-                  )}
-                  <time 
+
+              <!-- Overlay sutil, se intensifica en hover -->
+              <div class="moments-overlay absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent transition-opacity duration-500"></div>
+
+              <!-- Contenido de tarjeta -->
+              <div class="absolute inset-x-0 bottom-0 p-4 lg:p-5 pr-24">
+                <div class="transform translate-y-1 group-hover:translate-y-0 transition-transform duration-400 ease-out">
+                  <time
                     datetime={momento.fecha}
-                    class="block text-[#ffdadb] text-[10px] md:text-xs font-label font-medium uppercase tracking-wider mb-1"
+                    class="block font-serif italic text-[#ffdadb] text-base lg:text-lg leading-none mb-1"
                   >
-                    {formatDateBySize(momento.fecha, 'short')}
+                    {dateText}
                   </time>
-                  <p class={`text-white font-label uppercase leading-snug line-clamp-2 ${isPrimary ? 'text-sm md:text-base lg:text-lg' : 'text-xs md:text-sm'}`}>
+                  <p class="text-white/90 font-body text-xs leading-snug opacity-0 group-hover:opacity-100 transition-opacity duration-400 line-clamp-2 mt-1">
                     {momento.description}
                   </p>
                 </div>
-                
-                <!-- Indicador de expandir -->
-                <div class="absolute top-2 right-2 md:top-3 md:right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-75 group-hover:scale-100">
-                  <span class="flex items-center justify-center w-8 h-8 md:w-10 md:h-10 bg-white/90 backdrop-blur-sm rounded-full shadow-lg">
-                    <svg class="w-4 h-4 md:w-5 md:h-5 text-[#2e0007]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
-                    </svg>
-                  </span>
-                </div>
               </div>
-              
-              <!-- Borde decorativo en hover -->
-              <div class="absolute inset-0 border-2 border-white/0 group-hover:border-white/40 rounded-xl md:rounded-2xl transition-all duration-500 pointer-events-none"></div>
+
+              <!-- Badge flotante circular (solo en la última imagen) -->
+              {index === displayMomentos.length - 1 && hasMoreMomentos && (
+                <div class="absolute bottom-4 right-4 lg:bottom-5 lg:right-5 z-20 flex flex-col items-center justify-center w-14 h-14 lg:w-16 lg:h-16 bg-white/95 backdrop-blur-md text-[#2e0007] rounded-full shadow-[0_8px_20px_rgba(0,0,0,0.15)] group-hover:scale-110 group-hover:bg-white transition-all duration-400 pointer-events-none">
+                  <svg class="w-5 h-5 mb-0.5 opacity-80" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M3 3h7v7H3V3zm11 0h7v7h-7V3zM3 14h7v7H3v-7zm11 0h7v7h-7v-7z"/>
+                  </svg>
+                  <span class="font-sans font-bold text-xs tracking-tight">+{totalMomentos - MAX_DISPLAY}</span>
+                </div>
+              )}
             </article>
           );
         })}
       </div>
 
-      <!-- BotÃ³n para ver mÃ¡s -->
-      {hasMoreMomentos && (
-        <div class="text-center mt-8 md:mt-10">
-          <button 
-            id="openGalleryModal"
-            class="group inline-flex items-center gap-3 px-6 py-3 bg-[#2e0007] text-white rounded-full font-label font-bold text-sm uppercase tracking-wider hover:bg-[#550015] transition-all duration-300 shadow-lg hover:shadow-xl"
-          >
-            <span>Ver todos los momentos</span>
-            <span class="flex items-center justify-center w-6 h-6 bg-white/20 rounded-full">
-              <span class="text-xs">{totalMomentos}</span>
-            </span>
-            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-            </svg>
-          </button>
+      <!-- MOBILE: Layout Cuadrícula (Álbum) -->
+      <div class="md:hidden">
+        <div class="grid grid-cols-2 gap-2.5">
+          {displayMomentos.map((momento, index) => {
+            const dateText = formattedDates[index];
+            const isLast = index === displayMomentos.length - 1 && hasMoreMomentos;
+            
+            return (
+              <article
+                class="momento-card open-gallery-btn moments-gallery-trigger relative aspect-square rounded-2xl overflow-hidden bg-stone-200 shadow-sm"
+                data-index={index}
+                role="button"
+                tabindex="0"
+                aria-label={isLast ? `Abrir galería con ${totalMomentos} fotos` : `Ver momento del ${dateText}`}
+              >
+                <img
+                  src={`${momento.imagen.url}?w=400&h=400&fm=webp&q=80&fit=fill`}
+                  alt={momento.imagen.title || momento.description}
+                  class="absolute inset-0 w-full h-full object-cover"
+                  loading={index < 2 ? 'eager' : 'lazy'}
+                  decoding="async"
+                />
+                
+                {/* Overlay oscuro y botón central (Solo en la última imagen) */}
+                {isLast ? (
+                  <div class="absolute inset-0 bg-black/50 backdrop-blur-[2px] flex flex-col items-center justify-center text-white z-10 pointer-events-none transition-colors active:bg-black/60">
+                    <span class="font-sans font-bold text-3xl tracking-tight">+{totalMomentos - MAX_DISPLAY}</span>
+                  </div>
+                ) : (
+                  <>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                    <div class="absolute inset-x-0 bottom-0 p-3 pointer-events-none">
+                      <time datetime={momento.fecha} class="block font-serif italic text-[#ffdadb] text-sm leading-none mb-0.5">
+                        {dateText}
+                      </time>
+                      <p class="text-white/85 font-body text-[10px] leading-tight line-clamp-2">
+                        {momento.description}
+                      </p>
+                    </div>
+                  </>
+                )}
+              </article>
+            );
+          })}
         </div>
-      )}
+      </div>
+
     </div>
 
-    <!-- Modal Gallery -->
-    <div 
-      id="momentosGalleryModal" 
-      class="modal-gallery fixed inset-0 z-50 hidden"
+    <!-- ============================================================
+         MODAL GALERÍA
+         Estructura: header fijo + cuerpo centrado + thumbnails fijos.
+         Los botones de navegación están dentro del cuerpo (no del flex)
+         para que nunca queden fuera del viewport.
+    ============================================================ -->
+    <div
+      id="momentosGalleryModal"
+      class="fixed inset-0 z-50 hidden"
       role="dialog"
       aria-modal="true"
-      aria-labelledby="modalTitle"
+      aria-labelledby="modalGalleryTitle"
+      aria-hidden="true"
     >
-      <!-- Backdrop con textura sutil -->
-      <div class="absolute inset-0 bg-[#0a0003]/98 backdrop-blur-xl" id="modalBackdrop">
-        <div class="absolute inset-0 opacity-[0.03]" style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.85%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22/%3E%3C/svg%3E');"></div>
-      </div>
-      
-      <!-- Modal Content -->
-      <div class="momentos-modal-shell relative h-full w-full">
-        <!-- Header flotante -->
-        <header class="momentos-modal-header relative z-20 flex items-center justify-between p-4 md:p-6 lg:p-8">
-          <div class="flex items-center gap-4">
-            <div class="modal-header-pill flex items-center gap-3 px-4 py-2 bg-white/5 backdrop-blur-md rounded-full border border-white/10">
-              <span class="text-[#ffdadb] text-sm font-label font-semibold tracking-wide">
-                <span id="currentImageIndex">1</span>
-                <span class="text-white/40 mx-1">/</span>
-                <span class="text-white/60">{totalMomentos}</span>
-              </span>
-            </div>
+      <!-- Fondo -->
+      <div class="absolute inset-0 bg-black/96 backdrop-blur-md" id="modalBackdrop" aria-hidden="true"></div>
+
+      <!-- Shell del modal: 3 filas fijas: header | cuerpo | thumbnails -->
+      <div class="modal-shell relative z-10 w-full h-full flex flex-col">
+
+        <!-- Fila 1: Header -->
+        <header class="flex-none flex items-center justify-between px-4 py-3 md:px-6 md:py-4 border-b border-white/8">
+          <div class="flex items-center gap-3">
+            <span class="font-label text-xs text-white/40 uppercase tracking-widest" id="modalGalleryTitle">Galería</span>
+            <span class="w-px h-3 bg-white/20"></span>
+            <span class="font-label text-xs text-white/60" aria-live="polite">
+              <span id="currentImageIndex" class="text-[#ffdadb]">1</span>
+              <span class="text-white/30 mx-1">/</span>
+              <span>{totalMomentos}</span>
+            </span>
           </div>
-          <button 
-            id="closeModal"
-            class="group flex items-center justify-center w-11 h-11 md:w-12 md:h-12 bg-white/5 hover:bg-white/15 backdrop-blur-md rounded-full border border-white/10 hover:border-white/20 transition-all duration-300"
-            aria-label="Cerrar galerÃ­a"
+          <button
+            id="closeModalBtn"
+            class="flex items-center justify-center w-9 h-9 rounded-full bg-white/6 hover:bg-white/12 border border-white/10 text-white/70 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+            aria-label="Cerrar galería"
           >
-            <svg class="w-5 h-5 text-white/70 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/>
             </svg>
           </button>
         </header>
 
-        <!-- Main Image Area -->
-        <div class="momentos-modal-body relative min-h-0">
-          <!-- Navigation Buttons - Estilo refinado -->
-          <button 
-            id="prevImage"
-            class="nav-btn absolute left-3 md:left-8 lg:left-12 z-10 flex items-center justify-center w-12 h-12 md:w-14 md:h-14 bg-white/5 hover:bg-white/15 backdrop-blur-md rounded-full border border-white/10 hover:border-[#ffdadb]/30 transition-all duration-300 group"
+        <!-- Fila 2: Imagen principal + Botones de navegación (ocupa todo el espacio restante) -->
+        <div class="modal-body flex-1 relative overflow-hidden">
+
+          <!-- Botones de navegación: posicionados sobre la imagen, centrados verticalmente -->
+          <button
+            id="prevImageBtn"
+            class="modal-nav-btn absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-9 h-9 md:w-11 md:h-11 rounded-full bg-black/40 hover:bg-black/70 border border-white/15 text-white/70 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
             aria-label="Imagen anterior"
           >
-            <svg class="w-5 h-5 md:w-6 md:h-6 text-white/60 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19l-7-7 7-7"/>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
             </svg>
           </button>
-          
-          <button 
-            id="nextImage"
-            class="nav-btn absolute right-3 md:right-8 lg:right-12 z-10 flex items-center justify-center w-12 h-12 md:w-14 md:h-14 bg-white/5 hover:bg-white/15 backdrop-blur-md rounded-full border border-white/10 hover:border-[#ffdadb]/30 transition-all duration-300 group"
-            aria-label="Siguiente imagen"
+
+          <button
+            id="nextImageBtn"
+            class="modal-nav-btn absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-9 h-9 md:w-11 md:h-11 rounded-full bg-black/40 hover:bg-black/70 border border-white/15 text-white/70 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+            aria-label="Imagen siguiente"
           >
-            <svg class="w-5 h-5 md:w-6 md:h-6 text-white/60 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"/>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
           </button>
 
-          <!-- Image Container -->
-          <div class="momentos-modal-stage">
-            <figure class="modal-figure relative flex flex-col items-center w-full">
-              <!-- Imagen principal con glow sutil -->
-              <div class="modal-image-shell relative">
-                <div class="absolute -inset-4 bg-[#ffdadb]/5 blur-3xl rounded-3xl opacity-0 transition-opacity duration-500" id="imageGlow"></div>
-                <img 
-                  id="modalMainImage"
-                  src=""
-                  alt=""
-                  class="relative mx-auto max-w-full object-contain rounded-xl shadow-2xl transition-all duration-500"
-                  style="box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,218,219,0.1);"
-                />
+          <!-- Contenedor de imagen y caption -->
+          <figure class="h-full flex flex-col items-center justify-center px-12 md:px-16 py-4 md:py-6">
+            <!-- Área de imagen: flex-1 para ocupar espacio disponible, imagen contiene sin recortar -->
+            <div class="flex-1 w-full flex items-center justify-center min-h-0 relative">
+              <div id="imageLoader" class="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200 pointer-events-none">
+                <div class="w-6 h-6 border-2 border-[#ffdadb]/20 border-t-[#ffdadb]/80 rounded-full animate-spin"></div>
               </div>
-              
-              <!-- Caption elegante -->
-              <figcaption class="modal-caption mt-6 md:mt-8 w-full px-4 text-center">
-                <!-- Fecha con estilo editorial -->
-                <time id="modalImageDate" class="inline-block text-[#ffdadb]/80 text-xs md:text-sm font-label font-medium uppercase tracking-[0.2em] mb-3 pb-3 border-b border-white/10"></time>
-                
-                <!-- DescripciÃ³n con expansiÃ³n para textos largos -->
-                <div class="modal-description-wrapper relative mt-3">
-                  <div class="modal-description-container overflow-hidden transition-all duration-300" id="descriptionScroller">
-                    <p id="modalImageDescription" class="text-white/90 text-base md:text-lg font-label uppercase leading-relaxed"></p>
-                  </div>
-                  <!-- BotÃ³n expandir/contraer -->
-                  <button 
-                    id="toggleDescription" 
-                    class="hidden mt-3 text-[#ffdadb] text-sm font-label font-medium hover:text-white transition-colors focus:outline-none group"
-                    aria-expanded="false"
-                  >
-                    <span class="toggle-text">Ver mÃ¡s</span>
-                    <svg class="inline-block w-4 h-4 ml-1 transform transition-transform group-hover:translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                    </svg>
-                  </button>
-                </div>
-              </figcaption>
-            </figure>
-          </div>
+              <img
+                id="modalMainImage"
+                src=""
+                alt=""
+                class="max-w-full max-h-full w-auto h-auto object-contain rounded-lg shadow-2xl opacity-0 transition-opacity duration-300"
+              />
+            </div>
+
+            <!-- Caption: altura fija para no competir con la imagen -->
+            <figcaption class="flex-none w-full max-w-2xl text-center pt-4 pb-1">
+              <time id="modalImageDate" class="block font-serif italic text-[#ffdadb] text-base md:text-lg mb-1.5"></time>
+              <p id="modalImageDescription" class="text-white/70 font-body text-xs md:text-sm leading-relaxed line-clamp-2"></p>
+            </figcaption>
+          </figure>
         </div>
 
-        <!-- Thumbnails - DiseÃ±o mÃ¡s limpio -->
-        <div class="thumbnails-strip relative border-t border-white/10 bg-black/40 backdrop-blur-sm">
-          <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
-          <div class="thumbnails-scroll relative p-3 md:p-4 overflow-x-auto">
-            <div id="thumbnailsContainer" class="flex gap-2 md:gap-3 justify-center min-w-max px-4">
-              {allMomentos.map((momento, index) => (
-                <button
-                  class="thumbnail-btn relative w-14 h-14 md:w-16 md:h-16 lg:w-[72px] lg:h-[72px] rounded-lg overflow-hidden opacity-50 hover:opacity-100 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#ffdadb]/50 flex-shrink-0 group"
-                  data-index={index}
-                  data-url={momento.imagen.url}
-                  data-description={momento.description}
-                  data-date={momento.fecha}
-                  aria-label={`Ver imagen ${index + 1}: ${momento.description}`}
-                >
-                  <img
-                    src={`${momento.imagen.url}?w=160&h=160&fit=fill&fm=webp&q=75`}
-                    alt=""
-                    class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    loading="lazy"
-                  />
-                  <div class="absolute inset-0 border-2 border-transparent thumbnail-border rounded-lg transition-all duration-300"></div>
-                </button>
-              ))}
-            </div>
+        <!-- Fila 3: Tira de thumbnails -->
+        <nav
+          class="flex-none border-t border-white/8 bg-black/30 py-3 px-4 overflow-x-auto hide-scrollbar text-center"
+          aria-label="Navegación de imágenes"
+        >
+          <div id="thumbnailsContainer" class="inline-flex gap-2 justify-center mx-auto text-left">
+            {sortedMomentos.map((momento, index) => (
+              <button
+                class="thumbnail-btn relative flex-none w-12 h-12 md:w-14 md:h-14 rounded-lg overflow-hidden opacity-35 hover:opacity-80 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#ffdadb]"
+                data-index={index}
+                data-url={momento.imagen.url}
+                data-description={momento.description}
+                data-date={allFormattedDates[index]}
+                aria-label={`Ir a imagen ${index + 1}`}
+                aria-pressed="false"
+              >
+                <img
+                  src={`${momento.imagen.url}?w=120&h=120&fit=fill&fm=webp&q=70`}
+                  alt=""
+                  class="w-full h-full object-cover"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <div class="thumbnail-ring absolute inset-0 rounded-lg border-2 border-transparent transition-colors pointer-events-none"></div>
+              </button>
+            ))}
           </div>
-        </div>
+        </nav>
+
       </div>
     </div>
   </section>
 )}
 
 <style>
-  /* Animaciones para el collage */
+  /* Ocultar scrollbar manteniendo funcionalidad */
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar { display: none; }
+
+  /* Animación de entrada escalonada para las tarjetas */
   .momento-card {
-    animation: fadeInUp 0.6s ease-out both;
+    animation: cardIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
-  
   .momento-card:nth-child(1) { animation-delay: 0.05s; }
-  .momento-card:nth-child(2) { animation-delay: 0.1s; }
-  .momento-card:nth-child(3) { animation-delay: 0.15s; }
-  .momento-card:nth-child(4) { animation-delay: 0.2s; }
-  .momento-card:nth-child(5) { animation-delay: 0.25s; }
-  .momento-card:nth-child(6) { animation-delay: 0.3s; }
+  .momento-card:nth-child(2) { animation-delay: 0.12s; }
+  .momento-card:nth-child(3) { animation-delay: 0.19s; }
+  .momento-card:nth-child(4) { animation-delay: 0.26s; }
 
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(16px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
   }
 
-  /* Modal visible state */
-  #momentosGalleryModal {
-    overflow: hidden;
-  }
-
-  #momentosGalleryModal.active {
+  /* Estados del modal */
+  #momentosGalleryModal.is-open {
     display: flex !important;
-    animation: modalFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: modalIn 0.25s ease-out;
+  }
+  @keyframes modalIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
   }
 
-  @keyframes modalFadeIn {
-    from { 
-      opacity: 0;
-    }
-    to { 
-      opacity: 1;
-    }
-  }
-
-  /* Modal figure animation */
-  #momentosGalleryModal.active .modal-figure {
-    animation: modalSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
-  }
-
-  .momentos-modal-shell {
-    display: grid;
-    grid-template-rows: auto minmax(0, 1fr) auto;
-    width: 100%;
+  /* El shell usa la altura completa del viewport, incluyendo notch en iOS */
+  .modal-shell {
     height: 100dvh;
-    min-height: 100dvh;
   }
 
-  .momentos-modal-header {
-    padding-top: max(1rem, env(safe-area-inset-top));
-    padding-left: max(1rem, env(safe-area-inset-left));
-    padding-right: max(1rem, env(safe-area-inset-right));
-  }
-
-  .momentos-modal-body {
-    min-height: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255, 218, 219, 0.24) transparent;
-  }
-
-  .momentos-modal-body::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  .momentos-modal-body::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .momentos-modal-body::-webkit-scrollbar-thumb {
-    background: rgba(255, 218, 219, 0.18);
-    border-radius: 999px;
-  }
-
-  .momentos-modal-stage {
-    min-height: 100%;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding: clamp(1.5rem, 2.8vh, 2.5rem) clamp(3.5rem, 7vw, 6rem) clamp(1.75rem, 3vh, 2.75rem);
-  }
-
-  .modal-figure {
-    width: min(100%, 72rem);
-    margin: 0 auto;
-  }
-
-  .modal-image-shell {
-    width: min(100%, 56rem);
-    margin: 0 auto;
-  }
-
-  .modal-caption {
-    max-width: 48rem;
-    margin-left: auto;
-    margin-right: auto;
-    padding-bottom: 0.75rem;
-  }
-
-  #modalMainImage {
-    display: block;
-    width: auto;
-    max-width: 100%;
-    max-height: min(50dvh, 44rem);
-  }
-
-  .momentos-modal-body .nav-btn {
-    top: 50%;
-    transform: translateY(-50%);
-  }
-
-  @keyframes modalSlideUp {
-    from {
-      opacity: 0;
-      transform: translateY(30px) scale(0.95);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-  }
-
-  /* Header pill animation */
-  #momentosGalleryModal.active .modal-header-pill {
-    animation: pillSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
-  }
-
-  @keyframes pillSlideIn {
-    from {
-      opacity: 0;
-      transform: translateX(-20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
-
-  /* Navigation buttons animation */
-  #momentosGalleryModal.active .nav-btn {
-    animation: navFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
-  }
-
-  @keyframes navFadeIn {
-    from {
-      opacity: 0;
-      transform: scale(0.8);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-
-  /* Thumbnails strip animation */
-  #momentosGalleryModal.active .thumbnails-strip {
-    animation: stripSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
-  }
-
-  .thumbnails-strip {
-    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
-  }
-
-  .thumbnails-scroll {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255, 218, 219, 0.22) transparent;
-  }
-
-  .thumbnails-scroll::-webkit-scrollbar {
-    height: 6px;
-  }
-
-  .thumbnails-scroll::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .thumbnails-scroll::-webkit-scrollbar-thumb {
-    background: rgba(255, 218, 219, 0.18);
-    border-radius: 999px;
-  }
-
-  @keyframes stripSlideUp {
-    from {
-      opacity: 0;
-      transform: translateY(100%);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  /* Image glow effect on load */
-  #momentosGalleryModal.active #imageGlow {
-    animation: glowPulse 2s ease-in-out infinite alternate;
-  }
-
-  @keyframes glowPulse {
-    from { opacity: 0.3; }
-    to { opacity: 0.6; }
-  }
-
-  /* Active thumbnail */
+  /* Thumbnails activos */
   .thumbnail-btn.active {
-    opacity: 1 !important;
-    transform: scale(1.05);
-  }
-
-  .thumbnail-btn.active .thumbnail-border {
-    border-color: #ffdadb !important;
-    box-shadow: 0 0 20px rgba(255, 218, 219, 0.3);
-  }
-
-  /* Image transition in modal */
-  #modalMainImage {
-    transition: opacity 0.4s ease, transform 0.4s ease;
-  }
-
-  #modalMainImage.loading {
-    opacity: 0.2;
-    transform: scale(0.98);
-  }
-
-  /* Description container - collapsed by default */
-  .modal-description-container {
-    max-height: 4.5em; /* ~3 lÃ­neas */
-    position: relative;
-  }
-
-  .modal-description-container::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 1.5em;
-    background: linear-gradient(to bottom, transparent, #0a0003);
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-
-  .modal-description-wrapper.truncated .modal-description-container::after {
     opacity: 1;
   }
-
-  .modal-description-wrapper.expanded .modal-description-container {
-    max-height: 50vh;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255, 218, 219, 0.3) transparent;
+  .thumbnail-btn.active .thumbnail-ring {
+    border-color: #ffdadb;
   }
 
-  .modal-description-wrapper.expanded .modal-description-container::after {
-    opacity: 0;
-  }
-
-  .modal-description-container::-webkit-scrollbar {
-    width: 3px;
-  }
-
-  .modal-description-container::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .modal-description-container::-webkit-scrollbar-thumb {
-    background: rgba(255, 218, 219, 0.3);
-    border-radius: 3px;
-  }
-
-  /* Toggle button rotation when expanded */
-  .modal-description-wrapper.expanded #toggleDescription svg {
-    transform: rotate(180deg);
-  }
-
-  /* Scrollbar styling for thumbnails */
-  #thumbnailsContainer {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-
-  #thumbnailsContainer::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* Line clamp utility */
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  @media (max-width: 767px) {
-    .momentos-modal-header {
-      padding-bottom: 0.75rem;
-    }
-
-    .momentos-modal-stage {
-      padding-left: 1rem;
-      padding-right: 1rem;
-      padding-top: 1.25rem;
-      padding-bottom: 1.5rem;
-    }
-
-    .momentos-modal-body .nav-btn {
-      width: 2.75rem;
-      height: 2.75rem;
-      top: clamp(8rem, 30vh, 12rem);
-      transform: translateY(-50%);
-      backdrop-filter: blur(14px);
-    }
-
-    #modalMainImage {
-      max-height: min(40dvh, 22rem);
-    }
-
-    .modal-caption {
-      max-width: 100%;
-      padding-left: 0.25rem;
-      padding-right: 0.25rem;
-    }
-
-    .modal-description-container {
-      max-height: 5.2em;
-    }
-  }
-
-  @media (min-width: 768px) {
-    .momentos-modal-header {
-      padding-bottom: 0.25rem;
-    }
+  /* Soporte de reduced-motion */
+  @media (prefers-reduced-motion: reduce) {
+    .momento-card { animation: none; }
+    #momentosGalleryModal.is-open { animation: none; }
+    #modalMainImage { transition: none; }
   }
 </style>
 
 <script>
-  // Gallery Modal Controller - Con cleanup para View Transitions
-  // AbortController permite cancelar todos los listeners de una sola vez
-  let galleryAbortController: AbortController | null = null;
-
-  function cleanupGallery() {
-    if (galleryAbortController) {
-      galleryAbortController.abort();
-      galleryAbortController = null;
-    }
-  }
-
-  function initGallery() {
-    // Limpiar listeners anteriores antes de crear nuevos
-    cleanupGallery();
-    
+  /**
+   * Controlador del modal de galería de momentos.
+   * Compatible con Astro View Transitions (astro:page-load / astro:before-swap).
+   */
+  function initMomentsGallery() {
     const modal = document.getElementById('momentosGalleryModal');
-    const openBtn = document.getElementById('openGalleryModal');
-    const closeBtn = document.getElementById('closeModal');
-    const backdrop = document.getElementById('modalBackdrop');
-    const prevBtn = document.getElementById('prevImage');
-    const nextBtn = document.getElementById('nextImage');
-    const mainImage = document.getElementById('modalMainImage') as HTMLImageElement | null;
-    const imageDate = document.getElementById('modalImageDate');
-    const imageDescription = document.getElementById('modalImageDescription');
-    const currentIndexEl = document.getElementById('currentImageIndex');
-    const descriptionContainer = document.querySelector('.modal-description-container') as HTMLElement | null;
-    const descriptionWrapper = document.querySelector('.modal-description-wrapper') as HTMLElement | null;
-    const toggleDescBtn = document.getElementById('toggleDescription') as HTMLButtonElement | null;
-    const thumbnails = document.querySelectorAll('.thumbnail-btn');
-    const momentoCards = document.querySelectorAll('.momento-card');
+    if (!modal) return;
 
-    if (!modal || !mainImage) return;
-
-    // Crear nuevo AbortController para esta instancia
-    galleryAbortController = new AbortController();
-    const { signal } = galleryAbortController;
+    // Referencias a elementos del DOM
+    const mainImage  = document.getElementById('modalMainImage') as HTMLImageElement;
+    const loader     = document.getElementById('imageLoader');
+    const dateEl     = document.getElementById('modalImageDate');
+    const descEl     = document.getElementById('modalImageDescription');
+    const indexEl    = document.getElementById('currentImageIndex');
+    const closeBtn   = document.getElementById('closeModalBtn');
+    const prevBtn    = document.getElementById('prevImageBtn');
+    const nextBtn    = document.getElementById('nextImageBtn');
+    const thumbnails = document.querySelectorAll<HTMLElement>('.thumbnail-btn');
+    const triggers   = document.querySelectorAll<HTMLElement>('.moments-gallery-trigger');
 
     let currentIndex = 0;
-    const totalImages = thumbnails.length;
+    const total = thumbnails.length;
 
-    /**
-     * refreshDescriptionToggle - Optimizado para evitar Layout Thrashing
-     * Patrón: LECTURAS primero → luego ESCRITURAS en rAF
-     */
-    function refreshDescriptionToggle() {
-      if (!descriptionContainer || !descriptionWrapper || !toggleDescBtn) return;
+    // --- Funciones de control ---
 
-      // ── FASE 1: Reset inmediato (escrituras que no dependen de lecturas) ──
-      // Estas escrituras son necesarias para "resetear" antes de medir
-      descriptionWrapper.classList.remove('expanded', 'truncated');
-      toggleDescBtn.classList.add('hidden');
-      toggleDescBtn.setAttribute('aria-expanded', 'false');
-
-      const toggleText = toggleDescBtn.querySelector('.toggle-text');
-      if (toggleText) toggleText.textContent = 'Ver mas';
-
-      // ── FASE 2: Esperar al siguiente frame para que el layout se estabilice ──
-      requestAnimationFrame(() => {
-        // ── FASE 3: LECTURAS - Obtener todas las dimensiones necesarias ──
-        const scrollH = descriptionContainer.scrollHeight;
-        const clientH = descriptionContainer.clientHeight;
-        const isTruncated = scrollH > clientH + 8;
-
-        // ── FASE 4: ESCRITURAS - Aplicar cambios en el siguiente frame ──
-        requestAnimationFrame(() => {
-          if (isTruncated) {
-            descriptionWrapper.classList.add('truncated');
-            toggleDescBtn.classList.remove('hidden');
-          }
-        });
-      });
-    }
-
-    // Update modal with current image
-    function updateModalImage(index: number) {
-      const thumbnail = thumbnails[index] as HTMLElement;
-      if (!thumbnail || !mainImage) return;
-
-      const url = thumbnail.dataset.url || '';
-      const description = thumbnail.dataset.description || '';
-      const date = thumbnail.dataset.date || '';
-
-      mainImage.classList.add('loading');
-      
-      // Preload image
-      const img = new Image();
-      img.onload = () => {
-        if (!mainImage) return;
-        mainImage.src = `${url}?w=1400&h=1000&fit=fill&fm=webp&q=90`;
-        mainImage.alt = description;
-        mainImage.classList.remove('loading');
-      };
-      img.src = `${url}?w=1400&h=1000&fit=fill&fm=webp&q=90`;
-
-      // Format date
-      if (date && imageDate) {
-        const dateObj = new Date(date);
-        imageDate.textContent = dateObj.toLocaleDateString('es-PE', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric'
-        });
-      }
-
-      if (imageDescription) {
-        imageDescription.textContent = description;
-        refreshDescriptionToggle();
-      }
-      if (currentIndexEl) {
-        currentIndexEl.textContent = String(index + 1);
-      }
-
-      // Update thumbnail active states
-      thumbnails.forEach((thumb, i) => {
-        thumb.classList.toggle('active', i === index);
-      });
-
-      // Scroll thumbnail into view
-      thumbnail.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    function setImage(index: number) {
+      if (index < 0 || index >= total) return;
+      const thumb = thumbnails[index];
+      if (!thumb) return;
 
       currentIndex = index;
-    }
 
-    // Open modal
-    function openModal(startIndex = 0) {
-      if (!modal) return;
-      document.body.style.overflow = 'hidden';
-      modal.classList.add('active');
-      updateModalImage(startIndex);
-      const modalBody = modal.querySelector('.momentos-modal-body');
-      if (modalBody instanceof HTMLElement) {
-        modalBody.scrollTo({ top: 0, behavior: 'auto' });
-      }
-    }
+      // Actualizar metadatos visibles
+      if (indexEl) indexEl.textContent = String(index + 1);
+      if (descEl)  descEl.textContent  = thumb.dataset.description ?? '';
+      if (dateEl)  dateEl.textContent  = thumb.dataset.date ?? '';
 
-    // Close modal
-    function closeModal() {
-      if (!modal) return;
-      document.body.style.overflow = '';
-      modal.classList.remove('active');
-    }
+      // Carga de imagen con fade
+      mainImage.style.opacity = '0';
+      if (loader) loader.style.opacity = '1';
 
-    // Navigate
-    function goToNext() {
-      const nextIndex = (currentIndex + 1) % totalImages;
-      updateModalImage(nextIndex);
-    }
-
-    function goToPrev() {
-      const prevIndex = (currentIndex - 1 + totalImages) % totalImages;
-      updateModalImage(prevIndex);
-    }
-
-    // Event listeners - todos usan signal para cleanup automático
-    if (openBtn) {
-      openBtn.addEventListener('click', () => openModal(0), { signal });
-    }
-    
-    if (closeBtn) {
-      closeBtn.addEventListener('click', closeModal, { signal });
-    }
-    
-    // Toggle description expand/collapse - Optimizado
-    if (toggleDescBtn && descriptionWrapper) {
-      toggleDescBtn.addEventListener('click', () => {
-        // LECTURA: obtener estado actual antes de escribir
-        const isExpanded = descriptionWrapper.classList.contains('expanded');
-        
-        // ESCRITURAS: agrupar en rAF
+      const url = `${thumb.dataset.url}?w=1400&fm=webp&q=88`;
+      const img = new Image();
+      img.onload = () => {
+        mainImage.src = url;
+        mainImage.alt = thumb.dataset.description ?? '';
         requestAnimationFrame(() => {
-          descriptionWrapper.classList.toggle('expanded');
-          descriptionWrapper.classList.toggle('truncated', isExpanded);
-          toggleDescBtn.setAttribute('aria-expanded', String(!isExpanded));
-          
-          const toggleText = toggleDescBtn.querySelector('.toggle-text');
-          if (toggleText) {
-            toggleText.textContent = isExpanded ? 'Ver más' : 'Ver menos';
+          if (loader) loader.style.opacity = '0';
+          mainImage.style.opacity = '1';
+        });
+      };
+      img.onerror = () => {
+        if (loader) loader.style.opacity = '0';
+        mainImage.style.opacity = '1';
+      };
+      img.src = url;
+
+      // Actualizar estado de thumbnails
+      thumbnails.forEach((t, i) => {
+        const active = i === index;
+        t.classList.toggle('active', active);
+        t.setAttribute('aria-pressed', String(active));
+      });
+
+      // Scroll suave al thumbnail activo
+      thumb.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+
+    function openModal(startIndex: number) {
+      document.body.style.overflow = 'hidden';
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+      setImage(startIndex);
+      // Foco accesible al cerrar
+      closeBtn?.focus();
+    }
+
+    function closeModal() {
+      document.body.style.overflow = '';
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+      // Limpiar src para liberar memoria tras la animación de cierre
+      setTimeout(() => { mainImage.src = ''; }, 300);
+    }
+
+    function prev() { setImage((currentIndex - 1 + total) % total); }
+    function next() { setImage((currentIndex + 1) % total); }
+
+    // --- Listeners ---
+
+    // Disparadores del modal (tarjetas y botón "Ver galería")
+    triggers.forEach(el => {
+      el.addEventListener('click', () => {
+        const idx = parseInt(el.dataset.index ?? '0', 10);
+        openModal(isNaN(idx) ? 0 : idx);
+      });
+      // Accesibilidad de teclado para elementos con role="button"
+      if (el.getAttribute('role') === 'button') {
+        el.addEventListener('keydown', (e: Event) => {
+          const ke = e as KeyboardEvent;
+          if (ke.key === 'Enter' || ke.key === ' ') {
+            ke.preventDefault();
+            el.click();
           }
         });
-      }, { signal });
-    }
-    
-    if (backdrop) {
-      backdrop.addEventListener('click', closeModal, { signal });
-    }
-    
-    if (prevBtn) {
-      prevBtn.addEventListener('click', goToPrev, { signal });
-    }
-    
-    if (nextBtn) {
-      nextBtn.addEventListener('click', goToNext, { signal });
-    }
-
-    // Open modal from collage cards
-    momentoCards.forEach((card) => {
-      card.addEventListener('click', () => {
-        const index = parseInt((card as HTMLElement).dataset.momentoIndex || '0');
-        openModal(index);
-      }, { signal });
-      
-      // Keyboard support for cards
-      card.addEventListener('keydown', (e) => {
-        if ((e as KeyboardEvent).key === 'Enter' || (e as KeyboardEvent).key === ' ') {
-          e.preventDefault();
-          const index = parseInt((card as HTMLElement).dataset.momentoIndex || '0');
-          openModal(index);
-        }
-      }, { signal });
+      }
     });
 
-    // Thumbnail clicks
-    thumbnails.forEach((thumb) => {
-      thumb.addEventListener('click', () => {
-        const index = parseInt((thumb as HTMLElement).dataset.index || '0');
-        updateModalImage(index);
-      }, { signal });
+    closeBtn?.addEventListener('click', closeModal);
+    prevBtn?.addEventListener('click', prev);
+    nextBtn?.addEventListener('click', next);
+
+    thumbnails.forEach((btn, idx) => {
+      btn.addEventListener('click', () => setImage(idx));
     });
 
-    // Keyboard navigation - CRÍTICO: usa signal para evitar memory leak
-    document.addEventListener('keydown', (e) => {
-      if (!modal || !modal.classList.contains('active')) return;
-      switch (e.key) {
-        case 'Escape':
-          closeModal();
-          break;
-        case 'ArrowLeft':
-          goToPrev();
-          break;
-        case 'ArrowRight':
-          goToNext();
-          break;
-      }
-    }, { signal });
+    // Cerrar al hacer clic fuera de la imagen (en el backdrop)
+    document.getElementById('modalBackdrop')?.addEventListener('click', closeModal);
 
-    // Resize listener - Optimizado con debounce via rAF
-    let resizeRafPending = false;
-    window.addEventListener('resize', () => {
-      // Evitar múltiples rAF pendientes durante resize rápido
-      if (resizeRafPending) return;
-      resizeRafPending = true;
-
-      requestAnimationFrame(() => {
-        resizeRafPending = false;
-        // LECTURA: verificar si el modal está activo
-        const isModalActive = modal.classList.contains('active');
-        
-        if (isModalActive) {
-          refreshDescriptionToggle();
-        }
-      });
-    }, { signal });
-
-    // Touch/swipe support for mobile
-    let touchStartX = 0;
-    let touchEndX = 0;
-
-    if (modal) {
-      modal.addEventListener('touchstart', (e) => {
-        touchStartX = (e as TouchEvent).changedTouches[0].screenX;
-      }, { passive: true, signal });
-
-      modal.addEventListener('touchend', (e) => {
-        touchEndX = (e as TouchEvent).changedTouches[0].screenX;
-        handleSwipe();
-      }, { passive: true, signal });
+    // Navegación por teclado
+    function onKeydown(e: KeyboardEvent) {
+      if (!modal.classList.contains('is-open')) return;
+      if (e.key === 'Escape')     closeModal();
+      if (e.key === 'ArrowLeft')  prev();
+      if (e.key === 'ArrowRight') next();
     }
+    document.addEventListener('keydown', onKeydown);
 
-    function handleSwipe() {
-      const swipeThreshold = 50;
-      const diff = touchStartX - touchEndX;
-      
-      if (Math.abs(diff) > swipeThreshold) {
-        if (diff > 0) {
-          goToNext();
-        } else {
-          goToPrev();
-        }
-      }
-    }
+    // Cleanup al navegar con View Transitions (evita memory leaks)
+    document.addEventListener('astro:before-swap', () => {
+      document.removeEventListener('keydown', onKeydown);
+      document.body.style.overflow = '';
+    }, { once: true });
   }
 
-  // Initialize on DOMContentLoaded
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initGallery);
-  } else {
-    initGallery();
-  }
-
-  // Re-initialize on Astro page transitions (View Transitions)
-  document.addEventListener('astro:page-load', initGallery);
-  
-  // Cleanup antes de View Transition para evitar memory leaks
-  document.addEventListener('astro:before-swap', cleanupGallery);
+  document.addEventListener('astro:page-load', initMomentsGallery);
 </script>
-
-
