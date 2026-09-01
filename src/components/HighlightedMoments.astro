@@ -358,7 +358,7 @@ const allFormattedDates = sortedMomentos.map(m =>
    * Compatible con Astro View Transitions (astro:page-load / astro:before-swap).
    */
   function initMomentsGallery() {
-    const modal = document.getElementById('momentosGalleryModal');
+    const modal = document.getElementById('momentosGalleryModal') as HTMLElement;
     if (!modal) return;
 
     // Referencias a elementos del DOM
